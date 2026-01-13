@@ -1,9 +1,10 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Filter, Sparkles, Camera, X, Compass } from 'lucide-react';
+import { Search, Filter, Sparkles, Camera, X } from 'lucide-react';
 import { EventData } from '../types';
 import { EVENTS, RECOMMENDATIONS } from '../constants';
-import { IconButton, GlassContainer, Badge, FilterTabs, PullToRefresh } from './UI';
+import { GlassContainer, Badge, FilterTabs, PullToRefresh } from './UI';
+import { UnifiedHeader, HeaderTitle, HeaderAction } from './UnifiedHeader';
 import { triggerHaptic } from '../utils';
 
 interface ExploreViewProps {
@@ -47,68 +48,71 @@ export const ExploreView: React.FC<ExploreViewProps> = ({ onEventClick }) => {
 
   return (
     <div className="relative h-full">
-         {/* Floating Header */}
-         <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[80] w-[92%] animate-in slide-in-from-top-4 duration-500 pointer-events-auto">
-            <GlassContainer strong className="flex items-center justify-between p-2 h-[58px]">
-                {isSearchOpen ? (
-                    <div className="flex-1 flex items-center gap-2 animate-in fade-in duration-200 w-full pl-2">
-                        <Search size={18} className="text-[var(--o)] shrink-0" strokeWidth={2.5} />
-                        <input 
-                            ref={inputRef}
-                            type="text" 
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="EXPLORAR..."
-                            className="flex-1 bg-transparent border-none focus:outline-none text-white font-bold uppercase text-sm tracking-wider placeholder:text-white/30"
-                        />
-                        <IconButton Icon={X} onClick={handleCloseSearch} label="Cerrar" />
-                    </div>
-                ) : (
-                    <>
-                        <div className="pl-3 flex items-center gap-2 animate-in fade-in duration-300">
-                            <Compass size={20} className="text-[var(--o)]" strokeWidth={2.5} />
-                            <span className="text-lg font-black uppercase tracking-tighter text-white font-display">Explorar</span>
-                        </div>
-
-                        <div className="flex items-center gap-2 animate-in fade-in duration-300">
-                            <IconButton 
-                                Icon={Search} 
-                                onClick={() => { triggerHaptic('light'); setIsSearchOpen(true); }} 
-                                label="Buscar" 
-                            />
-                            <IconButton 
-                                Icon={showFilters ? X : Filter} 
-                                onClick={() => { triggerHaptic('light'); setShowFilters(!showFilters); }} 
-                                label="Filtrar" 
-                                color={showFilters ? "var(--o)" : undefined}
-                            />
-                        </div>
-                    </>
-                )}
-            </GlassContainer>
-        </div>
+         
+         <UnifiedHeader 
+            isSearchMode={isSearchOpen}
+            left={
+              <div className="w-10" /> /* Spacer */
+            }
+            center={
+               isSearchOpen ? (
+                 <div className="flex items-center gap-2 w-full animate-in fade-in duration-200">
+                    <Search size={18} className="text-[var(--o)] shrink-0" strokeWidth={2.5} />
+                    <input 
+                        ref={inputRef}
+                        type="text" 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="BUSCAR..."
+                        className="flex-1 bg-transparent border-none focus:outline-none text-white font-bold uppercase text-sm tracking-wider placeholder:text-white/30"
+                    />
+                 </div>
+               ) : (
+                 <HeaderTitle title="Explorar" />
+               )
+            }
+            right={
+              isSearchOpen ? (
+                 <HeaderAction onClick={handleCloseSearch}>
+                    <X size={20} strokeWidth={2.5} />
+                 </HeaderAction>
+              ) : (
+                <>
+                  <HeaderAction onClick={() => { triggerHaptic('light'); setIsSearchOpen(true); }}>
+                     <Search size={20} strokeWidth={2.5} />
+                  </HeaderAction>
+                  <HeaderAction 
+                    onClick={() => { triggerHaptic('light'); setShowFilters(!showFilters); }}
+                    active={showFilters}
+                  >
+                     {showFilters ? <X size={20} strokeWidth={2.5} /> : <Filter size={20} strokeWidth={2.5} />}
+                  </HeaderAction>
+                </>
+              )
+            }
+         />
 
         <PullToRefresh onRefresh={async () => { await new Promise(r => setTimeout(r, 1000)); }}>
-            <div className="pt-24 pb-32 space-y-8 animate-in fade-in duration-500 min-h-full">
+            <div className="pt-28 pb-32 space-y-8 animate-in fade-in duration-500 min-h-full">
             
             {showFilters && (
                 <div className="px-4 animate-in slide-in-from-top-2 duration-300">
                     <FilterTabs 
-                    options={FILTERS} 
-                    selectedId={filter} 
-                    onSelect={setFilter}
+                      options={FILTERS} 
+                      selectedId={filter} 
+                      onSelect={setFilter}
                     />
                 </div>
             )}
 
             {/* Suggested Events Carousel */}
             <div className="space-y-4 px-1">
-                <div className="flex items-center gap-2 px-1">
+                <div className="flex items-center gap-2 px-5">
                 <Sparkles size={16} color="var(--o)" strokeWidth={2.8} />
                 <div className="text-[10px] font-black uppercase tracking-[.22em]" style={{ color: "var(--s)" }}>Eventos sugeridos</div>
                 </div>
                 
-                <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2 px-1">
+                <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2 px-4">
                 {filteredEvents.slice(0, 5).map(e => (
                     <button 
                         key={e.id} 
@@ -133,7 +137,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({ onEventClick }) => {
             </div>
 
             {/* Recommendations List */}
-            <div className="space-y-4 px-1">
+            <div className="space-y-4 px-4">
                 <div className="flex items-center gap-2 px-1">
                 <Camera size={16} color="var(--s)" strokeWidth={2.8} />
                 <div className="text-[10px] font-black uppercase tracking-[.22em]" style={{ color: "var(--s)" }}>Cosas del distrito</div>

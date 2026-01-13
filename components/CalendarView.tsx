@@ -1,10 +1,10 @@
 
 import React, { useMemo, useRef, useState } from 'react';
-import { Plus, Calendar as CalendarIcon, SlidersHorizontal, Clock, MapPin, ChevronDown } from 'lucide-react';
+import { SlidersHorizontal, Clock, MapPin, ChevronDown, List, Rows } from 'lucide-react';
 import { EventData } from '../types';
 import { EVENTS } from '../constants';
 import { getHour, getEventBackgroundStyle, triggerHaptic, getFullDateLabel, cx } from '../utils';
-import { GlassContainer } from './UI';
+import { UnifiedHeader, HeaderTitle, HeaderAction } from './UnifiedHeader';
 
 interface DayGroup {
   dateLabel: string;
@@ -14,12 +14,52 @@ interface DayGroup {
 }
 
 // Sub-component for a single event card within a day
-const EventCard = ({ event, showTime, isLastInDay, onClick }: { event: EventData, showTime: boolean, isLastInDay: boolean, onClick: () => void }) => {
+const EventCard = ({ 
+  event, 
+  showTime, 
+  isLastInDay, 
+  isCompact, 
+  onClick 
+}: { 
+  event: EventData, 
+  showTime: boolean, 
+  isLastInDay: boolean, 
+  isCompact: boolean, 
+  onClick: () => void 
+}) => {
   const time = getHour(event.start);
   const bgStyle = getEventBackgroundStyle(event.image, event.track, event.id);
 
+  if (isCompact) {
+    // COMPACT MODE RENDER
+    return (
+        <div className="flex gap-4 relative group animate-in fade-in duration-300">
+           <div className="w-14 shrink-0 flex flex-col items-end pt-3">
+              <span className={cx("text-[11px] font-bold tracking-wider", showTime ? "text-[var(--o)] opacity-100" : "opacity-0")}>{time}</span>
+           </div>
+           
+           <div className="w-4 flex flex-col items-center relative pt-4">
+                <div className={cx("w-2.5 h-2.5 rounded-full border-2 border-[var(--bg)] z-10 transition-colors", showTime ? "bg-[var(--o)]" : "bg-[var(--f)] opacity-30")} />
+                {!isLastInDay && <div className="absolute top-6 bottom-[-16px] w-px border-l border-dashed border-white/10" />}
+           </div>
+
+           <button 
+              onClick={() => { triggerHaptic('light'); onClick(); }}
+              className="flex-1 py-3 pr-4 border-b border-white/5 active:opacity-50 text-left"
+           >
+              <div className="flex items-center gap-2 mb-1">
+                 <span className="text-[9px] font-black uppercase tracking-wider text-[var(--s)] px-1.5 py-0.5 rounded bg-white/5">{event.track}</span>
+              </div>
+              <div className="text-sm font-bold text-white leading-tight truncate">{event.title}</div>
+              <div className="text-[10px] text-[var(--f)] mt-0.5 truncate">{event.venue}</div>
+           </button>
+        </div>
+    );
+  }
+
+  // DETAILED MODE RENDER
   return (
-    <div className="flex gap-4 relative group">
+    <div className="flex gap-4 relative group animate-in slide-in-from-bottom-2 duration-500">
        {/* Left Column: Time & Connector */}
        <div className="w-14 shrink-0 flex flex-col items-center relative pt-1">
           {/* Time Label */}
@@ -73,8 +113,15 @@ const EventCard = ({ event, showTime, isLastInDay, onClick }: { event: EventData
   );
 };
 
-export const CalendarView = ({ onEventClick, onOpenConfig }: { onEventClick: (e: EventData) => void; onOpenConfig: () => void }) => {
+export const CalendarView = ({ 
+  onEventClick, 
+  onOpenConfig 
+}: { 
+  onEventClick: (e: EventData) => void; 
+  onOpenConfig: () => void 
+}) => {
   const todayRef = useRef<HTMLDivElement>(null);
+  const [isCompact, setIsCompact] = useState(false);
   
   // Group events by Day
   const groupedEvents = useMemo(() => {
@@ -105,7 +152,8 @@ export const CalendarView = ({ onEventClick, onOpenConfig }: { onEventClick: (e:
   const scrollToToday = () => {
     if (todayRef.current) {
         triggerHaptic('medium');
-        todayRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Scroll slightly above element for context
+        todayRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
@@ -114,39 +162,29 @@ export const CalendarView = ({ onEventClick, onOpenConfig }: { onEventClick: (e:
   return (
     <div className="h-full relative font-sans animate-in fade-in duration-300 flex flex-col">
       
-      {/* Floating Header */}
-      <div className="absolute top-6 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
-        <GlassContainer strong className="pointer-events-auto h-[64px] w-full max-w-[360px] px-3 flex items-center justify-between shadow-[0_20px_40px_rgba(0,0,0,0.6)] border border-white/15">
-           <button 
-              onClick={() => { triggerHaptic('light'); onOpenConfig(); }}
-              className="w-12 h-12 rounded-2xl flex items-center justify-center hover:bg-white/10 active:scale-95 transition"
-              aria-label="Configurar"
-           >
-             <SlidersHorizontal size={20} color="var(--tx)" strokeWidth={2.5} />
+      {/* Unified Header */}
+      <UnifiedHeader 
+        left={
+           <HeaderAction onClick={onOpenConfig}>
+              <SlidersHorizontal size={20} strokeWidth={2.5} />
+           </HeaderAction>
+        }
+        center={
+           <button onClick={scrollToToday} className="flex flex-col items-center active:scale-95 transition">
+             <HeaderTitle title="Itinerario" subtitle="Agenda 2026" />
+             {hasToday && (
+                <div className="text-[9px] font-bold text-[var(--ok)] uppercase tracking-wider flex items-center gap-1 mt-0.5 opacity-80 animate-pulse">
+                   Ir a Hoy <ChevronDown size={10} />
+                </div>
+             )}
            </button>
-           
-           <div className="flex flex-col items-center">
-              <div className="flex items-center gap-2">
-                <CalendarIcon size={16} className="text-[var(--o)]" strokeWidth={2.5} />
-                <span className="text-xs font-black uppercase tracking-[0.25em] text-white">Agenda</span>
-              </div>
-              {hasToday && (
-                  <button onClick={scrollToToday} className="text-[9px] font-bold text-[var(--s)] uppercase tracking-wider flex items-center gap-1 mt-0.5 active:opacity-50">
-                    Ir a Hoy <ChevronDown size={10} />
-                  </button>
-              )}
-           </div>
-
-           <button 
-             onClick={() => triggerHaptic('light')}
-             className="w-12 h-12 rounded-2xl flex items-center justify-center active:scale-95 transition hover:bg-white/10"
-           >
-              <div className="w-7 h-7 rounded-full border-[2px] border-white flex items-center justify-center">
-                  <Plus size={14} strokeWidth={3} className="text-white" />
-              </div>
-           </button>
-        </GlassContainer>
-      </div>
+        }
+        right={
+           <HeaderAction onClick={() => { triggerHaptic('light'); setIsCompact(!isCompact); }}>
+              {isCompact ? <Rows size={20} strokeWidth={2.5} /> : <List size={20} strokeWidth={2.5} />}
+           </HeaderAction>
+        }
+      />
 
       {/* Grouped List */}
       <div className="flex-1 overflow-y-auto no-scrollbar pt-28 pb-32 px-4 sm:px-6 scroll-smooth z-0">
@@ -156,22 +194,22 @@ export const CalendarView = ({ onEventClick, onOpenConfig }: { onEventClick: (e:
                <div 
                   key={group.isoDate} 
                   ref={group.isToday ? todayRef : null}
-                  className="relative animate-in slide-in-from-bottom-4 duration-700" 
-                  style={{ animationDelay: `${gIndex * 50}ms` }}
+                  className="relative pb-4" 
                >
                   
-                  {/* Sticky Date Header */}
-                  <div className="sticky top-0 z-30 pt-4 pb-2 mb-2 transition-all">
-                     {/* Glass Background for Header */}
-                     <div className="absolute inset-x-[-10px] top-0 bottom-0 bg-[var(--bg)]/80 backdrop-blur-xl border-b border-white/5 mask-image-gradient" style={{ maskImage: "linear-gradient(to bottom, black 80%, transparent)" }}></div>
+                  {/* Sticky Date Header - Positioned to sit right below the Unified Header */}
+                  {/* Top-20 (~80px) ensures it clears the 64px header + spacing */}
+                  <div className="sticky top-[-1px] z-30 pt-4 pb-2 mb-2 transition-all">
+                     {/* Gradient Mask for scrolling content */}
+                     <div className="absolute inset-x-[-20px] -top-10 bottom-0 bg-[var(--bg)]/95 backdrop-blur-xl border-b border-white/5 shadow-lg mask-image-gradient" style={{ maskImage: "linear-gradient(to bottom, black 85%, transparent)" }}></div>
                      
-                     <h2 className={cx("text-xs font-black uppercase tracking-[0.2em] pl-14 relative flex items-center z-10", group.isToday ? "text-[var(--o)]" : "text-white")}>
-                        <span className={cx("absolute left-3 top-1/2 -translate-y-1/2 w-8 h-0.5 rounded-full shadow-[0_0_10px_currentColor]", group.isToday ? "bg-[var(--o)]" : "bg-white/50")} />
+                     <h2 className={cx("text-xs font-black uppercase tracking-[0.2em] pl-14 relative flex items-center z-10 transition-colors duration-300", group.isToday ? "text-[var(--o)] scale-105 origin-left" : "text-white")}>
+                        <span className={cx("absolute left-3 top-1/2 -translate-y-1/2 w-8 h-0.5 rounded-full shadow-[0_0_10px_currentColor] transition-colors", group.isToday ? "bg-[var(--o)]" : "bg-white/50")} />
                         {group.isToday ? "HOY, " : ""}{group.dateLabel}
                      </h2>
                   </div>
 
-                  {/* Events for this day */}
+                  {/* Events */}
                   <div className="pl-0">
                      {group.events.map((event, i) => {
                         const prevEvent = group.events[i - 1];
@@ -183,6 +221,7 @@ export const CalendarView = ({ onEventClick, onOpenConfig }: { onEventClick: (e:
                               event={event}
                               showTime={!isSameTime} 
                               isLastInDay={i === group.events.length - 1}
+                              isCompact={isCompact}
                               onClick={() => onEventClick(event)}
                            />
                         );
@@ -191,11 +230,15 @@ export const CalendarView = ({ onEventClick, onOpenConfig }: { onEventClick: (e:
 
                </div>
             ))}
-
-            <div className="h-16 flex items-center justify-center opacity-30 gap-2 mt-8">
-               <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-               <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse delay-100" />
-               <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse delay-200" />
+            
+            {/* End of List Spacer */}
+            <div className="h-32 flex flex-col items-center justify-center opacity-30 gap-2 mt-8">
+               <div className="text-[10px] font-black uppercase tracking-[0.2em]">Fin de Agenda</div>
+               <div className="flex gap-2">
+                   <div className="w-1 h-1 rounded-full bg-white" />
+                   <div className="w-1 h-1 rounded-full bg-white" />
+                   <div className="w-1 h-1 rounded-full bg-white" />
+               </div>
             </div>
          </div>
       </div>

@@ -1,39 +1,39 @@
 
 import React, { useState } from 'react';
-import { Heart, Layers, Navigation, Plus, Minus } from 'lucide-react';
-import { Badge, GlassContainer, IconButton } from './UI';
+import { Heart, Navigation, Plus, Minus, Layers, Map as MapIcon } from 'lucide-react';
+import { Badge, GlassContainer } from './UI';
+import { UnifiedHeader, HeaderTitle, HeaderAction } from './UnifiedHeader';
 import { cx, triggerHaptic } from '../utils';
 
 export const MapView: React.FC = () => {
   const [activeLayer, setActiveLayer] = useState<'heat' | 'venue'>('heat');
 
   return (
-    <div className="pt-16 pb-24 h-full flex flex-col animate-in fade-in duration-500">
+    <div className="h-full flex flex-col animate-in fade-in duration-500">
       
-      {/* Map Header */}
-      <div className="flex items-center justify-between mb-4 px-1">
-        <div>
-          <div className="text-2xl font-black uppercase tracking-tighter font-display" style={{ color: "var(--tx)" }}>Mapa</div>
-          <div className="text-[9px] font-black uppercase tracking-[.2em] text-[var(--o)]">Zona Romántica</div>
-        </div>
-        <div className="flex gap-2">
-           <button 
-             onClick={() => { triggerHaptic('light'); setActiveLayer('heat'); }}
-             className={cx("px-3 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-wider transition-colors", activeLayer === 'heat' ? "bg-[var(--o)] border-[var(--o)] text-black" : "border-[var(--b)] text-[var(--f)]")}
-           >
-             Heat
-           </button>
-           <button 
-             onClick={() => { triggerHaptic('light'); setActiveLayer('venue'); }}
-             className={cx("px-3 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-wider transition-colors", activeLayer === 'venue' ? "bg-[var(--o)] border-[var(--o)] text-black" : "border-[var(--b)] text-[var(--f)]")}
-           >
-             Venues
-           </button>
-        </div>
-      </div>
+      <UnifiedHeader 
+        left={<div className="w-10" />}
+        center={<HeaderTitle title="Mapa" subtitle="Zona Romántica" />}
+        right={
+           <div className="flex bg-white/10 rounded-xl p-1 border border-white/5">
+              <button 
+                onClick={() => { triggerHaptic('light'); setActiveLayer('heat'); }}
+                className={cx("p-2 rounded-lg transition-all", activeLayer === 'heat' ? "bg-[var(--o)] text-black shadow-lg" : "text-white hover:bg-white/5")}
+              >
+                 <Layers size={16} strokeWidth={2.5} />
+              </button>
+              <button 
+                onClick={() => { triggerHaptic('light'); setActiveLayer('venue'); }}
+                className={cx("p-2 rounded-lg transition-all", activeLayer === 'venue' ? "bg-[var(--o)] text-black shadow-lg" : "text-white hover:bg-white/5")}
+              >
+                 <MapIcon size={16} strokeWidth={2.5} />
+              </button>
+           </div>
+        }
+      />
 
       {/* Map Container */}
-      <div className="flex-1 relative rounded-[32px] overflow-hidden border border-[var(--b)] shadow-2xl">
+      <div className="flex-1 relative overflow-hidden bg-[#1a1612] w-full h-full">
         
         {/* Mock Map Background */}
         <div className="absolute inset-0 bg-[#1a1612] scale-150">
@@ -49,7 +49,7 @@ export const MapView: React.FC = () => {
         </div>
 
         {/* Map UI Overlays */}
-        <div className="absolute top-4 left-4">
+        <div className="absolute top-24 left-4 z-10">
            <Badge label="En vivo" dot color="var(--ok)" />
         </div>
 
@@ -74,10 +74,10 @@ export const MapView: React.FC = () => {
         </div>
 
         {/* User Location */}
-        <div className="absolute bottom-20 right-12 w-6 h-6 border-2 border-white rounded-full bg-[var(--o)] shadow-lg animate-pulse" />
+        <div className="absolute bottom-40 right-12 w-6 h-6 border-2 border-white rounded-full bg-[var(--o)] shadow-lg animate-pulse" />
 
         {/* Floating Controls */}
-        <div className="absolute bottom-4 left-4 right-4">
+        <div className="absolute bottom-28 left-4 right-4 z-10">
            <GlassContainer strong className="p-3 flex items-center justify-between">
               <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-[var(--o)] flex items-center justify-center text-black">

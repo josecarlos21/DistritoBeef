@@ -1,83 +1,9 @@
 
-import React, { useMemo } from 'react';
-import { Home, Calendar, Map as MapIcon, Wallet, User, SlidersHorizontal, MapPin, Music, Sparkles, Lock, CloudSun, Bell } from 'lucide-react';
-import { TabType, EventData } from '../types';
-import { GlassContainer, IconButton } from './UI';
+import React from 'react';
+import { Home, Calendar, Map as MapIcon, Wallet, User } from 'lucide-react';
+import { TabType } from '../types';
+import { GlassContainer } from './UI';
 import { cx, triggerHaptic } from '../utils';
-
-// StatusBar
-interface StatusBarProps {
-  activeTab: TabType;
-  event: EventData | null;
-  onOpenConfig: () => void;
-  onWeather: () => void;
-  onNotifications: () => void;
-}
-
-export const StatusBar: React.FC<StatusBarProps> = ({ activeTab, event, onOpenConfig, onWeather, onNotifications }) => {
-  const isMap = activeTab === 'map';
-  
-  // Logic: Hide this global StatusBar if we are in Calendar or Social view, 
-  // because those views have their own headers.
-  if (['calendar', 'social'].includes(activeTab)) return null;
-
-  const status = useMemo(() => {
-    if (event) return { title: event.title, Icon: Music, color: "var(--o)" };
-    switch (activeTab) {
-      case "map": return { title: "Rastreo", Icon: MapPin, color: "var(--o)" };
-      case "wallet": return { title: "ID Verificado", Icon: Lock, color: "var(--ok)" };
-      case "social": return { title: "Distrito Vivo", Icon: Sparkles, color: "var(--s)" };
-      default: return { title: "Puerto Vallarta", Icon: MapIcon, color: "var(--s)" };
-    }
-  }, [activeTab, event]);
-
-  return (
-    <div className="absolute top-4 left-0 w-full z-[80] pointer-events-none px-3 sm:px-4">
-      {/* Inner Container: Handles Width and Alignment Transition */}
-      <div 
-        className={cx(
-          "pointer-events-auto transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] flex",
-          isMap ? "justify-end" : "justify-center"
-        )}
-      >
-        <GlassContainer 
-          strong 
-          className={cx(
-            "flex items-center justify-between p-2 h-[58px] transition-all duration-500 overflow-hidden shadow-2xl",
-            isMap ? "w-[180px]" : "w-full"
-          )}
-        >
-          {/* Left Side: Context Title (Collapses in Map Mode) */}
-          <div className={cx(
-            "flex items-center gap-2 overflow-hidden transition-all duration-500",
-            isMap ? "w-0 opacity-0 -ml-4" : "w-auto opacity-100"
-          )}>
-             <IconButton 
-                Icon={status.Icon} 
-                color={status.color} 
-                onClick={() => {}} 
-                label={status.title} 
-             />
-             {/* We can add text here if needed, but icon is cleaner */}
-          </div>
-
-          {/* Right Side: Tools (Always Visible) */}
-          <div className={cx("flex items-center gap-2 transition-all duration-500", isMap ? "ml-auto" : "")}>
-             {isMap && (
-               <div className="animate-in fade-in zoom-in-95 duration-500 delay-100">
-                  <IconButton Icon={MapPin} color="var(--o)" onClick={() => {}} label="Map Context" />
-               </div>
-             )}
-
-             <IconButton Icon={CloudSun} color="var(--o)" onClick={onWeather} label="Clima" />
-             <IconButton Icon={Bell} onClick={onNotifications} label="Notificaciones" />
-             <IconButton Icon={SlidersHorizontal} onClick={onOpenConfig} label="Ambiente" />
-          </div>
-        </GlassContainer>
-      </div>
-    </div>
-  );
-};
 
 // NavBar
 interface NavBarProps {

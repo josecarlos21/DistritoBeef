@@ -15,7 +15,7 @@ export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onActi
   const fullDate = getFullDateLabel(event.start);
 
   return (
-    <div className="absolute inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div className="absolute inset-0 z-[150] flex items-end sm:items-center justify-center p-0 sm:p-4">
       {/* Backdrop */}
       <div 
         className="absolute inset-0 backdrop-blur-md transition-opacity animate-in fade-in duration-300" 
@@ -24,19 +24,19 @@ export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onActi
       ></div>
       
       {/* Card */}
-      <div className="relative w-full sm:max-w-md sm:rounded-[32px] rounded-t-[32px] overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)] border flex flex-col max-h-[90vh] animate-in slide-in-from-bottom-full duration-500" style={{ background: "#1a120b", borderColor: "var(--b)" }}>
+      <div className="relative w-full sm:max-w-md sm:rounded-[40px] rounded-t-[40px] overflow-hidden shadow-[0_0_80px_rgba(0,0,0,0.9)] border-t border-white/20 sm:border border-white/10 flex flex-col max-h-[92vh] animate-in slide-in-from-bottom-full duration-500" style={{ background: "#1a120b" }}>
         
         {/* Image Header */}
-        <div className="h-72 relative shrink-0 group">
+        <div className="h-80 relative shrink-0 group">
           <div className="w-full h-full bg-cover bg-center transition-transform duration-1000 group-hover:scale-105" style={bgStyle} />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#1a120b] via-[#1a120b]/40 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-[#1a120b] via-[#1a120b]/30 to-transparent"></div>
           
           <button 
             onClick={() => { triggerHaptic('light'); onClose(); }}
-            className="absolute top-4 right-4 w-10 h-10 rounded-full backdrop-blur-md text-white flex items-center justify-center border z-10 hover:bg-white/20 transition-all active:scale-95"
+            className="absolute top-4 right-4 w-10 h-10 rounded-full backdrop-blur-md text-white flex items-center justify-center border z-10 hover:bg-white/20 transition-all active:scale-95 shadow-lg"
             style={{ background: "rgba(0,0,0,0.4)", borderColor: "rgba(255,255,255,0.15)" }}
           >
-            <span className="material-symbols-outlined text-lg">close</span>
+            <span className="material-symbols-outlined text-lg">✕</span>
           </button>
 
           <div className="absolute bottom-6 left-6 right-6">
@@ -55,10 +55,10 @@ export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onActi
         </div>
 
         {/* Content */}
-        <div className="p-6 pt-2 overflow-y-auto no-scrollbar" style={{ background: "#1a120b" }}>
+        <div className="p-6 pt-2 overflow-y-auto no-scrollbar bg-[#1a120b]">
           
           {/* Key Info Grid */}
-          <div className="grid grid-cols-1 gap-4 mb-8 bg-white/5 p-4 rounded-2xl border border-white/5">
+          <div className="grid grid-cols-1 gap-4 mb-8 bg-white/5 p-5 rounded-3xl border border-white/5 shadow-inner">
              {/* Date */}
              <div className="flex items-start gap-3">
                 <Calendar size={18} className="text-[var(--o)] shrink-0 mt-0.5" strokeWidth={2.5} />

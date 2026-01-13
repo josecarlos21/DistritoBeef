@@ -1,11 +1,10 @@
-
 import React, { useState, useMemo, useEffect } from 'react';
 import { cx, triggerHaptic } from './utils';
 import { TabType, EventData, AmbienceState } from './types';
 import { INITIAL_AMBIENCE } from './constants';
 import { GlobalStyles } from './components/GlobalStyles';
 import { CanvasBackground } from './components/CanvasBackground';
-import { StatusBar, NavBar } from './components/Navigation';
+import { NavBar } from './components/Navigation';
 import { AmbienceModal } from './components/AmbienceModal';
 import { Onboarding } from './components/Onboarding';
 import { Toast } from './components/UI';
@@ -64,24 +63,34 @@ export default function App() {
     setActiveTab('map');
   };
 
-  const renderView = useMemo(() => {
-    const content = (() => {
-        switch (activeTab) {
-            case "home": return <HomeView onEventClick={setSelectedEvent} onNavigate={setActiveTab} />;
-            case "social": return <ExploreView onEventClick={setSelectedEvent} />;
-            case "calendar": return <CalendarView onEventClick={setSelectedEvent} onOpenConfig={() => setIsConfigOpen(true)} />;
-            case "wallet": return <WalletView />;
-            case "map": return <MapView />;
-            default: return null;
-        }
-    })();
+  const handleConfig = () => {
+    triggerHaptic('light');
+    setIsConfigOpen(true);
+  };
 
-    // Key fix: h-full ensures child views take full height for their own internal scrolling
-    return (
-        <div key={activeTab} className="h-full w-full animate-in fade-in slide-in-from-bottom-2 duration-300">
-            {content}
-        </div>
-    );
+  const renderView = useMemo(() => {
+    switch (activeTab) {
+        case "home": 
+            return <HomeView 
+                onEventClick={setSelectedEvent} 
+                onNavigate={setActiveTab} 
+                onWeather={handleWeather}
+                onNotifications={handleNotifications} 
+            />;
+        case "social": 
+            return <ExploreView onEventClick={setSelectedEvent} />;
+        case "calendar": 
+            return <CalendarView 
+                onEventClick={setSelectedEvent} 
+                onOpenConfig={handleConfig} 
+            />;
+        case "wallet": 
+            return <WalletView onOpenConfig={handleConfig} />;
+        case "map": 
+            return <MapView />;
+        default: 
+            return null;
+    }
   }, [activeTab]);
 
   return (
@@ -89,7 +98,7 @@ export default function App() {
       <GlobalStyles />
       <div 
         className={cx(
-          "relative w-full h-full flex flex-col overflow-hidden", // Force overflow hidden here
+          "relative w-full h-full flex flex-col overflow-hidden",
           "sm:max-w-md sm:h-[844px] sm:rounded-[60px] sm:border-[12px] sm:border-zinc-900",
           "shadow-[0_0_140px_rgba(255,138,29,.10)]"
         )} 
@@ -109,7 +118,7 @@ export default function App() {
           <Onboarding onComplete={() => setAuthenticated(true)} />
         ) : (
           <>
-            {/* System Notifications Toast (Top Layer) */}
+            {/* System Notifications Toast */}
             {notification && (
               <Toast 
                 message={notification.msg} 
@@ -118,16 +127,7 @@ export default function App() {
               />
             )}
 
-            {/* Status Bar: Navigation.tsx handles visibility logic (hidden in calendar/social) */}
-            <StatusBar 
-              activeTab={activeTab} 
-              event={selectedEvent} 
-              onOpenConfig={() => setIsConfigOpen(true)}
-              onWeather={handleWeather}
-              onNotifications={handleNotifications}
-            />
-
-            {/* Main Content Area - Scroll is handled inside views */}
+            {/* Main Content Area - Header is now inside View */}
             <div className="relative flex-1 overflow-hidden z-0">
               {renderView}
             </div>
@@ -136,8 +136,6 @@ export default function App() {
             <NavBar activeTab={activeTab} setTab={handleTabChange} />
 
             {/* --- LAYERS & MODALS --- */}
-            
-            {/* Event Detail Modal */}
             {selectedEvent && (
               <EventDetail 
                 event={selectedEvent} 
@@ -146,13 +144,11 @@ export default function App() {
               />
             )}
 
-            {/* Notification Drawer */}
             <NotificationDrawer 
               open={isNotifOpen} 
               onClose={() => setIsNotifOpen(false)} 
             />
 
-            {/* Ambience Config */}
             <AmbienceModal 
               open={isConfigOpen} 
               onClose={() => setIsConfigOpen(false)} 

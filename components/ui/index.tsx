@@ -1,7 +1,6 @@
-
 import React, { useEffect, useState, useRef } from 'react';
-import { cx, triggerHaptic } from '../utils';
 import { LucideIcon, X, Bell, Loader2 } from 'lucide-react';
+import { cx, triggerHaptic } from '../../utils';
 
 // Glass Container
 interface GlassContainerProps {
@@ -46,6 +45,7 @@ interface IconButtonProps {
 
 export const IconButton: React.FC<IconButtonProps> = ({ Icon, onClick, color, label }) => (
   <button 
+    type="button"
     onClick={(e) => {
         triggerHaptic('light');
         onClick(e);
@@ -66,12 +66,19 @@ interface ToastProps {
 }
 
 export const Toast: React.FC<ToastProps> = ({ message, type = 'info', onClose }) => {
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
     triggerHaptic(type === 'alert' ? 'heavy' : 'light');
-    const timer = setTimeout(() => {
+    timerRef.current = setTimeout(() => {
         onClose();
     }, 5000);
-    return () => clearTimeout(timer); // Cleanup memory leak
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    };
   }, [onClose, type]);
 
   return (
@@ -117,6 +124,7 @@ export const FilterTabs: React.FC<FilterTabsProps> = ({ options, selectedId, onS
       const active = selectedId === f.id;
       return (
         <button
+          type="button"
           key={f.id}
           onClick={() => {
               triggerHaptic('light');
@@ -124,7 +132,7 @@ export const FilterTabs: React.FC<FilterTabsProps> = ({ options, selectedId, onS
           }}
           className={cx(
             "px-4 py-2 rounded-full border text-[10px] font-black uppercase tracking-[.15em] transition-all flex-shrink-0 active:scale-95",
-            active ? "bg-[#D8C2A2] text-[#0E0C09] border-[#D8C2A2] shadow-[0_0_15px_rgba(216,194,162,0.3)]" : "bg-transparent text-[var(--f)] border-[var(--b)] hover:border-[var(--s)]"
+            active ? "bg-[#D8C2A2] text[#0E0C09] border[#D8C2A2] shadow-[0_0_15px_rgba(216,194,162,0.3)]" : "bg-transparent text-[var(--f)] border-[var(--b)] hover:border-[var(--s)]"
           )}
         >
           {f.label}

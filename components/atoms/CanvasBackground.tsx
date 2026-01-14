@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { AmbienceState } from '../types';
+import { AmbienceState } from '../../types';
 
 interface CanvasBackgroundProps {
   ambience: AmbienceState;
@@ -23,7 +23,7 @@ export const CanvasBackground: React.FC<CanvasBackgroundProps> = ({ ambience }) 
       canvas.height = (rect.height * dpr) | 0;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
-    
+
     resize();
     const resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(canvas);
@@ -42,7 +42,7 @@ export const CanvasBackground: React.FC<CanvasBackgroundProps> = ({ ambience }) 
       const rect = canvas.getBoundingClientRect();
       const w = Math.max(1, rect.width);
       const h = Math.max(1, rect.height);
-      
+
       timeRef.current += .006;
       const t0 = timeRef.current;
 
@@ -55,12 +55,12 @@ export const CanvasBackground: React.FC<CanvasBackgroundProps> = ({ ambience }) 
       ctx.globalCompositeOperation = "source-over";
       const g = ctx.createRadialGradient(cx0, cy0, 0, cx0, cy0, Math.max(w, h) * .92);
       const k = ambience.g;
-      
+
       g.addColorStop(0, `hsla(${hue},90%,58%,${.12 * k})`);
       g.addColorStop(.35, `hsla(${(hue + 42) % 360},92%,56%,${.08 * k})`);
       g.addColorStop(.65, `hsla(${(hue + 120) % 360},92%,55%,${.06 * k})`);
       g.addColorStop(1, "rgba(0,0,0,0)");
-      
+
       ctx.fillStyle = g;
       ctx.fillRect(0, 0, w, h);
 
@@ -80,9 +80,13 @@ export const CanvasBackground: React.FC<CanvasBackgroundProps> = ({ ambience }) 
           const n = noise2D(nx * 2.2 * s + t0 * .7, li * 1.7 + t0 * .2, 11 + li * 17);
           const wb = Math.sin(nx * 5.2 + t0 * (1.1 + li * .2)) * .6;
           const y = y0 + (n - .5) * amp + wb * amp * .22;
-          xx === -24 ? ctx.moveTo(xx, y) : ctx.lineTo(xx, y);
+          if (xx === -24) {
+            ctx.moveTo(xx, y);
+          } else {
+            ctx.lineTo(xx, y);
+          }
         }
-        
+
         ctx.lineTo(w + 40, h + 50);
         ctx.lineTo(-40, h + 50);
         ctx.closePath();
@@ -114,7 +118,11 @@ export const CanvasBackground: React.FC<CanvasBackgroundProps> = ({ ambience }) 
           const u = s / 44;
           const xx = xb + (u - .5) * len;
           const yy = yb + Math.sin(u * 6 + ttt) * amp * (.6 + ambience.t * .65);
-          s ? ctx.lineTo(xx, yy) : ctx.moveTo(xx, yy);
+          if (s) {
+            ctx.lineTo(xx, yy);
+          } else {
+            ctx.moveTo(xx, yy);
+          }
         }
 
         const hu3 = (ambience.h + 60 + i * 12 + Math.sin(ttt) * 24) % 360;

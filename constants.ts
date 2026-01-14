@@ -1,21 +1,22 @@
 
 import { EventData, UserData, RecommendationData, AmbienceState } from './types';
 
+// Token snapshot for JS usage (data colors). CSS variables live in theme.css.
 export const THEME = {
   bg: "#0E0C09",
   bg2: "#14110C",
   vig: "rgba(0,0,0,.52)",
-  c: "#5A3A25", // Primary accent (Brown/Bronze)
-  o: "#FF9F45", // Secondary accent (Brightened Orange for visibility)
-  s: "#E8D8C0", // Tertiary (Sand - Brightened)
-  ok: "#2CD67C", // Success (High contrast green)
-  tx: "#FFFFFF", // Text Pure White
-  m: "rgba(255,255,255,.85)", // Muted text - Increased opacity for readability
-  f: "rgba(255,255,255,.60)", // Faint text - Increased opacity for readability
-  gl: "rgba(30,25,20,.65)", // Glass light
-  gs: "rgba(30,25,20,.85)", // Glass strong
-  b: "rgba(255,255,255,.15)", // Border
-  bs: "rgba(255,255,255,.25)" // Border strong
+  c: "#5A3A25",
+  o: "#FF9F45",
+  s: "#E8D8C0",
+  ok: "#2CD67C",
+  tx: "#FFFFFF",
+  m: "rgba(255,255,255,.85)",
+  f: "rgba(255,255,255,.60)",
+  gl: "rgba(30,25,20,.65)",
+  gs: "rgba(30,25,20,.85)",
+  b: "rgba(255,255,255,.15)",
+  bs: "rgba(255,255,255,.25)"
 } as const;
 
 export const INITIAL_AMBIENCE: AmbienceState = { g: .52, h: 26, a: .7, t: .62 };
@@ -134,7 +135,8 @@ const RAW_EVENTS: EventData[] = [
   { id: "INS_0215", day: "Dom 01", title: "SWEAT: Closing Party", venue: "CC Slaughters", track: "beefdip", start: "2026-02-01T22:00:00", end: "2026-02-02T05:00:00", dress: "Underwear / Jock", color: "#555", image: IMG.night, description: "Fiesta de clausura en ropa interior" }
 ];
 
-export const EVENTS = RAW_EVENTS.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+// Keep RAW_EVENTS immutable to allow reuse without side‑effects
+export const EVENTS = [...RAW_EVENTS].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
 
 export const USERS: UserData[] = [
   { id: 1, name: "Beto", age: 34, dist: "AQUÍ", img: "https://i.pravatar.cc/240?u=1", online: true },

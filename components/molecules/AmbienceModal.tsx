@@ -2,7 +2,7 @@ import React from 'react';
 import { Sparkles, X } from 'lucide-react';
 import { AmbienceState } from '../../types';
 import { GlassContainer, IconButton } from '../atoms';
-import { clamp } from '../../utils';
+import { clamp } from '../../src/utils/index';
 import { INITIAL_AMBIENCE } from '../../constants';
 import { useLocale } from '../../src/context/LocaleContext';
 

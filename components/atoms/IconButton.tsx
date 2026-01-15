@@ -1,6 +1,6 @@
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
-import { triggerHaptic } from '../../utils';
+import { triggerHaptic } from '../../../src/utils/index';
 
 interface IconButtonProps {
     Icon: LucideIcon;

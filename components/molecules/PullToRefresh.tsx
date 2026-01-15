@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Loader2 } from 'lucide-react';
-import { triggerHaptic } from '../../utils';
+import { triggerHaptic } from '../../src/utils/index';
 
 interface PullToRefreshProps {
     children: React.ReactNode;
@@ -59,6 +59,7 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({ children, onRefres
             <div
                 className="absolute top-0 left-0 right-0 flex justify-center items-center pointer-events-none ptr-indicator"
                 style={{
+                    // eslint-disable-next-line react-dom/no-unsafe-styles
                     '--ptr-y': translateY,
                     '--ptr-opacity': Math.min(translateY / 40, 1),
                     '--ptr-transition': refreshing ? 'transform 0.3s ease' : 'none'

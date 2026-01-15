@@ -3,7 +3,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { Award, RefreshCw, ShieldCheck, HelpCircle, SlidersHorizontal } from 'lucide-react';
 import { GlassContainer } from '../atoms';
 import { UnifiedHeader, HeaderTitle, HeaderAction } from '../organisms';
-import { triggerHaptic, cx } from '../../utils';
+import { triggerHaptic, cx } from '../../src/utils/index';
 import { useLocale } from '../../src/context/LocaleContext';
 
 interface WalletViewProps {
@@ -68,8 +68,13 @@ export const WalletView: React.FC<WalletViewProps> = ({ onOpenConfig, onLogout, 
 
                         <div className="flex flex-col items-center">
                             <div className="relative">
-                                <div className="w-28 h-28 rounded-full border-4 border-[var(--bg)] shadow-[0_0_20px_rgba(255,138,29,0.3)] overflow-hidden">
-                                    <img src="https://i.pravatar.cc/240?u=1" alt="Profile" className="w-full h-full object-cover" />
+                                <div className="w-28 h-28 rounded-full border-4 border-[var(--bg)] shadow-[0_0_20px_rgba(255,138,29,0.3)] overflow-hidden bg-white/10 flex items-center justify-center">
+                                    {/* Use transparent background placeholder if no specific image logic is present (generic user) */}
+                                    <img
+                                        src={`https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=1a120b&color=f97316&size=240&bold=true`}
+                                        alt="Profile"
+                                        className="w-full h-full object-cover"
+                                    />
                                 </div>
                                 <div className="absolute -bottom-2 -right-2 bg-ok text-black text-[9px] font-black px-3 py-1 rounded-full border-4 border-b shadow-md">
                                     {t('wallet.active')}
@@ -119,7 +124,7 @@ export const WalletView: React.FC<WalletViewProps> = ({ onOpenConfig, onLogout, 
                             </div>
                             <div className="text-center">
                                 <div className="text-[9px] font-bold text-f uppercase mb-1">{t('wallet.id')}</div>
-                                <div className="text-xs font-black text-white">#8829</div>
+                                <div className="text-xs font-black text-white">#{Math.abs(userName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) * 13).toString().slice(0, 4)}</div>
                             </div>
                         </div>
 

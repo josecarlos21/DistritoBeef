@@ -3,7 +3,7 @@ import React from 'react';
 import { MapPin, Flame, Award, Info, ArrowRight, Bell, CloudSun } from 'lucide-react';
 import { EventData, TabType } from '../../types';
 import { EVENTS } from '../../constants';
-import { cx, triggerHaptic } from '../../utils';
+import { cx, triggerHaptic } from '../../src/utils/index';
 import { Badge, GlassContainer } from '../atoms';
 import { PullToRefresh } from '../molecules';
 import { UnifiedHeader, HeaderAction } from '../organisms';
@@ -106,23 +106,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate, on
 
           {/* Live Status Widgets */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <button type="button" onClick={() => { triggerHaptic('light'); onNavigate('map'); }} className="text-left group relative">
-              <div className="absolute inset-0 bg-o opacity-0 group-hover:opacity-5 rounded-[28px] transition-opacity duration-500" />
-              <GlassContainer className="p-6 h-full transition-colors duration-300 border-white/10">
-                <div className="flex justify-between items-start">
-                  <div className="text-[10px] font-black uppercase tracking-[.22em] text-f">{t('home.density')}</div>
-                  <div className="flex h-2.5 w-2.5 relative">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-o opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-o"></span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 mt-3">
-                  <Flame size={20} className="text-o" strokeWidth={2.8} />
-                  <div className="text-2xl font-black font-display text-tx">{t('home.high')}</div>
-                </div>
-                <div className="mt-2 text-[10px] font-bold text-m opacity-80">{t('home.zone')}</div>
-              </GlassContainer>
-            </button>
+
 
             <button type="button" onClick={() => { triggerHaptic('light'); onNavigate('social'); }} className="text-left group relative">
               <div className="absolute inset-0 bg-[var(--s)] opacity-0 group-hover:opacity-5 rounded-[28px] transition-opacity duration-500" />

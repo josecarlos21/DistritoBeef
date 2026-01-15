@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { cx, triggerHaptic } from './utils';
+import { cx, triggerHaptic } from './src/utils/index';
 import { TabType, EventData, AmbienceState } from './types';
 import { INITIAL_AMBIENCE } from './constants';
 import { GlobalStyles } from './components/GlobalStyles';
@@ -13,12 +13,12 @@ import { ExploreView } from './components/views/ExploreView';
 import { CalendarView } from './components/views/CalendarView';
 import { WalletView } from './components/views/WalletView';
 import { MapView } from './components/views/MapView';
+import { AgendaView } from './components/organisms/AgendaView';
 import { EventDetail } from './components/molecules/EventDetail';
 import { NotificationDrawer } from './components/molecules/NotificationDrawer';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
 import { LocaleProvider, useLocale } from './src/context/LocaleContext';
 
-import { TicketModal } from './components/molecules/TicketModal';
 import { UserProfileModal } from './components/molecules/UserProfileModal';
 import { UserData } from './types';
 
@@ -26,7 +26,6 @@ function AppContent() {
   const { t, locale, setLocale } = useLocale();
   const [activeTab, setActiveTab] = useState<TabType>("home");
   const [selectedEvent, setSelectedEvent] = useState<EventData | null>(null);
-  const [purchasingEvent, setPurchasingEvent] = useState<EventData | null>(null);
   const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
 
   const [ambience, setAmbience] = useState<AmbienceState>(INITIAL_AMBIENCE);
@@ -39,20 +38,11 @@ function AppContent() {
 
   const handleTabChange = (tab: TabType) => {
     setSelectedEvent(null);
-    setPurchasingEvent(null);
     setSelectedUser(null);
     setActiveTab(tab);
   };
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      const timer = setTimeout(() => {
-        triggerHaptic('medium');
-        setNotification({ msg: t('toast.density'), type: "alert" });
-      }, 8000);
-      return () => clearTimeout(timer);
-    }
-  }, [isAuthenticated, t]);
+
 
   const handleWeather = () => {
     triggerHaptic('light');
@@ -88,6 +78,8 @@ function AppContent() {
         return <WalletView userName={user?.name || "Invitado"} onOpenConfig={handleConfig} onLogout={logout} />;
       case "map":
         return <MapView />;
+      case "agenda":
+        return <AgendaView onBack={() => handleTabChange('home')} />;
       default:
         return null;
     }
@@ -131,8 +123,15 @@ function AppContent() {
               </div>
 
               <nav className="flex-1 px-4 space-y-2">
-                {(['home', 'calendar', 'social', 'map', 'wallet'] as TabType[]).map((tab) => {
-                  const icons: Record<string, string> = { home: 'home', calendar: 'event_note', social: 'group', map: 'map', wallet: 'account_balance_wallet' };
+                {(['home', 'calendar', 'social', 'map', 'agenda', 'wallet'] as TabType[]).map((tab) => {
+                  const icons: Record<string, string> = {
+                    home: 'home',
+                    calendar: 'event_note',
+                    social: 'group',
+                    map: 'map',
+                    wallet: 'account_balance_wallet',
+                    agenda: 'bookmarks'
+                  };
                   const isActive = activeTab === tab;
                   return (
                     <button
@@ -187,14 +186,6 @@ function AppContent() {
           event={selectedEvent}
           onClose={() => setSelectedEvent(null)}
           onAction={handleDirections}
-          onTicket={() => setPurchasingEvent(selectedEvent)}
-        />
-      )}
-
-      {purchasingEvent && (
-        <TicketModal
-          event={purchasingEvent}
-          onClose={() => setPurchasingEvent(null)}
         />
       )}
 

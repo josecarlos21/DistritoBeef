@@ -3,7 +3,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { SlidersHorizontal, Clock, MapPin, ChevronDown, List, Rows } from 'lucide-react';
 import { EventData } from '../../types';
 import { EVENTS } from '../../constants';
-import { getEventBackgroundValue, triggerHaptic, cx } from '../../utils';
+import { getEventBackgroundValue, triggerHaptic, cx } from '../../src/utils/index';
 import { UnifiedHeader, HeaderTitle, HeaderAction } from '../organisms';
 import { useLocale } from '../../src/context/LocaleContext';
 

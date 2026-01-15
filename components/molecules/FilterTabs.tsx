@@ -1,5 +1,5 @@
 import React from 'react';
-import { cx, triggerHaptic } from '../../utils';
+import { cx, triggerHaptic } from '../../src/utils/index';
 
 export interface FilterOption {
     id: string;

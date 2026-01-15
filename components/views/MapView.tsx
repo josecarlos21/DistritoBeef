@@ -1,11 +1,11 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
-import { Navigation, Plus, Minus, Layers, Map as MapIcon, LocateFixed, Calendar } from 'lucide-react';
-import { MapContainer, TileLayer, Marker, useMap, Circle, Tooltip } from 'react-leaflet';
+import { Navigation, Plus, Minus, Map as MapIcon, LocateFixed, Calendar } from 'lucide-react';
+import { MapContainer, TileLayer, Marker, useMap, Tooltip } from 'react-leaflet';
 import L from 'leaflet';
-import { Badge, GlassContainer } from '../atoms';
+import { GlassContainer } from '../atoms';
 import { UnifiedHeader, HeaderTitle } from '../organisms';
-import { cx, triggerHaptic } from '../../utils';
+import { cx, triggerHaptic } from '../../src/utils/index';
 import { EVENTS } from '../../constants';
 import { useLocale } from '../../src/context/LocaleContext';
 
@@ -96,7 +96,6 @@ const MapEvents: React.FC<{ setZoom: (z: number) => void }> = ({ setZoom }) => {
 };
 
 export const MapView: React.FC = () => {
-  const [activeLayer, setActiveLayer] = useState<'heat' | 'venue'>('venue');
   const [selectedVenue, setSelectedVenue] = useState<string | null>(null);
   const [zoom, setZoom] = useState(17);
   const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
@@ -110,15 +109,6 @@ export const MapView: React.FC = () => {
       if (VENUE_COORDS[normalized]) names.add(normalized);
     });
     return Array.from(names);
-  }, []);
-
-  const venueHeat = useMemo(() => {
-    const counts: Record<string, number> = {};
-    EVENTS.forEach(e => {
-      const normalized = VENUE_MAPPER[e.venue] || e.venue;
-      counts[normalized] = (counts[normalized] || 0) + 1;
-    });
-    return counts;
   }, []);
 
   const selectedVenueEvents = useMemo(() => {
@@ -163,26 +153,7 @@ export const MapView: React.FC = () => {
       <UnifiedHeader
         left={<div className="w-10" />}
         center={<HeaderTitle title={t('header.map')} subtitle={t('map.subtitle')} />}
-        right={
-          <div className="flex bg-white/10 rounded-xl p-1 border border-white/5">
-            <button
-              onClick={() => { triggerHaptic('light'); setActiveLayer('heat'); setSelectedVenue(null); }}
-              title={t('map.heatLayer')}
-              aria-label={t('map.heatLayer')}
-              className={cx("p-2 rounded-lg transition-all", activeLayer === 'heat' ? "bg-[var(--o)] text-black shadow-lg" : "text-white hover:bg-white/5")}
-            >
-              <Layers size={16} strokeWidth={2.5} />
-            </button>
-            <button
-              onClick={() => { triggerHaptic('light'); setActiveLayer('venue'); }}
-              title={t('map.venueLayer')}
-              aria-label={t('map.venueLayer')}
-              className={cx("p-2 rounded-lg transition-all", activeLayer === 'venue' ? "bg-[var(--o)] text-black shadow-lg" : "text-white hover:bg-white/5")}
-            >
-              <MapIcon size={16} strokeWidth={2.5} />
-            </button>
-          </div>
-        }
+        right={<div className="w-10" />}
       />
 
       <div className="flex-1 relative overflow-hidden bg-[#1a1612] w-full h-full">
@@ -205,25 +176,7 @@ export const MapView: React.FC = () => {
 
           <MapEvents setZoom={setZoom} />
 
-          {activeLayer === 'heat' && Object.entries(VENUE_COORDS).map(([venue, coords]) => {
-            const heat = venueHeat[venue];
-            if (!heat) return null;
-            return (
-              <Circle
-                key={`heat-${venue}`}
-                center={[coords.lat, coords.lng]}
-                radius={20 + (heat * 10)}
-                pathOptions={{
-                  fillColor: 'var(--o)',
-                  fillOpacity: 0.15 + (heat * 0.05),
-                  color: 'transparent',
-                  className: 'blur-md'
-                }}
-              />
-            );
-          })}
-
-          {activeLayer === 'venue' && uniqueVenueNames.map((venue) => {
+          {uniqueVenueNames.map((venue) => {
             const coords = VENUE_COORDS[venue];
             if (!coords) return null;
 
@@ -262,10 +215,6 @@ export const MapView: React.FC = () => {
           </Marker>
         </MapContainer>
 
-        <div className="absolute top-4 left-4 z-[1000] pointer-events-none">
-          <Badge label={activeLayer === 'heat' ? t('map.activity') : t('map.live')} dot color={activeLayer === 'heat' ? "var(--o)" : "var(--ok)"} />
-        </div>
-
         <MapControls
           onZoomIn={() => mapInstance?.zoomIn()}
           onZoomOut={() => mapInstance?.zoomOut()}
@@ -277,7 +226,7 @@ export const MapView: React.FC = () => {
           }}
         />
 
-        <div className="absolute bottom-28 left-4 right-4 z-[1000]">
+        <div className="absolute bottom-28 left-4 right-4 z-[2000]">
           {selectedVenue ? (
             <GlassContainer strong className="p-4 flex items-center justify-between animate-in slide-in-from-bottom-4 duration-300">
               <div className="flex items-center gap-3 overflow-hidden">

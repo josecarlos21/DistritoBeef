@@ -1,4 +1,4 @@
-import { generateItinerary } from '../../src/utils/itineraryPlanner';
+import { generateItinerary } from '../../src/utils/itinerary';
 import { EventData } from '../../types';
 
 describe('generateItinerary', () => {

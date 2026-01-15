@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, Lock } from 'lucide-react';
-import { cx } from '../../utils';
+import { cx } from '../../src/utils/index';
 import { useAuth } from '../../src/context/AuthContext';
 import { useLocale } from '../../src/context/LocaleContext';
 import { ThirdPartyLoginButton } from '../atoms/ThirdPartyLoginButton';

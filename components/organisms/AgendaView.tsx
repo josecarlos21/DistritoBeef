@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { EVENTS } from '../../constants';
 import { AgendaItem } from '../molecules/AgendaItem';
-import { getSavedAgenda, toggleAgendaItem } from '../../src/utils/itinerary';
+import { getSavedAgenda, toggleAgendaItem } from '../../../src/utils/itinerary';
 import { ArrowLeft, Calendar } from 'lucide-react';
 import { ItineraryPlanner } from '../molecules/ItineraryPlanner';
 import { useLocale } from '../../src/context/LocaleContext';

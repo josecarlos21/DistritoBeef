@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { cx, getHour, clamp, getFullDateLabel, isEventLive } from '../utils';
+import { cx, getHour, clamp, getFullDateLabel, isEventLive } from './utils/index';
 
 describe('utils', () => {
     it('cx joins classes correctly', () => {

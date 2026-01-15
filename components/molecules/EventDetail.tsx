@@ -1,12 +1,12 @@
 
 import React from 'react';
 import { EventData } from '../../types';
-import { getEventBackgroundValue, triggerHaptic, cx } from '../../utils';
-import { getEventBackgroundValue, triggerHaptic, cx } from '../../utils';
+import { getEventBackgroundValue, triggerHaptic, cx } from '../../src/utils/index';
+import { getEventBackgroundValue, triggerHaptic, cx } from '../../src/utils/index';
 import { getTrackStyles, getTrackLabel } from '../../src/utils/branding';
 import { MapPin, CalendarPlus, Navigation, Clock, Calendar } from 'lucide-react';
 import { useLocale } from '../../src/context/LocaleContext';
-import { getSavedAgenda, toggleAgendaItem } from '../../src/utils/itinerary';
+import { getSavedAgenda, toggleAgendaItem } from '../../../src/utils/itinerary';
 
 interface EventDetailProps {
   event: EventData;

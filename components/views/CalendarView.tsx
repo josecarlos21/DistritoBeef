@@ -86,6 +86,8 @@ const EventCard: React.FC<EventCardProps> = ({
             className="flex-1 relative mb-6 rounded-[24px] overflow-hidden border border-white/10 shadow-lg active:scale-[0.98] transition-all duration-300 bg-[#14110C] min-h-[110px] text-left group-hover:border-white/25 group-hover:shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
          >
             {/* Bg */}
+            {/* Bg */}
+            {/* eslint-disable-next-line react-dom/no-unsafe-styles */}
             <div className="absolute inset-0 bg-cover bg-center opacity-50 mix-blend-overlay transition-transform duration-700 group-hover:scale-105 dynamic-event-bg" style={{ '--event-bg': bgVal } as React.CSSProperties} />
             <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/70 to-transparent" />
 
@@ -192,8 +194,8 @@ export const CalendarView = ({
          />
 
          {/* Grouped List */}
-         <div className="flex-1 overflow-y-auto no-scrollbar pt-28 pb-32 px-4 sm:px-6 scroll-smooth z-0">
-            <div className="max-w-md mx-auto space-y-2">
+         <div className="flex-1 overflow-y-auto no-scrollbar pt-28 pb-32 px-4 sm:px-6 md:px-12 scroll-smooth z-0">
+            <div className="max-w-7xl mx-auto space-y-2">
 
                {groupedEvents.map((group, _) => (
                   <div
@@ -215,7 +217,7 @@ export const CalendarView = ({
                      </div>
 
                      {/* Events */}
-                     <div className="pl-0">
+                     <div className="pl-0 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-8">
                         {group.events.map((event, i) => {
                            const prevEvent = group.events[i - 1];
                            const isSameTime = prevEvent && formatTime(prevEvent.start) === formatTime(event.start);

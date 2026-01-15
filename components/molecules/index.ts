@@ -4,6 +4,7 @@ export * from './PullToRefresh';
 export * from './AmbienceModal';
 export * from './EventDetail';
 export * from './NotificationDrawer';
+export * from './ErrorBoundary';
 
 export * from './UserProfileModal';
-export * from './ErrorBoundary';
+export * from './TicketModal';

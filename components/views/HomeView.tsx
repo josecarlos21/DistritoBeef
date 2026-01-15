@@ -48,10 +48,10 @@ export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate, on
       />
 
       <PullToRefresh onRefresh={refreshData}>
-        <div className="space-y-6 pb-32 pt-28 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="max-w-7xl mx-auto space-y-6 pb-32 pt-28 px-4 md:px-8 xl:px-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
 
           {/* Featured Card - Now the Hero element */}
-          <div className="px-4">
+          <div>
             <div className="mb-4 flex items-center justify-between px-2">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-ok animate-pulse shadow-[0_0_8px_var(--ok)]" />
@@ -105,7 +105,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate, on
           </div>
 
           {/* Live Status Widgets */}
-          <div className="grid grid-cols-2 gap-4 px-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <button type="button" onClick={() => { triggerHaptic('light'); onNavigate('map'); }} className="text-left group relative">
               <div className="absolute inset-0 bg-o opacity-0 group-hover:opacity-5 rounded-[28px] transition-opacity duration-500" />
               <GlassContainer className="p-6 h-full transition-colors duration-300 border-white/10">

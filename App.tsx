@@ -18,10 +18,16 @@ import { NotificationDrawer } from './components/molecules/NotificationDrawer';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
 import { LocaleProvider, useLocale } from './src/context/LocaleContext';
 
+import { TicketModal } from './components/molecules/TicketModal';
+import { UserProfileModal } from './components/molecules/UserProfileModal';
+import { UserData } from './types';
+
 function AppContent() {
   const { t, locale, setLocale } = useLocale();
   const [activeTab, setActiveTab] = useState<TabType>("home");
   const [selectedEvent, setSelectedEvent] = useState<EventData | null>(null);
+  const [purchasingEvent, setPurchasingEvent] = useState<EventData | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
 
   const [ambience, setAmbience] = useState<AmbienceState>(INITIAL_AMBIENCE);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
@@ -32,12 +38,12 @@ function AppContent() {
   const [notification, setNotification] = useState<{ msg: string, type: 'info' | 'alert' } | null>(null);
 
   const handleTabChange = (tab: TabType) => {
-    // Clear modals when changing main tabs
     setSelectedEvent(null);
+    setPurchasingEvent(null);
+    setSelectedUser(null);
     setActiveTab(tab);
   };
 
-  // Simulate Real-time Notification Event
   useEffect(() => {
     if (isAuthenticated) {
       const timer = setTimeout(() => {
@@ -48,7 +54,6 @@ function AppContent() {
     }
   }, [isAuthenticated, t]);
 
-  // Global Action Handlers
   const handleWeather = () => {
     triggerHaptic('light');
     setNotification({ msg: t('toast.weather'), type: "info" });
@@ -74,25 +79,13 @@ function AppContent() {
   const renderView = () => {
     switch (activeTab) {
       case "home":
-        return <HomeView
-          onEventClick={setSelectedEvent}
-          onNavigate={setActiveTab}
-          onWeather={handleWeather}
-          onNotifications={handleNotifications}
-        />;
+        return <HomeView onEventClick={setSelectedEvent} onNavigate={handleTabChange} onWeather={handleWeather} onNotifications={handleNotifications} />;
       case "social":
-        return <ExploreView onEventClick={setSelectedEvent} />;
+        return <ExploreView onEventClick={setSelectedEvent} onUserClick={setSelectedUser} />;
       case "calendar":
-        return <CalendarView
-          onEventClick={setSelectedEvent}
-          onOpenConfig={handleConfig}
-        />;
+        return <CalendarView onEventClick={setSelectedEvent} onOpenConfig={handleConfig} />;
       case "wallet":
-        return <WalletView
-          userName={user?.name || "Invitado"}
-          onOpenConfig={handleConfig}
-          onLogout={logout}
-        />;
+        return <WalletView userName={user?.name || "Invitado"} onOpenConfig={handleConfig} onLogout={logout} />;
       case "map":
         return <MapView />;
       default:
@@ -104,82 +97,145 @@ function AppContent() {
     setLocale(locale === 'es' ? 'en' : 'es');
   };
 
+  if (isLoading) return null;
+
   return (
     <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-black overflow-hidden font-sans">
       <GlobalStyles />
+
+      {/* Background Layers */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 bg-aurora-nebula" />
+        <div className="absolute inset-0 bg-aurora-depth" />
+        <div className="absolute inset-0 bg-aurora-glow" />
+        <CanvasBackground ambience={ambience} />
+        <div className="absolute inset-0 bg-vignette" />
+      </div>
+
       <div
         className={cx(
-          "relative w-full h-full flex flex-col overflow-hidden",
-          "sm:max-w-md sm:h-[844px] sm:rounded-[60px] sm:border-[12px] sm:border-zinc-900",
-          "shadow-[0_0_140px_rgba(255,138,29,.10)]",
-          "bg-theme-main"
+          "relative w-full h-full flex overflow-hidden bg-theme-main",
+          "md:border-x md:border-zinc-900 transition-all duration-300 ease-in-out shadow-2xl",
+          "lg:max-w-screen-lg xl:max-w-screen-xl 2xl:max-w-[1600px] mx-auto z-10"
         )}
       >
-        <div className="absolute top-4 right-4 z-[120]">
+        {!isAuthenticated ? (
+          <Onboarding />
+        ) : (
+          <>
+            {/* Desktop Sidebar */}
+            <aside className="hidden md:flex w-24 lg:w-64 flex-col border-r border-white/5 bg-black/40 backdrop-blur-3xl shrink-0 z-20">
+              <div className="p-8 pb-12 flex flex-col items-center lg:items-start">
+                <div className="text-[10px] font-black uppercase tracking-[.3em] text-s leading-none mb-1">DISTRICT</div>
+                <div className="text-2xl font-black tracking-tighter text-white leading-none">VALLARTA<span className="text-o">.</span></div>
+              </div>
+
+              <nav className="flex-1 px-4 space-y-2">
+                {(['home', 'calendar', 'social', 'map', 'wallet'] as TabType[]).map((tab) => {
+                  const icons: Record<string, string> = { home: 'home', calendar: 'event_note', social: 'group', map: 'map', wallet: 'account_balance_wallet' };
+                  const isActive = activeTab === tab;
+                  return (
+                    <button
+                      key={tab}
+                      onClick={() => { triggerHaptic('light'); handleTabChange(tab); }}
+                      className={cx(
+                        "w-full h-14 rounded-2xl flex items-center px-4 gap-4 transition-all duration-300 group",
+                        isActive ? "bg-o text-black shadow-[0_10px_30px_rgba(255,159,69,0.2)]" : "text-f hover:bg-white/5 hover:text-white"
+                      )}
+                    >
+                      <span className={cx("material-symbols-outlined text-2xl transition-transform", isActive ? "scale-110" : "group-hover:scale-110")}>{icons[tab]}</span>
+                      <span className="hidden lg:block text-[10px] font-black uppercase tracking-widest">{t(`nav.${tab}`)}</span>
+                    </button>
+                  );
+                })}
+              </nav>
+
+              <div className="p-6">
+                <button
+                  onClick={toggleLocale}
+                  className="w-full h-12 mb-2 rounded-xl flex items-center justify-center lg:justify-start lg:px-4 gap-3 text-f hover:text-white hover:bg-white/5 transition border border-white/10"
+                >
+                  <span className="text-[10px] font-black uppercase tracking-widest">{locale === 'es' ? 'English' : 'Español'}</span>
+                </button>
+                <button
+                  onClick={logout}
+                  className="w-full h-12 rounded-xl flex items-center justify-center lg:justify-start lg:px-4 gap-3 text-f hover:text-white hover:bg-white/5 transition"
+                >
+                  <span className="material-symbols-outlined text-xl">logout</span>
+                  <span className="hidden lg:block text-[10px] font-black uppercase tracking-widest">{t('action.logout')}</span>
+                </button>
+              </div>
+            </aside>
+
+            {/* Main Content */}
+            <main className="relative flex-1 h-full overflow-hidden flex flex-col">
+              <div className="flex-1 relative overflow-hidden z-0">
+                {renderView()}
+              </div>
+
+              <div className="md:hidden">
+                <NavBar activeTab={activeTab} setTab={handleTabChange} />
+              </div>
+            </main>
+          </>
+        )}
+      </div>
+
+      {/* Overlays & Modals */}
+      {selectedEvent && (
+        <EventDetail
+          event={selectedEvent}
+          onClose={() => setSelectedEvent(null)}
+          onAction={handleDirections}
+          onTicket={() => setPurchasingEvent(selectedEvent)}
+        />
+      )}
+
+      {purchasingEvent && (
+        <TicketModal
+          event={purchasingEvent}
+          onClose={() => setPurchasingEvent(null)}
+        />
+      )}
+
+      {selectedUser && (
+        <UserProfileModal
+          user={selectedUser}
+          onClose={() => setSelectedUser(null)}
+        />
+      )}
+
+      <NotificationDrawer
+        open={isNotifOpen}
+        onClose={() => setIsNotifOpen(false)}
+      />
+
+      <AmbienceModal
+        open={isConfigOpen}
+        onClose={() => setIsConfigOpen(false)}
+        ambience={ambience}
+        setAmbience={setAmbience}
+      />
+
+      {notification && (
+        <Toast
+          message={notification.msg}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+        />
+      )}
+
+      {/* Language Toggle for Mobile Only */}
+      {isAuthenticated && (
+        <div className="absolute top-4 right-4 z-[120] md:hidden">
           <button
-            type="button"
             onClick={toggleLocale}
-            className="px-3 py-2 rounded-2xl bg-white/10 border border-white/20 text-[10px] font-black uppercase tracking-[.18em] text-white hover:bg-white/15 active:scale-95 transition"
-            aria-label={t('lang.toggle')}
+            className="px-3 py-2 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-[10px] font-black uppercase tracking-[.18em] text-white hover:bg-white/15 active:scale-95 transition"
           >
             {locale === 'es' ? 'EN' : 'ES'}
           </button>
         </div>
-
-        {/* Background Layers */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0 bg-aurora-nebula" />
-          <div className="absolute inset-0 bg-aurora-depth" />
-          <div className="absolute inset-0 bg-aurora-glow" />
-          <CanvasBackground ambience={ambience} />
-          <div className="absolute inset-0 bg-vignette" />
-        </div>
-
-        {/* Auth / Onboarding Layer */}
-        {isLoading ? null : !isAuthenticated ? (
-          <Onboarding />
-        ) : (
-          <>
-            {/* System Notifications Toast */}
-            {notification && (
-              <Toast
-                message={notification.msg}
-                type={notification.type}
-                onClose={() => setNotification(null)}
-              />
-            )}
-
-            {/* Main Content Area - Header is now inside View */}
-            <div className="relative flex-1 overflow-hidden z-0">
-              {renderView()}
-            </div>
-
-            {/* Navigation */}
-            <NavBar activeTab={activeTab} setTab={handleTabChange} />
-
-            {/* --- LAYERS & MODALS --- */}
-            {selectedEvent && (
-              <EventDetail
-                event={selectedEvent}
-                onClose={() => setSelectedEvent(null)}
-                onAction={handleDirections}
-              />
-            )}
-
-            <NotificationDrawer
-              open={isNotifOpen}
-              onClose={() => setIsNotifOpen(false)}
-            />
-
-            <AmbienceModal
-              open={isConfigOpen}
-              onClose={() => setIsConfigOpen(false)}
-              ambience={ambience}
-              setAmbience={setAmbience}
-            />
-          </>
-        )}
-      </div>
+      )}
     </div>
   );
 }

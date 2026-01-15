@@ -11,7 +11,7 @@ interface EventDetailProps {
   onAction: () => void;
 }
 
-export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onAction }) => {
+export const EventDetail: React.FC<EventDetailProps & { onTicket: () => void }> = ({ event, onClose, onAction, onTicket }) => {
   const { t, formatFullDate, formatTime } = useLocale();
   const bgVal = getEventBackgroundValue(event.image, event.track, event.id);
   const fullDate = formatFullDate(event.start);
@@ -105,11 +105,11 @@ export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onActi
           <div className="flex gap-3 mb-4 sticky bottom-0 pb-2">
             <button
               type="button"
-              onClick={() => { triggerHaptic('light'); onClose(); }}
-              className="flex-1 h-14 text-white font-bold rounded-2xl uppercase tracking-widest border border-white/10 hover:bg-white/5 transition-all active:scale-95 flex items-center justify-center gap-2 bg-[#1a120b]"
+              onClick={() => { triggerHaptic('light'); onTicket(); }}
+              className="flex-1 h-14 text-black font-bold rounded-2xl uppercase tracking-widest hover:brightness-110 transition-all active:scale-95 flex items-center justify-center gap-2 bg-ok shadow-[0_4px_30px_rgba(37,192,109,0.3)]"
             >
-              <CalendarPlus size={16} strokeWidth={2.5} />
-              <span className="text-[10px]">{t('action.schedule')}</span>
+              <span className="material-symbols-outlined text-lg">local_activity</span>
+              <span className="text-[10px]">{t('checkout.title')}</span>
             </button>
 
             <button

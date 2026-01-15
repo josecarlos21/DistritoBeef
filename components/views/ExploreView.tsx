@@ -9,12 +9,22 @@ import { UnifiedHeader, HeaderTitle, HeaderAction } from '../organisms';
 import { triggerHaptic } from '../../utils';
 import { useLocale } from '../../src/context/LocaleContext';
 
+import { UserData } from '../../types';
+
 interface ExploreViewProps {
   onEventClick: (e: EventData) => void;
+  onUserClick: (u: UserData) => void;
 }
 
-export const ExploreView: React.FC<ExploreViewProps> = ({ onEventClick }) => {
+export const ExploreView: React.FC<ExploreViewProps> = ({ onEventClick, onUserClick }) => {
   const [filter, setFilter] = useState('all');
+
+  const MOCK_USERS: UserData[] = [
+    { id: 101, name: 'Diego', age: 28, dist: '100m', img: 'https://i.pravatar.cc/150?u=101', online: true },
+    { id: 102, name: 'Alex', age: 31, dist: '250m', img: 'https://i.pravatar.cc/150?u=102', online: false },
+    { id: 103, name: 'Marco', age: 24, dist: '500m', img: 'https://i.pravatar.cc/150?u=103', online: true },
+    { id: 104, name: 'Luis', age: 29, dist: '800m', img: 'https://i.pravatar.cc/150?u=104', online: true },
+  ];
   const [showFilters, setShowFilters] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -147,13 +157,38 @@ export const ExploreView: React.FC<ExploreViewProps> = ({ onEventClick }) => {
             </div>
           </div>
 
+          {/* People Nearby */}
+          <div className="space-y-4 px-1">
+            <div className="flex items-center gap-2 px-5">
+              <span className="material-symbols-outlined text-o text-base">group</span>
+              <div className="text-[10px] font-black uppercase tracking-[.22em] text-s">People Nearby</div>
+            </div>
+            <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2 px-4">
+              {MOCK_USERS.map(u => (
+                <button
+                  key={u.id}
+                  onClick={() => { triggerHaptic('light'); onUserClick(u); }}
+                  className="flex flex-col items-center gap-2 min-w-[72px]"
+                >
+                  <div className="relative">
+                    <div className="w-16 h-16 rounded-2xl border-2 border-white-10 p-0.5">
+                      <img src={u.img} className="w-full h-full rounded-xl object-cover" alt={u.name} />
+                    </div>
+                    {u.online && <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-ok border-2 border-black rounded-full" />}
+                  </div>
+                  <div className="text-[10px] font-bold text-white leading-none">{u.name}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Recommendations List */}
           <div className="space-y-4 px-4">
             <div className="flex items-center gap-2 px-1">
               <Camera size={16} className="text-s" strokeWidth={2.8} />
               <div className="text-[10px] font-black uppercase tracking-[.22em] text-s">{t('home.districtThings')}</div>
             </div>
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {RECOMMENDATIONS.map(it => (
                 <GlassContainer key={it.id} className="overflow-hidden group active:scale-[0.99] transition-transform">
                   <div className="flex h-28">

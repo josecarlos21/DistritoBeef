@@ -9,6 +9,7 @@ export const IS_DEMO_MODE = true;
 
 interface User {
     name: string;
+    img?: string;
     isDemoUser: boolean;
 }
 
@@ -16,7 +17,7 @@ interface AuthContextType {
     isAuthenticated: boolean;
     isLoading: boolean;
     user: User | null;
-    login: (name: string) => void;
+    login: (name: string, img?: string) => void;
     logout: () => void;
     validatePin: (pin: string) => boolean;
 }
@@ -35,7 +36,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
             if (isAuth) {
                 setIsAuthenticated(true);
-                if (savedName) setUser({ name: savedName, isDemoUser: true });
+                const savedImg = localStorage.getItem('app.session.userimg') || undefined;
+                if (savedName) setUser({ name: savedName, img: savedImg, isDemoUser: true });
             }
         } catch {
             console.warn('Failed to restore demo session');
@@ -44,12 +46,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     }, []);
 
-    const login = (name: string) => {
+    const login = (name: string, img?: string) => {
         setIsAuthenticated(true);
-        setUser({ name, isDemoUser: true });
+        setUser({ name, img, isDemoUser: true });
         try {
             localStorage.setItem(STORAGE_KEY_DEMO, 'true');
             localStorage.setItem('app.session.username', name);
+            if (img) localStorage.setItem('app.session.userimg', img);
         } catch { /* ignore */ }
     };
 
@@ -59,6 +62,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
             localStorage.removeItem(STORAGE_KEY_DEMO);
             localStorage.removeItem('app.session.username');
+            localStorage.removeItem('app.session.userimg');
         } catch { /* ignore */ }
     };
 

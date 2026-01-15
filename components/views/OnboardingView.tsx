@@ -4,6 +4,7 @@ import { ArrowRight, Lock } from 'lucide-react';
 import { cx } from '../../utils';
 import { useAuth } from '../../src/context/AuthContext';
 import { useLocale } from '../../src/context/LocaleContext';
+import { ThirdPartyLoginButton } from '../atoms/ThirdPartyLoginButton';
 
 export const Onboarding: React.FC = () => {
   const { validatePin, login } = useAuth();
@@ -68,10 +69,17 @@ export const Onboarding: React.FC = () => {
             <button
               type="button"
               onClick={() => setStep(1)}
-              className="w-full h-14 rounded-full bg-white text-black font-black uppercase tracking-[.2em] text-[11px] flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-[0_0_40px_rgba(255,255,255,0.2)]"
+              className="w-full h-14 rounded-full bg-white text-black font-black uppercase tracking-[.2em] text-[11px] flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-[0_0_40px_rgba(255,255,255,0.2)] mb-8"
             >
               {t('action.start')} <ArrowRight size={16} strokeWidth={3} />
             </button>
+
+            <div className="space-y-2 border-t border-white/10 pt-6">
+              <p className="text-[10px] text-center uppercase tracking-widest text-white/40 mb-4">Or connect with</p>
+              <ThirdPartyLoginButton provider="apple" onClick={() => login('Adrian (Apple)', 'https://api.dicebear.com/7.x/micah/svg?seed=Adrian')} />
+              <ThirdPartyLoginButton provider="facebook" onClick={() => login('Fabian (FB)', 'https://api.dicebear.com/7.x/micah/svg?seed=Fabian')} />
+              <ThirdPartyLoginButton provider="x" onClick={() => login('Xavier', 'https://api.dicebear.com/7.x/micah/svg?seed=Xavier')} />
+            </div>
           </div>
         ) : step === 1 ? (
           <div className="space-y-6 animate-in zoom-in-95 duration-300">

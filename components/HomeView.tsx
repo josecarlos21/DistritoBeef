@@ -26,7 +26,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate, on
     <>
       <UnifiedHeader 
         left={
-           <div className="flex flex-col justify-center animate-in fade-in duration-500">
+           <div className="flex flex-col justify-center animate-in fade-in duration-500 pl-2">
              <div className="text-[10px] font-black uppercase tracking-[.22em] text-[var(--s)] leading-none mb-0.5">District</div>
              <div className="text-sm font-black tracking-tighter text-white leading-none">VALLARTA<span className="text-[var(--o)]">.</span></div>
            </div>

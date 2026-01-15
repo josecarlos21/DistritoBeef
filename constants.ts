@@ -1,5 +1,5 @@
 
-import { EventData, UserData, RecommendationData, AmbienceState } from './types';
+import { EventData, RecommendationData, AmbienceState } from './types';
 
 export const THEME = {
   bg: "#0E0C09",
@@ -10,8 +10,8 @@ export const THEME = {
   s: "#E8D8C0", // Tertiary (Sand - Brightened)
   ok: "#2CD67C", // Success (High contrast green)
   tx: "#FFFFFF", // Text Pure White
-  m: "rgba(255,255,255,.85)", // Muted text - Increased opacity for readability
-  f: "rgba(255,255,255,.60)", // Faint text - Increased opacity for readability
+  m: "rgba(255,255,255,.85)", // Muted text
+  f: "rgba(255,255,255,.60)", // Faint text
   gl: "rgba(30,25,20,.65)", // Glass light
   gs: "rgba(30,25,20,.85)", // Glass strong
   b: "rgba(255,255,255,.15)", // Border
@@ -20,15 +20,8 @@ export const THEME = {
 
 export const INITIAL_AMBIENCE: AmbienceState = { g: .52, h: 26, a: .7, t: .62 };
 
-export const TRACK_LABELS: Record<string, string> = {
-  community: 'Comunidad',
-  beefdip: 'BeefDip',
-  bearadise: 'Bearadise'
-};
-
 export const TRACK_OPTIONS = ['ALL', 'community', 'beefdip', 'bearadise'];
 
-// Image Assets for Categories
 const IMG = {
   pool: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=60",
   night: "https://images.unsplash.com/photo-1566737236500-c8ac40014582?auto=format&fit=crop&w=800&q=60",
@@ -41,8 +34,6 @@ const IMG = {
   bear: "https://images.unsplash.com/photo-1572511443159-462a7424d67e?auto=format&fit=crop&w=800&q=60"
 };
 
-// FULL 2026 SCHEDULE - SORTED
-// Sorting enforced here to ensure Calendar View renders optimally without client-side heavy lifting
 const RAW_EVENTS: EventData[] = [
   // --- VIERNES 16 (Warmup) ---
   { id: "INS_0001", day: "Vie 16", title: "Drag Show (Medianoche)", venue: "Paco's Ranch", track: "community", start: "2026-01-16T00:00:00", end: "2026-01-16T01:00:00", dress: "Casual", color: THEME.s, image: IMG.drag, description: "Drag show diario" },
@@ -135,15 +126,6 @@ const RAW_EVENTS: EventData[] = [
 ];
 
 export const EVENTS = RAW_EVENTS.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
-
-export const USERS: UserData[] = [
-  { id: 1, name: "Beto", age: 34, dist: "AQUÍ", img: "https://i.pravatar.cc/240?u=1", online: true },
-  { id: 2, name: "Carlos", age: 29, dist: "150m", img: "https://i.pravatar.cc/240?u=2", online: true },
-  { id: 3, name: "Sergio", age: 41, dist: "300m", img: "https://i.pravatar.cc/240?u=3", online: false },
-  { id: 4, name: "Marcus", age: 38, dist: "500m", img: "https://i.pravatar.cc/240?u=4", online: true },
-  { id: 5, name: "David", age: 35, dist: "1km", img: "https://i.pravatar.cc/240?u=5", online: false },
-  { id: 6, name: "Iván", age: 31, dist: "1.2km", img: "https://i.pravatar.cc/240?u=6", online: true },
-];
 
 export const RECOMMENDATIONS: RecommendationData[] = [
   { id: "r1", type: "tip", title: "Mejor Margarita", content: "Prueba la de mango en \"La Margarita\". Tip del comité.", img: "https://images.unsplash.com/photo-1595981267035-7b04ca84a82d?auto=format&fit=crop&w=900&q=80" },

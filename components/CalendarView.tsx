@@ -1,10 +1,10 @@
 
 import React, { useMemo, useRef, useState } from 'react';
-import { SlidersHorizontal, Clock, MapPin, ChevronDown, List, Rows } from 'lucide-react';
+import { SlidersHorizontal, Clock, MapPin, ChevronDown, Minus, Plus } from 'lucide-react';
 import { EventData } from '../types';
 import { EVENTS } from '../constants';
 import { getHour, getEventBackgroundStyle, triggerHaptic, getFullDateLabel, cx } from '../utils';
-import { UnifiedHeader, HeaderTitle, HeaderAction } from './UnifiedHeader';
+import { UnifiedHeader, HeaderTitle, HeaderAction, HeaderSegmentedControl, SegmentButton } from './UnifiedHeader';
 
 interface DayGroup {
   dateLabel: string;
@@ -13,19 +13,21 @@ interface DayGroup {
   events: EventData[];
 }
 
+interface EventCardProps { 
+  event: EventData;
+  showTime: boolean; 
+  isLastInDay: boolean; 
+  isCompact: boolean; 
+  onClick: () => void;
+}
+
 // Sub-component for a single event card within a day
-const EventCard = ({ 
+const EventCard: React.FC<EventCardProps> = ({ 
   event, 
   showTime, 
   isLastInDay, 
   isCompact, 
   onClick 
-}: { 
-  event: EventData, 
-  showTime: boolean, 
-  isLastInDay: boolean, 
-  isCompact: boolean, 
-  onClick: () => void 
 }) => {
   const time = getHour(event.start);
   const bgStyle = getEventBackgroundStyle(event.image, event.track, event.id);
@@ -162,7 +164,7 @@ export const CalendarView = ({
   return (
     <div className="h-full relative font-sans animate-in fade-in duration-300 flex flex-col">
       
-      {/* Unified Header */}
+      {/* Unified Header with Zoom Controls */}
       <UnifiedHeader 
         left={
            <HeaderAction onClick={onOpenConfig}>
@@ -180,9 +182,20 @@ export const CalendarView = ({
            </button>
         }
         right={
-           <HeaderAction onClick={() => { triggerHaptic('light'); setIsCompact(!isCompact); }}>
-              {isCompact ? <Rows size={20} strokeWidth={2.5} /> : <List size={20} strokeWidth={2.5} />}
-           </HeaderAction>
+           <HeaderSegmentedControl>
+             <SegmentButton 
+               onClick={() => { triggerHaptic('light'); setIsCompact(true); }} 
+               active={isCompact}
+             >
+               <Minus size={16} strokeWidth={3} />
+             </SegmentButton>
+             <SegmentButton 
+               onClick={() => { triggerHaptic('light'); setIsCompact(false); }} 
+               active={!isCompact}
+             >
+               <Plus size={16} strokeWidth={3} />
+             </SegmentButton>
+           </HeaderSegmentedControl>
         }
       />
 
@@ -197,8 +210,7 @@ export const CalendarView = ({
                   className="relative pb-4" 
                >
                   
-                  {/* Sticky Date Header - Positioned to sit right below the Unified Header */}
-                  {/* Top-20 (~80px) ensures it clears the 64px header + spacing */}
+                  {/* Sticky Date Header */}
                   <div className="sticky top-[-1px] z-30 pt-4 pb-2 mb-2 transition-all">
                      {/* Gradient Mask for scrolling content */}
                      <div className="absolute inset-x-[-20px] -top-10 bottom-0 bg-[var(--bg)]/95 backdrop-blur-xl border-b border-white/5 shadow-lg mask-image-gradient" style={{ maskImage: "linear-gradient(to bottom, black 85%, transparent)" }}></div>

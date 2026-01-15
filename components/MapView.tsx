@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
-import { Heart, Navigation, Plus, Minus, Layers, Map as MapIcon } from 'lucide-react';
+import { Heart, Navigation, Plus, Minus, Layers, Map as MapIcon, Search } from 'lucide-react';
 import { Badge, GlassContainer } from './UI';
-import { UnifiedHeader, HeaderTitle, HeaderAction } from './UnifiedHeader';
+import { UnifiedHeader, HeaderTitle, HeaderAction, HeaderSegmentedControl, SegmentButton } from './UnifiedHeader';
 import { cx, triggerHaptic } from '../utils';
 
 export const MapView: React.FC = () => {
@@ -12,23 +12,27 @@ export const MapView: React.FC = () => {
     <div className="h-full flex flex-col animate-in fade-in duration-500">
       
       <UnifiedHeader 
-        left={<div className="w-10" />}
+        left={
+           <HeaderAction onClick={() => triggerHaptic('light')}>
+             <Search size={20} strokeWidth={2.5} />
+           </HeaderAction>
+        }
         center={<HeaderTitle title="Mapa" subtitle="Zona Romántica" />}
         right={
-           <div className="flex bg-white/10 rounded-xl p-1 border border-white/5">
-              <button 
+           <HeaderSegmentedControl>
+              <SegmentButton 
                 onClick={() => { triggerHaptic('light'); setActiveLayer('heat'); }}
-                className={cx("p-2 rounded-lg transition-all", activeLayer === 'heat' ? "bg-[var(--o)] text-black shadow-lg" : "text-white hover:bg-white/5")}
+                active={activeLayer === 'heat'}
               >
                  <Layers size={16} strokeWidth={2.5} />
-              </button>
-              <button 
+              </SegmentButton>
+              <SegmentButton 
                 onClick={() => { triggerHaptic('light'); setActiveLayer('venue'); }}
-                className={cx("p-2 rounded-lg transition-all", activeLayer === 'venue' ? "bg-[var(--o)] text-black shadow-lg" : "text-white hover:bg-white/5")}
+                active={activeLayer === 'venue'}
               >
                  <MapIcon size={16} strokeWidth={2.5} />
-              </button>
-           </div>
+              </SegmentButton>
+           </HeaderSegmentedControl>
         }
       />
 

@@ -7,7 +7,6 @@ export const clamp = (v: number, min: number, max: number) => Math.max(min, Math
 export const getHour = (iso: string) => ((iso.split("T")[1] || "").slice(0, 5));
 
 // Helper to get full header like "Sábado, 24 de Enero"
-// FIXED: Uses explicit es-MX locale to guarantee Spanish display
 export const getFullDateLabel = (isoString: string) => {
   // Create date object. Note: ISO strings without Z are treated as local time, which is desired here for fixed event times.
   const date = new Date(isoString);
@@ -19,13 +18,6 @@ export const getFullDateLabel = (isoString: string) => {
   });
   
   return formatter.format(date); // e.g., "sábado, 24 de enero"
-};
-
-export const isEventLive = (start: string, end?: string): boolean => {
-  const now = new Date();
-  const startDate = new Date(start);
-  const endDate = end ? new Date(end) : new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // Default 2h duration
-  return now >= startDate && now <= endDate;
 };
 
 // Optimized Background Style Generator

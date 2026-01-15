@@ -15,3 +15,31 @@
   --bs: rgba(255,255,255,.25);
   --ease-ios: cubic-bezier(0.32, 0.72, 0, 1);
 }
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #000;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom scrollbar hiding */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none; 
+}
+
+input[type=range] {
+  accent-color: var(--o);
+}

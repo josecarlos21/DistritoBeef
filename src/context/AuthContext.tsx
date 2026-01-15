@@ -1,10 +1,15 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-const STORAGE_KEY = 'app.session.authenticated';
-const VALID_PINS = ['2026', '0000'];
+const STORAGE_KEY_DEMO = 'app.session.demo_authenticated';
+// Explicitly labeled as DEMO PINS to avoid security confusion.
+// This is not real authentication, just a simple gate for the demo experience.
+const DEMO_PINS = ['2026', '0000'];
+
+export const IS_DEMO_MODE = true;
 
 interface User {
     name: string;
+    isDemoUser: boolean;
 }
 
 interface AuthContextType {
@@ -25,15 +30,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     useEffect(() => {
         try {
-            const isAuth = localStorage.getItem(STORAGE_KEY) === 'true';
+            const isAuth = localStorage.getItem(STORAGE_KEY_DEMO) === 'true';
             const savedName = localStorage.getItem('app.session.username');
 
             if (isAuth) {
                 setIsAuthenticated(true);
-                if (savedName) setUser({ name: savedName });
+                if (savedName) setUser({ name: savedName, isDemoUser: true });
             }
         } catch {
-            console.warn('Failed to restore session');
+            console.warn('Failed to restore demo session');
         } finally {
             setIsLoading(false);
         }
@@ -41,9 +46,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const login = (name: string) => {
         setIsAuthenticated(true);
-        setUser({ name });
+        setUser({ name, isDemoUser: true });
         try {
-            localStorage.setItem(STORAGE_KEY, 'true');
+            localStorage.setItem(STORAGE_KEY_DEMO, 'true');
             localStorage.setItem('app.session.username', name);
         } catch { /* ignore */ }
     };
@@ -52,13 +57,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsAuthenticated(false);
         setUser(null);
         try {
-            localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem(STORAGE_KEY_DEMO);
             localStorage.removeItem('app.session.username');
         } catch { /* ignore */ }
     };
 
     const validatePin = (pin: string) => {
-        return VALID_PINS.includes(pin);
+        return DEMO_PINS.includes(pin);
     };
 
     return (

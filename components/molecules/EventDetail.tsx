@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { EventData } from '../../types';
-import { getEventBackgroundStyle, triggerHaptic } from '../../utils';
+import { getEventBackgroundValue, triggerHaptic } from '../../utils';
 import { MapPin, CalendarPlus, Navigation, Clock, Calendar } from 'lucide-react';
 import { useLocale } from '../../src/context/LocaleContext';
 
@@ -13,7 +13,7 @@ interface EventDetailProps {
 
 export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onAction }) => {
   const { t, formatFullDate, formatTime } = useLocale();
-  const bgStyle = getEventBackgroundStyle(event.image, event.track, event.id);
+  const bgVal = getEventBackgroundValue(event.image, event.track, event.id);
   const fullDate = formatFullDate(event.start);
 
   return (
@@ -29,7 +29,7 @@ export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onActi
 
         {/* Image Header */}
         <div className="h-80 relative shrink-0 group">
-          <div className="w-full h-full bg-cover bg-center transition-transform duration-1000 group-hover:scale-105" style={bgStyle} />
+          <div className="w-full h-full bg-cover bg-center transition-transform duration-1000 group-hover:scale-105 dynamic-event-bg" style={{ '--event-bg': bgVal } as React.CSSProperties} />
           <div className="absolute inset-0 bg-gradient-to-t from-[#1a120b] via-[#1a120b]/30 to-transparent"></div>
 
           <button

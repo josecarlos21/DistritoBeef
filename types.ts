@@ -6,7 +6,6 @@ export type ZoomLevel = 0 | 1 | 2 | 3;
 
 export interface EventData {
   id: string;
-  day?: string; // @deprecated: Calculated dynamically from 'start'
   title: string;
   venue: string;
   track: TrackType;

@@ -2,9 +2,8 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { Award, RefreshCw, ShieldCheck, HelpCircle, SlidersHorizontal } from 'lucide-react';
 import { GlassContainer } from '../atoms';
-import { UnifiedHeader } from '../molecules';
-import { HeaderTitle, HeaderAction } from '../molecules/UnifiedHeader';
-import { triggerHaptic } from '../../utils';
+import { UnifiedHeader, HeaderTitle, HeaderAction } from '../organisms';
+import { triggerHaptic, cx } from '../../utils';
 import { useLocale } from '../../src/context/LocaleContext';
 
 interface WalletViewProps {
@@ -91,8 +90,7 @@ export const WalletView: React.FC<WalletViewProps> = ({ onOpenConfig, onLogout, 
                                 {blocks.map((x, i) => (
                                     <div
                                         key={i}
-                                        className="rounded-lg transition-colors duration-500"
-                                        style={{ background: x ? "#0E0C09" : "#e5e5e5" }}
+                                        className={cx("rounded-lg transition-colors duration-500", x ? "wallet-code-on" : "wallet-code-off")}
                                     />
                                 ))}
                             </div>
@@ -148,12 +146,7 @@ export const WalletView: React.FC<WalletViewProps> = ({ onOpenConfig, onLogout, 
                     </div>
                 </div>
 
-                <style>{`
-          @keyframes scan {
-              0% { top: -20%; }
-              100% { top: 120%; }
-          }
-        `}</style>
+
             </div>
         </div>
     );

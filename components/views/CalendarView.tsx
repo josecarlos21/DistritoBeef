@@ -3,9 +3,8 @@ import React, { useMemo, useRef, useState } from 'react';
 import { SlidersHorizontal, Clock, MapPin, ChevronDown, List, Rows } from 'lucide-react';
 import { EventData } from '../../types';
 import { EVENTS } from '../../constants';
-import { getEventBackgroundStyle, triggerHaptic, cx } from '../../utils';
-import { UnifiedHeader } from '../molecules';
-import { HeaderTitle, HeaderAction } from '../molecules/UnifiedHeader';
+import { getEventBackgroundValue, triggerHaptic, cx } from '../../utils';
+import { UnifiedHeader, HeaderTitle, HeaderAction } from '../organisms';
 import { useLocale } from '../../src/context/LocaleContext';
 
 interface DayGroup {
@@ -33,7 +32,7 @@ const EventCard: React.FC<EventCardProps> = ({
 }) => {
    const { formatTime } = useLocale();
    const time = formatTime(event.start);
-   const bgStyle = getEventBackgroundStyle(event.image, event.track, event.id);
+   const bgVal = getEventBackgroundValue(event.image, event.track, event.id);
 
    if (isCompact) {
       // COMPACT MODE RENDER
@@ -87,7 +86,7 @@ const EventCard: React.FC<EventCardProps> = ({
             className="flex-1 relative mb-6 rounded-[24px] overflow-hidden border border-white/10 shadow-lg active:scale-[0.98] transition-all duration-300 bg-[#14110C] min-h-[110px] text-left group-hover:border-white/25 group-hover:shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
          >
             {/* Bg */}
-            <div className="absolute inset-0 bg-cover bg-center opacity-50 mix-blend-overlay transition-transform duration-700 group-hover:scale-105" style={bgStyle} />
+            <div className="absolute inset-0 bg-cover bg-center opacity-50 mix-blend-overlay transition-transform duration-700 group-hover:scale-105 dynamic-event-bg" style={{ '--event-bg': bgVal } as React.CSSProperties} />
             <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/70 to-transparent" />
 
             {/* Content */}
@@ -207,7 +206,7 @@ export const CalendarView = ({
                      {/* Top-20 (~80px) ensures it clears the 64px header + spacing */}
                      <div className="sticky top-[-1px] z-30 pt-4 pb-2 mb-2 transition-all">
                         {/* Gradient Mask for scrolling content */}
-                        <div className="absolute inset-x-[-20px] -top-10 bottom-0 bg-[var(--bg)]/95 backdrop-blur-xl border-b border-white/5 shadow-lg mask-image-gradient" style={{ maskImage: "linear-gradient(to bottom, black 85%, transparent)" }}></div>
+                        <div className="absolute inset-x-[-20px] -top-10 bottom-0 bg-[var(--bg)]/95 backdrop-blur-xl border-b border-white/5 shadow-lg mask-image-gradient mask-gradient-bottom"></div>
 
                         <h2 className={cx("text-xs font-black uppercase tracking-[0.2em] pl-14 relative flex items-center z-10 transition-colors duration-300", group.isToday ? "text-o scale-105 origin-left" : "text-white")}>
                            <span className={cx("absolute left-3 top-1/2 -translate-y-1/2 w-8 h-0.5 rounded-full shadow-[0_0_10px_currentColor] transition-colors", group.isToday ? "bg-o" : "bg-white/50")} />

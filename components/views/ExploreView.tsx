@@ -4,8 +4,8 @@ import { Search, Filter, Sparkles, Camera, X } from 'lucide-react';
 import { EventData } from '../../types';
 import { EVENTS, RECOMMENDATIONS } from '../../constants';
 import { GlassContainer, Badge } from '../atoms';
-import { FilterTabs, PullToRefresh, UnifiedHeader } from '../molecules';
-import { HeaderTitle, HeaderAction } from '../molecules/UnifiedHeader';
+import { FilterTabs, PullToRefresh } from '../molecules';
+import { UnifiedHeader, HeaderTitle, HeaderAction } from '../organisms';
 import { triggerHaptic } from '../../utils';
 import { useLocale } from '../../src/context/LocaleContext';
 
@@ -23,9 +23,13 @@ export const ExploreView: React.FC<ExploreViewProps> = ({ onEventClick }) => {
 
   // Auto-focus search input when opened
   useEffect(() => {
+    let timer: NodeJS.Timeout;
     if (isSearchOpen) {
-      setTimeout(() => inputRef.current?.focus(), 100);
+      timer = setTimeout(() => inputRef.current?.focus(), 100);
     }
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
   }, [isSearchOpen]);
 
   const handleCloseSearch = () => {

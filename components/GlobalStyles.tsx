@@ -16,6 +16,7 @@ export const GlobalStyles = () => (
     /* Animation Polyfills & Optimizations */
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes zoomIn95 { from { opacity: 0; transform: scale(0.95); } to { transform: scale(1); } }
+    @keyframes scan { 0% { top: -20%; } 100% { top: 120%; } }
     @keyframes slideInBottomFull { from { transform: translateY(100%); } to { transform: translateY(0); } }
     @keyframes slideInBottomSmall { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes slideInTopSmall { from { opacity: 0; transform: translateY(-20px); } to { transform: translateY(0); } }
@@ -108,5 +109,53 @@ export const GlobalStyles = () => (
         -ms-overflow-style: none;
         scrollbar-width: none;
     }
+
+    /* Linting Fix Utilities */
+    .bg-theme-main { background: var(--bg); }
+    
+    .badge-dot { 
+        background: var(--badge-color); 
+        color: var(--badge-color); 
+    }
+    
+    .dynamic-event-bg {
+        background: var(--event-bg);
+        background-size: cover;
+        background-position: center;
+    }
+
+    .mask-gradient-bottom {
+        mask-image: linear-gradient(to bottom, black 85%, transparent);
+        -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent);
+    }
+    
+    .drawer-item { 
+        animation-delay: var(--delay); 
+    }
+
+    /* Pull To Refresh Dynamic Classes */
+    .ptr-indicator {
+        height: 60px;
+        transform: translate3d(0, calc(var(--ptr-y) * 1px - 60px), 0);
+        opacity: var(--ptr-opacity);
+        transition: var(--ptr-transition);
+    }
+    
+    .ptr-content {
+        transform: translate3d(0, calc(var(--ptr-y) * 1px), 0);
+        transition: var(--ptr-content-transition);
+    }
+
+    .ptr-icon {
+        transform: rotate(calc(var(--ptr-y) * 3deg));
+    }
+
+    /* Wallet View */
+    .wallet-code-on { background: #0E0C09; }
+    .wallet-code-off { background: #e5e5e5; }
+    
+    /* Onboarding */
+    .bg-radial-faded { background: radial-gradient(circle, var(--c) 0%, transparent 60%); }
+
   `}</style>
 );

@@ -60,10 +60,7 @@ export default defineConfig(({ mode }) => {
         'https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Montserrat:wght@900&display=swap'
       ]),
     ],
-    define: {
-      'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
-    },
+
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),

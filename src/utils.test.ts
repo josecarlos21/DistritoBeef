@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { cx, getHour, clamp, getFullDateLabel } from '../utils';
+import { describe, it, expect, vi } from 'vitest';
+import { cx, getHour, clamp, getFullDateLabel, isEventLive } from '../utils';
 
 describe('utils', () => {
     it('cx joins classes correctly', () => {
@@ -22,11 +22,24 @@ describe('utils', () => {
         expect(getFullDateLabel('invalid-date')).toBe('Fecha inválida');
     });
 
-    it('isEventLive checks range', () => {
-        // Mock date would be ideal here, but simpler to test logic relative to "now" is hard without mocking.
-        // For this basic test, we assume the function calculates correctly based on inputs.
-        // Let's rely on basic date parsing checks if we were mocking, but for now we skip complex date logic 
-        // to avoid flaky tests without a date mocker like vi.setSystemTime
-        expect(true).toBe(true);
+    it('isEventLive checks range correctly', () => {
+        // Mock "Now" to be 2026-01-24T12:00:00Z
+        const MOCK_NOW = new Date('2026-01-24T12:00:00Z');
+        vi.useFakeTimers();
+        vi.setSystemTime(MOCK_NOW);
+
+        const oneHourAgo = new Date(MOCK_NOW.getTime() - 60 * 60 * 1000).toISOString();
+        const oneHourFromNow = new Date(MOCK_NOW.getTime() + 60 * 60 * 1000).toISOString();
+        const threeHoursAgo = new Date(MOCK_NOW.getTime() - 3 * 60 * 60 * 1000).toISOString();
+
+        // importing isEventLive from utils to test it
+        // We need to re-import or rely on module scope. 
+        // Ideally we import it at the top, but let's check imports first.
+        // Assuming isEventLive is imported.
+        expect(isEventLive(oneHourAgo, oneHourFromNow)).toBe(true); // Active
+        expect(isEventLive(threeHoursAgo, oneHourAgo)).toBe(false); // Ended
+        expect(isEventLive(oneHourFromNow)).toBe(false); // Future
+
+        vi.useRealTimers();
     });
 });

@@ -38,7 +38,7 @@ export const Toast: React.FC<ToastProps> = ({ message, type = 'info', onClose })
                     <Bell size={16} color={type === 'alert' ? 'var(--o)' : 'var(--tx)'} />
                 </div>
                 <div className="flex-1">
-                    <div className="text-[10px] font-black uppercase tracking-[.2em] mb-1" style={{ color: "var(--m)" }}>
+                    <div className="text-[10px] font-black uppercase tracking-[.2em] mb-1 text-m">
                         {type === 'alert' ? t('toast.alert') : t('toast.notification')}
                     </div>
                     <div className="text-sm font-bold leading-tight text-white">{message}</div>

@@ -6,7 +6,7 @@ import { GlobalStyles } from './components/GlobalStyles';
 import { CanvasBackground } from './components/atoms/CanvasBackground';
 import { NavBar } from './components/organisms/Navigation';
 import { AmbienceModal } from './components/molecules/AmbienceModal';
-import { Onboarding } from './components/Onboarding';
+import { Onboarding } from './components/views/OnboardingView';
 import { Toast } from './components/molecules/Toast';
 import { HomeView } from './components/views/HomeView';
 import { ExploreView } from './components/views/ExploreView';
@@ -111,9 +111,9 @@ function AppContent() {
         className={cx(
           "relative w-full h-full flex flex-col overflow-hidden",
           "sm:max-w-md sm:h-[844px] sm:rounded-[60px] sm:border-[12px] sm:border-zinc-900",
-          "shadow-[0_0_140px_rgba(255,138,29,.10)]"
+          "shadow-[0_0_140px_rgba(255,138,29,.10)]",
+          "bg-theme-main"
         )}
-        style={{ background: "var(--bg)" }}
       >
         <div className="absolute top-4 right-4 z-[120]">
           <button

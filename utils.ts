@@ -42,9 +42,9 @@ export const isEventLive = (start: string, end?: string): boolean => {
 };
 
 // Optimized Background Style Generator
-export const getEventBackgroundStyle = (image: string | undefined, track: string, id: string) => {
+export const getEventBackgroundValue = (image: string | undefined, track: string, id: string): string => {
   if (image && image.length > 5) {
-    return { backgroundImage: `url("${image}")` };
+    return `url("${image}")`;
   }
 
   const gradients = [
@@ -63,7 +63,7 @@ export const getEventBackgroundStyle = (image: string | undefined, track: string
     index = charCode % 4;
   }
 
-  return { background: gradients[index] };
+  return gradients[index];
 };
 
 // Haptic Feedback Utility (Safe Check)

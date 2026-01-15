@@ -57,28 +57,28 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({ children, onRefres
             onTouchEnd={handleTouchEnd}
         >
             <div
-                className="absolute top-0 left-0 right-0 flex justify-center items-center pointer-events-none"
+                className="absolute top-0 left-0 right-0 flex justify-center items-center pointer-events-none ptr-indicator"
                 style={{
-                    height: '60px',
-                    transform: `translate3d(0, ${translateY - 60}px, 0)`,
-                    opacity: Math.min(translateY / 40, 1),
-                    transition: refreshing ? 'transform 0.3s ease' : 'none'
-                }}
+                    '--ptr-y': translateY,
+                    '--ptr-opacity': Math.min(translateY / 40, 1),
+                    '--ptr-transition': refreshing ? 'transform 0.3s ease' : 'none'
+                } as React.CSSProperties}
             >
                 {refreshing ? (
                     <Loader2 className="animate-spin text-o" size={20} />
                 ) : (
-                    <div className="text-[9px] font-black uppercase text-o tracking-[.2em] transition-transform duration-200" style={{ transform: `rotate(${translateY * 3}deg)` }}>
+                    <div className="text-[9px] font-black uppercase text-o tracking-[.2em] transition-transform duration-200 ptr-icon" style={{ '--ptr-y': translateY } as React.CSSProperties}>
                         ▼
                     </div>
                 )}
             </div>
 
             <div
+                className="ptr-content"
                 style={{
-                    transform: `translate3d(0, ${translateY}px, 0)`,
-                    transition: !startY ? 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)' : 'none'
-                }}
+                    '--ptr-y': translateY,
+                    '--ptr-content-transition': !startY ? 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)' : 'none'
+                } as React.CSSProperties}
             >
                 {children}
             </div>

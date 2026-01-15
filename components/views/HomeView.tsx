@@ -5,8 +5,8 @@ import { EventData, TabType } from '../../types';
 import { EVENTS } from '../../constants';
 import { cx, triggerHaptic } from '../../utils';
 import { Badge, GlassContainer } from '../atoms';
-import { PullToRefresh, UnifiedHeader } from '../molecules';
-import { HeaderAction } from '../molecules/UnifiedHeader';
+import { PullToRefresh } from '../molecules';
+import { UnifiedHeader, HeaderAction } from '../organisms';
 import { useLocale } from '../../src/context/LocaleContext';
 
 interface HomeViewProps {

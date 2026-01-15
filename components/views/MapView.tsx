@@ -4,8 +4,7 @@ import { Navigation, Plus, Minus, Layers, Map as MapIcon, LocateFixed, Calendar 
 import { MapContainer, TileLayer, Marker, useMap, Circle, Tooltip } from 'react-leaflet';
 import L from 'leaflet';
 import { Badge, GlassContainer } from '../atoms';
-import { UnifiedHeader } from '../molecules';
-import { HeaderTitle } from '../molecules/UnifiedHeader';
+import { UnifiedHeader, HeaderTitle } from '../organisms';
 import { cx, triggerHaptic } from '../../utils';
 import { EVENTS } from '../../constants';
 import { useLocale } from '../../src/context/LocaleContext';

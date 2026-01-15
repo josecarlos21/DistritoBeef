@@ -1,9 +1,9 @@
 
 import React, { useState } from 'react';
 import { ArrowRight, Lock } from 'lucide-react';
-import { cx } from '../utils';
-import { useAuth } from '../src/context/AuthContext';
-import { useLocale } from '../src/context/LocaleContext';
+import { cx } from '../../utils';
+import { useAuth } from '../../src/context/AuthContext';
+import { useLocale } from '../../src/context/LocaleContext';
 
 export const Onboarding: React.FC = () => {
   const { validatePin, login } = useAuth();
@@ -19,12 +19,21 @@ export const Onboarding: React.FC = () => {
     setError(false);
   };
 
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        setError(false);
+        setCode('');
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
   const submitCode = () => {
     if (validatePin(code)) {
       setStep(2); // Go to Name step
     } else {
       setError(true);
-      setTimeout(() => setCode(''), 500);
     }
   };
 
@@ -39,8 +48,7 @@ export const Onboarding: React.FC = () => {
 
       {/* Background Ambience */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-20%] left-[-20%] w-[140%] h-[140%] opacity-30"
-          style={{ background: "radial-gradient(circle, var(--c) 0%, transparent 60%)" }} />
+        <div className="absolute top-[-20%] left-[-20%] w-[140%] h-[140%] opacity-30 bg-radial-faded" />
       </div>
 
       <div className="relative z-10 w-full max-w-xs">

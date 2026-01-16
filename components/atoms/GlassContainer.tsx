@@ -1,5 +1,5 @@
 import React from 'react';
-import { cx } from '../../../src/utils/index';
+import { cx } from '../../src/utils';
 
 interface GlassContainerProps {
     children: React.ReactNode;

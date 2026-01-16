@@ -3,7 +3,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { Award, RefreshCw, ShieldCheck, HelpCircle, SlidersHorizontal } from 'lucide-react';
 import { GlassContainer } from '../atoms';
 import { UnifiedHeader, HeaderTitle, HeaderAction } from '../organisms';
-import { triggerHaptic, cx } from '../../src/utils/index';
+import { triggerHaptic, cx } from '../../src/utils';
 import { useLocale } from '../../src/context/LocaleContext';
 
 interface WalletViewProps {

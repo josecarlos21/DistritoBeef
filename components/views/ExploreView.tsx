@@ -6,7 +6,7 @@ import { EVENTS, RECOMMENDATIONS } from '../../constants';
 import { GlassContainer, Badge } from '../atoms';
 import { FilterTabs, PullToRefresh } from '../molecules';
 import { UnifiedHeader, HeaderTitle, HeaderAction } from '../organisms';
-import { triggerHaptic } from '../../src/utils/index';
+import { triggerHaptic } from '../../src/utils';
 import { useLocale } from '../../src/context/LocaleContext';
 
 import { UserData } from '../../types';

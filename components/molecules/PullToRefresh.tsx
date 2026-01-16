@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Loader2 } from 'lucide-react';
-import { triggerHaptic } from '../../src/utils/index';
+import { triggerHaptic } from '../../src/utils';
 
 interface PullToRefreshProps {
     children: React.ReactNode;

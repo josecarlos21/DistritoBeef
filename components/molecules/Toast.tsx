@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { X, Bell } from 'lucide-react';
-import { cx, triggerHaptic } from '../../src/utils/index';
+import { cx, triggerHaptic } from '../../src/utils';
 import { useLocale } from '../../src/context/LocaleContext';
 
 interface ToastProps {

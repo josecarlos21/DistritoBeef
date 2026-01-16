@@ -2,7 +2,7 @@
 import React from 'react';
 import { X, Bell, Info, AlertTriangle } from 'lucide-react';
 import { IconButton } from '../atoms';
-import { triggerHaptic } from '../../src/utils/index';
+import { triggerHaptic } from '../../src/utils';
 import { useLocale } from '../../src/context/LocaleContext';
 
 interface NotificationDrawerProps {

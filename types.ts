@@ -1,6 +1,6 @@
 
 export type TrackType = "community" | "beefdip" | "bearadise";
-export type TabType = "home" | "social" | "calendar" | "wallet" | "map";
+export type TabType = "home" | "social" | "calendar" | "wallet" | "map" | "agenda";
 
 export type ZoomLevel = 0 | 1 | 2 | 3;
 
@@ -9,12 +9,14 @@ export interface EventData {
   title: string;
   venue: string;
   track: TrackType;
+  category: 'beef' | 'community';
   start: string; // ISO string
   end: string; // ISO string
   dress: string;
   color: string;
   image: string;
   description?: string;
+  url?: string;
   isFeatured?: boolean;
 }
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { EventData } from '../../types';
-import { generateItinerary, saveItinerary } from '../../../src/utils/itinerary';
+import { generateItinerary, saveItinerary } from '../../src/utils/itinerary';
 import { EVENTS } from '../../constants';
 import { X } from 'lucide-react';
 
@@ -12,7 +12,7 @@ interface ItineraryPlannerProps {
 export const ItineraryPlanner: React.FC<ItineraryPlannerProps> = ({ eventIds, onClose }) => {
     const allEvents = EVENTS;
     const initialItinerary = generateItinerary(eventIds, allEvents);
-    const [selectedIds, setSelectedIds] = useState<string[]>(initialItinerary.map(e => e.id));
+    const [selectedIds, setSelectedIds] = useState<string[]>(initialItinerary.map((e: EventData) => e.id));
 
     const toggle = (id: string) => {
         setSelectedIds(prev =>
@@ -31,7 +31,7 @@ export const ItineraryPlanner: React.FC<ItineraryPlannerProps> = ({ eventIds, on
             <div className="bg-deep text-white p-6 rounded-lg w-11/12 max-w-2xl max-h-[80vh] overflow-y-auto">
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-xl font-bold">Crear Itinerario</h2>
-                    <button onClick={onClose} className="p-1 rounded hover:bg-white/10">
+                    <button onClick={onClose} className="p-1 rounded hover:bg-white/10" aria-label="Close">
                         <X size={20} />
                     </button>
                 </div>
@@ -43,6 +43,7 @@ export const ItineraryPlanner: React.FC<ItineraryPlannerProps> = ({ eventIds, on
                                 <span>{evt.title} ({new Date(evt.start).toLocaleString()})</span>
                                 <input
                                     type="checkbox"
+                                    title={`Select ${evt.title}`}
                                     checked={selectedIds.includes(evt.id)}
                                     onChange={() => toggle(evt.id)}
                                 />

@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-const STORAGE_KEY_DEMO = 'app.session.demo_authenticated';
 // Explicitly labeled as DEMO PINS to avoid security confusion.
 // This is not real authentication, just a simple gate for the demo experience.
 const DEMO_PINS = ['2026', '0000'];
@@ -30,39 +29,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
-        try {
-            const isAuth = localStorage.getItem(STORAGE_KEY_DEMO) === 'true';
-            const savedName = localStorage.getItem('app.session.username');
-
-            if (isAuth) {
-                setIsAuthenticated(true);
-                const savedImg = localStorage.getItem('app.session.userimg') || undefined;
-                if (savedName) setUser({ name: savedName, img: savedImg, isDemoUser: true });
-            }
-        } catch {
-            console.warn('Failed to restore demo session');
-        } finally {
-            setIsLoading(false);
-        }
+        // No persistence by design: every session requires a fresh PIN entry.
+        setIsLoading(false);
     }, []);
 
     const login = (name: string, img?: string) => {
         setIsAuthenticated(true);
         setUser({ name, img, isDemoUser: true });
-        try {
-            localStorage.setItem(STORAGE_KEY_DEMO, 'true');
-            localStorage.setItem('app.session.username', name);
-            if (img) localStorage.setItem('app.session.userimg', img);
-        } catch { /* ignore */ }
     };
 
     const logout = () => {
         setIsAuthenticated(false);
         setUser(null);
+        // Clear demo-only data to honor "no data stored" promise.
         try {
-            localStorage.removeItem(STORAGE_KEY_DEMO);
-            localStorage.removeItem('app.session.username');
-            localStorage.removeItem('app.session.userimg');
+            localStorage.removeItem('distrito_beef_agenda');
+            localStorage.removeItem('distrito_beef_itinerary');
         } catch { /* ignore */ }
     };
 

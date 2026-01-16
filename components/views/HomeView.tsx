@@ -3,7 +3,7 @@ import React from 'react';
 import { MapPin, Flame, Award, Info, ArrowRight, Bell, CloudSun } from 'lucide-react';
 import { EventData, TabType } from '../../types';
 import { EVENTS } from '../../constants';
-import { cx, triggerHaptic } from '../../src/utils/index';
+import { cx, triggerHaptic } from '../../src/utils';
 import { Badge, GlassContainer } from '../atoms';
 import { PullToRefresh } from '../molecules';
 import { UnifiedHeader, HeaderAction } from '../organisms';

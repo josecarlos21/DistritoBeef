@@ -62,12 +62,14 @@ export const getEventsFromBase = (): EventData[] => {
             title: evt.Evento,
             venue: evt.Venue,
             track,
+            category: track === 'beefdip' ? 'beef' : 'community',
             start: startIso,
             end: endIso,
             dress: evt['Dress code'] || 'Casual',
             color: mapColor(track),
             image: mapImage(evt.Tipo || '', evt.Venue || ''),
-            description: evt.Notas || ''
+            description: evt.Notas || '',
+            url: evt['URL fuente']
         };
     });
 };

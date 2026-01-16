@@ -38,6 +38,8 @@ export default defineConfig(({ mode }) => {
         },
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+          // Allow precaching of our heaviest font asset while keeping a safe cap.
+          maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
           runtimeCaching: [
             {
               urlPattern: /^https:\/\/images\.unsplash\.com\/.*/i,
@@ -64,6 +66,17 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
+      }
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          // Split heavy libs (maps/icons) away from the main bundle to improve FCP.
+          manualChunks: {
+            leaflet: ['leaflet', 'react-leaflet'],
+            icons: ['lucide-react']
+          }
+        }
       }
     }
   };

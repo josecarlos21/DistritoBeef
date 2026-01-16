@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { cx, triggerHaptic } from './src/utils/index';
+import { cx, triggerHaptic } from './src/utils';
 import { TabType, EventData, AmbienceState } from './types';
 import { INITIAL_AMBIENCE } from './constants';
 import { GlobalStyles } from './components/GlobalStyles';
+import { GlobalErrorBoundary } from './components/molecules/GlobalErrorBoundary';
 import { CanvasBackground } from './components/atoms/CanvasBackground';
 import { NavBar } from './components/organisms/Navigation';
 import { AmbienceModal } from './components/molecules/AmbienceModal';
@@ -79,7 +80,7 @@ function AppContent() {
       case "map":
         return <MapView />;
       case "agenda":
-        return <AgendaView onBack={() => handleTabChange('home')} />;
+        return <AgendaView onBack={() => handleTabChange('home')} onEventClick={setSelectedEvent} />;
       default:
         return null;
     }
@@ -235,7 +236,9 @@ export default function App() {
   return (
     <LocaleProvider>
       <AuthProvider>
-        <AppContent />
+        <GlobalErrorBoundary>
+          <AppContent />
+        </GlobalErrorBoundary>
       </AuthProvider>
     </LocaleProvider>
   );

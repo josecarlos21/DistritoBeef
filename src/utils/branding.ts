@@ -35,6 +35,6 @@ export const getTrackLabel = (track: TrackType): string => {
         case 'beefdip': return 'BEEF';
         case 'bearadise': return 'BEARADISE';
         case 'community': return 'COMMUNITY';
-        default: return track.toUpperCase();
+        default: return (track as string).toUpperCase();
     }
 };

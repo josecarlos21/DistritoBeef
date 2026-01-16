@@ -3,7 +3,7 @@ import { X, MapPin, MessageCircle, UserPlus, Music, Shield } from 'lucide-react'
 import { UserData } from '../../types';
 import { GlassContainer, IconButton } from '../atoms';
 import { useLocale } from '../../src/context/LocaleContext';
-import { triggerHaptic } from '../../src/utils/index';
+import { triggerHaptic } from '../../src/utils';
 
 interface UserProfileModalProps {
     user: UserData | null;

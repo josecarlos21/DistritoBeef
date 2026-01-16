@@ -3,7 +3,7 @@ import React from 'react';
 import { Home, Calendar, Map as MapIcon, Wallet, User } from 'lucide-react';
 import { TabType } from '../../types';
 import { GlassContainer } from '../atoms';
-import { cx, triggerHaptic } from '../../../src/utils/index';
+import { cx, triggerHaptic } from '../../src/utils';
 import { useLocale } from '../../src/context/LocaleContext';
 
 // NavBar

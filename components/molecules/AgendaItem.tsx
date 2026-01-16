@@ -7,14 +7,17 @@ interface AgendaItemProps {
     event: EventData;
     isSelected: boolean;
     onToggle: (id: string) => void;
+    onEventClick?: (event: EventData) => void;
 }
 
-export const AgendaItem: React.FC<AgendaItemProps> = ({ event, isSelected, onToggle }) => {
+export const AgendaItem: React.FC<AgendaItemProps> = ({ event, isSelected, onToggle, onEventClick }) => {
     return (
-        <div className={`relative flex items-center p-4 rounded-xl mb-3 border transition-all ${isSelected
-            ? 'bg-orange-500/10 border-orange-500/50'
-            : 'bg-white/5 border-white/10'
-            }`}
+        <div
+            onClick={() => onEventClick?.(event)}
+            className={`relative flex items-center p-4 rounded-xl mb-3 border transition-all cursor-pointer hover:bg-white/10 ${isSelected
+                ? 'bg-orange-500/10 border-orange-500/50'
+                : 'bg-white/5 border-white/10'
+                }`}
         >
             <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
@@ -37,7 +40,7 @@ export const AgendaItem: React.FC<AgendaItemProps> = ({ event, isSelected, onTog
             </div>
 
             <div
-                onClick={() => onToggle(event.id)}
+                onClick={(e) => { e.stopPropagation(); onToggle(event.id); }}
                 className={`w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-all ${isSelected ? 'bg-orange-500 text-white shadow-[0_0_15px_rgba(249,115,22,0.5)]' : 'bg-white/10 hover:bg-white/20'
                     }`}
             >

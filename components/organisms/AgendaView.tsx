@@ -1,32 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { EVENTS } from '../../constants';
 import { EventData } from '../../types';
 import { AgendaItem } from '../molecules/AgendaItem';
-import { getSavedAgenda, toggleAgendaItem } from '../../src/utils/itinerary';
 import { ArrowLeft, Calendar } from 'lucide-react';
 import { ItineraryPlanner } from '../molecules/ItineraryPlanner';
 import { useLocale } from '../../src/context/LocaleContext';
-import { useAuth } from '../../src/context/AuthContext';
+import { useAppStore } from '../../src/store/useAppStore';
 
 export const AgendaView: React.FC<{ onBack?: () => void, onEventClick?: (e: EventData) => void }> = ({ onBack, onEventClick }) => {
-    const [agendaIds, setAgendaIds] = useState<string[]>(() => getSavedAgenda());
+    const { agendaIds, toggleAgendaItem, isAuthenticated } = useAppStore();
     const [showPlanner, setShowPlanner] = useState(false);
     const { t } = useLocale();
-    const { isAuthenticated } = useAuth();
 
-    useEffect(() => {
-        if (!isAuthenticated) {
-            setAgendaIds([]);
-            return;
-        }
-        setAgendaIds(getSavedAgenda());
-    }, [isAuthenticated]);
-
-    const handleToggle = (id: string) => {
+    const handleToggle = useCallback((id: string) => {
         if (!isAuthenticated) return;
-        const updated = toggleAgendaItem(id);
-        setAgendaIds(updated);
-    };
+        toggleAgendaItem(id);
+    }, [isAuthenticated, toggleAgendaItem]);
 
     const savedEvents = isAuthenticated ? EVENTS.filter(evt => agendaIds.includes(evt.id)) : [];
 

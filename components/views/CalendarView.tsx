@@ -1,7 +1,7 @@
 
 import React, { useMemo, useRef, useState } from 'react';
 import { SlidersHorizontal, Clock, MapPin, ChevronDown, List, Rows } from 'lucide-react';
-import { EventData } from '../../types';
+import { EventData } from '../../src/types';
 import { EVENTS } from '../../constants';
 import { getEventBackgroundValue, triggerHaptic, cx } from '../../src/utils';
 import { UnifiedHeader, HeaderTitle, HeaderAction } from '../organisms';
@@ -88,7 +88,12 @@ const EventCard: React.FC<EventCardProps> = ({
             {/* Bg */}
             {/* Bg */}
 
-            <div className="absolute inset-0 bg-cover bg-center opacity-50 mix-blend-overlay transition-transform duration-700 group-hover:scale-105 dynamic-event-bg" style={{ '--event-bg': bgVal } as any} />
+            {/* Bg */}
+            <div
+               className="absolute inset-0 bg-cover bg-center opacity-50 mix-blend-overlay transition-transform duration-700 group-hover:scale-105 dynamic-event-bg"
+               // eslint-disable-next-line react-dom/no-unsafe-styles
+               style={{ '--event-bg': bgVal } as React.CSSProperties}
+            />
             <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/70 to-transparent" />
 
             {/* Content */}

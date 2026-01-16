@@ -1,5 +1,5 @@
 
-import { EventData, TrackType } from '../../types';
+import { EventData, TrackType } from '../types';
 import baseData from '../context/base.json';
 
 const CATEGORY_IMAGES: Record<string, string> = {

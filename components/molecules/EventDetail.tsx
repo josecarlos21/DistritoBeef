@@ -1,12 +1,14 @@
 
-import React from 'react';
-import { EventData } from '../../types';
+import React, { useEffect, useState, useMemo } from 'react';
+import { EventData } from '../../src/types';
 import { triggerHaptic, cx } from '../../src/utils';
 import { getTrackStyles, getTrackLabel } from '../../src/utils/branding';
 import { MapPin, Calendar, Clock } from 'lucide-react';
 import { useLocale } from '../../src/context/LocaleContext';
 import { useAuth } from '../../src/context/AuthContext';
 import { getSavedAgenda, toggleAgendaItem } from '../../src/utils/itinerary';
+
+import { useAppStore } from '../../src/store/useAppStore';
 
 interface EventDetailProps {
   event: EventData;
@@ -19,18 +21,15 @@ export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onActi
 
   // const bgVal = getEventBackgroundValue(event.image, event.track, event.id); // Keeping for future use if needed, but commenting out for lint
   const fullDate = formatFullDate(event.start);
-  const [isInAgenda, setIsInAgenda] = React.useState(false);
-  const { isAuthenticated } = useAuth();
 
-  React.useEffect(() => {
-    setIsInAgenda(getSavedAgenda().includes(event.id));
-  }, [event.id]);
+  const { agendaIds, toggleAgendaItem, isAuthenticated } = useAppStore();
+  const isInAgenda = agendaIds.includes(event.id);
 
   // Demo Logic: Hardcoded 'User is Nearby'
   const isNearby = true;
 
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-  const canRate = React.useMemo(() => {
+  const canRate = useMemo(() => {
     // Demo Logic: Hardcoded 'User is Nearby'
     return isNearby;
   }, [isNearby]);
@@ -77,7 +76,11 @@ export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onActi
         {/* Image Header */}
         <div className="h-80 relative shrink-0 group">
 
-          <div className="w-full h-full bg-cover bg-center transition-transform duration-1000 group-hover:scale-105" style={{ backgroundImage: `url(${event.image})` }} />
+          <img
+            src={event.image}
+            alt={event.title}
+            className="w-full h-full object-cover object-center transition-transform duration-1000 group-hover:scale-105"
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-[#1a120b] via-[#1a120b]/30 to-transparent"></div>
 
           <button
@@ -201,7 +204,6 @@ export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onActi
                   return;
                 }
                 triggerHaptic('success');
-                setIsInAgenda(!isInAgenda);
                 toggleAgendaItem(event.id);
               }}
               disabled={!isAuthenticated}

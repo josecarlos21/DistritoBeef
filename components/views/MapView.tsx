@@ -2,6 +2,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { Navigation, Plus, Minus, Map as MapIcon, LocateFixed, Calendar } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, useMap, Tooltip } from 'react-leaflet';
+import { EventData } from '../../src/types';
 import L from 'leaflet';
 import { GlassContainer } from '../atoms';
 import { UnifiedHeader, HeaderTitle } from '../organisms';
@@ -95,7 +96,11 @@ const MapEvents: React.FC<{ setZoom: (z: number) => void }> = ({ setZoom }) => {
   return null;
 };
 
-export const MapView: React.FC = () => {
+interface MapViewProps {
+  onEventClick?: (e: EventData) => void;
+}
+
+export const MapView: React.FC<MapViewProps> = ({ onEventClick }) => {
   const [selectedVenue, setSelectedVenue] = useState<string | null>(null);
   const [zoom, setZoom] = useState(17);
   const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
@@ -245,15 +250,26 @@ export const MapView: React.FC = () => {
                   )}
                 </div>
               </div>
-              <a
-                href={`https://maps.google.com/?q=${encodeURIComponent(selectedVenue + " Puerto Vallarta")}`}
-                target="_blank"
-                rel="noreferrer"
-                onClick={() => triggerHaptic('medium')}
-                className="px-4 py-2.5 bg-white text-black rounded-xl text-[9px] font-black uppercase hover:bg-gray-200 transition shadow-lg shrink-0 ml-4"
-              >
-                {t('action.viewRoute')}
-              </a>
+              <div className="flex gap-2 shrink-0 ml-4">
+                {nextEvent && onEventClick && (
+                  <button
+                    type="button"
+                    onClick={() => { triggerHaptic('medium'); onEventClick(nextEvent); }}
+                    className="px-4 py-2.5 bg-[var(--o)] text-black rounded-xl text-[9px] font-black uppercase hover:opacity-90 transition shadow-lg"
+                  >
+                    {t('home.viewInfo')}
+                  </button>
+                )}
+                <a
+                  href={`https://maps.google.com/?q=${encodeURIComponent(selectedVenue + " Puerto Vallarta")}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => triggerHaptic('medium')}
+                  className="px-4 py-2.5 bg-white text-black rounded-xl text-[9px] font-black uppercase hover:bg-gray-200 transition shadow-lg shrink-0"
+                >
+                  {t('action.viewRoute')}
+                </a>
+              </div>
             </GlassContainer>
           ) : (
             <GlassContainer strong className="p-3 flex items-center justify-between opacity-80">

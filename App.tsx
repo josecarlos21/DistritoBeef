@@ -79,7 +79,7 @@ function AppContent() {
       case "wallet":
         return <WalletView userName={user?.name || "Invitado"} onOpenConfig={handleConfig} onLogout={logout} />;
       case "map":
-        return <MapView />;
+        return <MapView onEventClick={setSelectedEvent} />;
       case "agenda":
         return <AgendaView onBack={() => handleTabChange('home')} onEventClick={setSelectedEvent} />;
       default:

@@ -14,9 +14,11 @@ interface User {
 
 interface AuthContextType {
     isAuthenticated: boolean;
+    hasAccess: boolean;
     isLoading: boolean;
     user: User | null;
     login: (name: string, img?: string) => void;
+    enterAsGuest: () => void;
     logout: () => void;
     validatePin: (pin: string) => boolean;
 }
@@ -25,6 +27,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [hasAccess, setHasAccess] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [user, setUser] = useState<User | null>(null);
 
@@ -35,11 +38,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const login = (name: string, img?: string) => {
         setIsAuthenticated(true);
+        setHasAccess(true);
         setUser({ name, img, isDemoUser: true });
+    };
+
+    const enterAsGuest = () => {
+        setIsAuthenticated(false);
+        setHasAccess(true);
+        setUser(null);
     };
 
     const logout = () => {
         setIsAuthenticated(false);
+        setHasAccess(false);
         setUser(null);
         // Clear demo-only data to honor "no data stored" promise.
         try {
@@ -53,7 +64,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, isLoading, user, login, logout, validatePin }}>
+        <AuthContext.Provider value={{ isAuthenticated, hasAccess, isLoading, user, login, enterAsGuest, logout, validatePin }}>
             {children}
         </AuthContext.Provider>
     );

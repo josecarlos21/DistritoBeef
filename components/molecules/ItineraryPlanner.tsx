@@ -3,6 +3,7 @@ import { EventData } from '../../types';
 import { generateItinerary, saveItinerary } from '../../src/utils/itinerary';
 import { EVENTS } from '../../constants';
 import { X } from 'lucide-react';
+import { useAuth } from '../../src/context/AuthContext';
 
 interface ItineraryPlannerProps {
     eventIds: string[];
@@ -13,6 +14,7 @@ export const ItineraryPlanner: React.FC<ItineraryPlannerProps> = ({ eventIds, on
     const allEvents = EVENTS;
     const initialItinerary = generateItinerary(eventIds, allEvents);
     const [selectedIds, setSelectedIds] = useState<string[]>(initialItinerary.map((e: EventData) => e.id));
+    const { isAuthenticated } = useAuth();
 
     const toggle = (id: string) => {
         setSelectedIds(prev =>
@@ -21,6 +23,7 @@ export const ItineraryPlanner: React.FC<ItineraryPlannerProps> = ({ eventIds, on
     };
 
     const confirm = () => {
+        if (!isAuthenticated) return;
         const finalItinerary = generateItinerary(selectedIds, allEvents);
         saveItinerary(finalItinerary);
         onClose();
@@ -35,6 +38,9 @@ export const ItineraryPlanner: React.FC<ItineraryPlannerProps> = ({ eventIds, on
                         <X size={20} />
                     </button>
                 </div>
+                <p className="text-[10px] text-f uppercase tracking-widest bg-white/5 border border-white/10 rounded-xl p-2 mb-2">
+                    Demo informativa: el itinerario se guarda solo de forma local y se limpia al cerrar sesión.
+                </p>
                 <ul className="space-y-2">
                     {allEvents
                         .filter(evt => eventIds.includes(evt.id))
@@ -54,7 +60,11 @@ export const ItineraryPlanner: React.FC<ItineraryPlannerProps> = ({ eventIds, on
                     <button onClick={onClose} className="px-4 py-2 rounded bg-gray-600 hover:bg-gray-500">
                         Cancelar
                     </button>
-                    <button onClick={confirm} className="px-4 py-2 rounded bg-primary-500 hover:bg-primary-400">
+                    <button
+                        onClick={confirm}
+                        disabled={!isAuthenticated}
+                        className="px-4 py-2 rounded bg-primary-500 hover:bg-primary-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
                         Confirmar
                     </button>
                 </div>

@@ -5,6 +5,7 @@ import { getEventBackgroundValue, triggerHaptic, cx } from '../../src/utils';
 import { getTrackStyles, getTrackLabel } from '../../src/utils/branding';
 import { MapPin, CalendarPlus, Navigation, Clock, Calendar } from 'lucide-react';
 import { useLocale } from '../../src/context/LocaleContext';
+import { useAuth } from '../../src/context/AuthContext';
 import { getSavedAgenda, toggleAgendaItem } from '../../src/utils/itinerary';
 
 interface EventDetailProps {
@@ -19,6 +20,7 @@ export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onActi
   const fullDate = formatFullDate(event.start);
   const [hasRated, setHasRated] = React.useState(false);
   const [isInAgenda, setIsInAgenda] = React.useState(false);
+  const { isAuthenticated } = useAuth();
 
   React.useEffect(() => {
     setIsInAgenda(getSavedAgenda().includes(event.id));
@@ -220,15 +222,21 @@ export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onActi
             <button
               type="button"
               onClick={() => {
+                if (!isAuthenticated) {
+                  triggerHaptic('error');
+                  return;
+                }
                 triggerHaptic('success');
                 setIsInAgenda(!isInAgenda);
                 toggleAgendaItem(event.id);
               }}
+              disabled={!isAuthenticated}
               className={cx(
                 "col-span-2 h-14 rounded-2xl flex items-center justify-center gap-3 transition-all font-black uppercase tracking-[.2em] text-[11px] shadow-lg mb-4",
                 isInAgenda
                   ? "bg-white text-black hover:bg-white/90"
-                  : "bg-white/10 text-white hover:bg-white/20 border border-white/10"
+                  : "bg-white/10 text-white hover:bg-white/20 border border-white/10",
+                !isAuthenticated && "opacity-50 cursor-not-allowed"
               )}
             >
               {isInAgenda ? (
@@ -244,7 +252,11 @@ export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onActi
               )}
             </button>
             <p className="col-span-2 text-[9px] text-center text-white/40 uppercase tracking-widest pb-4">
-              {isInAgenda ? "Evento guardado en tu itinerario" : "Guarda este evento para armar tu plan"}
+              {!isAuthenticated
+                ? "App informativa: inicia sesión para guardar eventos (solo en este dispositivo)."
+                : isInAgenda
+                  ? "Evento guardado en tu itinerario"
+                  : "Guarda este evento para armar tu plan"}
             </p>
           </div>
         </div>

@@ -4,10 +4,8 @@ import { ArrowRight, Lock } from 'lucide-react';
 import { cx } from '../../src/utils';
 import { useAuth } from '../../src/context/AuthContext';
 import { useLocale } from '../../src/context/LocaleContext';
-import { ThirdPartyLoginButton } from '../atoms/ThirdPartyLoginButton';
-
 export const Onboarding: React.FC = () => {
-  const { validatePin, login } = useAuth();
+  const { validatePin, login, enterAsGuest } = useAuth();
   const [step, setStep] = useState(0);
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
@@ -66,20 +64,27 @@ export const Onboarding: React.FC = () => {
               {t('onboarding.description')}
             </p>
 
+            <div className="text-[10px] text-f uppercase tracking-widest leading-relaxed bg-white/5 border border-white/10 rounded-2xl p-3">
+              Demo informativa: no almacenamos tus datos en servidores; el acceso requiere PIN y la agenda se queda solo en tu dispositivo.
+            </div>
+
             <button
               type="button"
               onClick={() => setStep(1)}
-              className="w-full h-14 rounded-full bg-white text-black font-black uppercase tracking-[.2em] text-[11px] flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-[0_0_40px_rgba(255,255,255,0.2)] mb-8"
+              className="w-full h-14 rounded-full bg-white text-black font-black uppercase tracking-[.2em] text-[11px] flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-[0_0_40px_rgba(255,255,255,0.2)] mb-4"
             >
               {t('action.start')} <ArrowRight size={16} strokeWidth={3} />
             </button>
 
-            <div className="space-y-2 border-t border-white/10 pt-6">
-              <p className="text-[10px] text-center uppercase tracking-widest text-white/40 mb-4">Or connect with</p>
-              <ThirdPartyLoginButton provider="apple" onClick={() => login('Adrian (Apple)', 'https://api.dicebear.com/7.x/micah/svg?seed=Adrian')} />
-              <ThirdPartyLoginButton provider="facebook" onClick={() => login('Fabian (FB)', 'https://api.dicebear.com/7.x/micah/svg?seed=Fabian')} />
-              <ThirdPartyLoginButton provider="x" onClick={() => login('Xavier', 'https://api.dicebear.com/7.x/micah/svg?seed=Xavier')} />
-            </div>
+            <button
+              type="button"
+              onClick={enterAsGuest}
+              className="w-full h-12 rounded-full bg-white/5 border border-white/10 text-white font-bold uppercase tracking-[.15em] text-[10px] flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all"
+            >
+              Continuar como Invitado
+            </button>
+
+            {/* Third-party shortcuts removed to enforce PIN-only entry */}
           </div>
         ) : step === 1 ? (
           <div className="space-y-6 animate-in zoom-in-95 duration-300">
@@ -118,6 +123,14 @@ export const Onboarding: React.FC = () => {
               className="w-full h-14 rounded-2xl bg-o text-black font-black uppercase tracking-[.2em] text-[10px] disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 transition-all mt-4"
             >
               {t('action.next')}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => { setStep(0); setCode(''); setError(false); }}
+              className="w-full h-10 mt-2 rounded-2xl bg-transparent text-white/50 font-bold uppercase tracking-[.15em] text-[9px] hover:text-white active:scale-95 transition-all"
+            >
+              {t('action.cancel', 'Cancelar')}
             </button>
 
             <div className="text-[9px] text-f mt-4">

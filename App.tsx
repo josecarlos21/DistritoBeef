@@ -34,7 +34,7 @@ function AppContent() {
   const [isNotifOpen, setIsNotifOpen] = useState(false);
 
   // Auth State from Context
-  const { isAuthenticated, isLoading, user, logout } = useAuth();
+  const { isAuthenticated, hasAccess, isLoading, user, logout } = useAuth();
   const [notification, setNotification] = useState<{ msg: string, type: 'info' | 'alert' } | null>(null);
 
   const handleTabChange = (tab: TabType) => {
@@ -112,7 +112,7 @@ function AppContent() {
           "lg:max-w-screen-lg xl:max-w-screen-xl 2xl:max-w-[1600px] mx-auto z-10"
         )}
       >
-        {!isAuthenticated ? (
+        {!useAuth().hasAccess ? (
           <Onboarding />
         ) : (
           <>
@@ -124,30 +124,32 @@ function AppContent() {
               </div>
 
               <nav className="flex-1 px-4 space-y-2">
-                {(['home', 'calendar', 'social', 'map', 'agenda', 'wallet'] as TabType[]).map((tab) => {
-                  const icons: Record<string, string> = {
-                    home: 'home',
-                    calendar: 'event_note',
-                    social: 'group',
-                    map: 'map',
-                    wallet: 'account_balance_wallet',
-                    agenda: 'bookmarks'
-                  };
-                  const isActive = activeTab === tab;
-                  return (
-                    <button
-                      key={tab}
-                      onClick={() => { triggerHaptic('light'); handleTabChange(tab); }}
-                      className={cx(
-                        "w-full h-14 rounded-2xl flex items-center px-4 gap-4 transition-all duration-300 group",
-                        isActive ? "bg-o text-black shadow-[0_10px_30px_rgba(255,159,69,0.2)]" : "text-f hover:bg-white/5 hover:text-white"
-                      )}
-                    >
-                      <span className={cx("material-symbols-outlined text-2xl transition-transform", isActive ? "scale-110" : "group-hover:scale-110")}>{icons[tab]}</span>
-                      <span className="hidden lg:block text-[10px] font-black uppercase tracking-widest">{t(`nav.${tab}`)}</span>
-                    </button>
-                  );
-                })}
+                {(['home', 'calendar', 'social', 'map', 'agenda', 'wallet'] as TabType[])
+                  .filter(t => isAuthenticated || t !== 'wallet')
+                  .map((tab) => {
+                    const icons: Record<string, string> = {
+                      home: 'home',
+                      calendar: 'event_note',
+                      social: 'group',
+                      map: 'map',
+                      wallet: 'account_balance_wallet',
+                      agenda: 'bookmarks'
+                    };
+                    const isActive = activeTab === tab;
+                    return (
+                      <button
+                        key={tab}
+                        onClick={() => { triggerHaptic('light'); handleTabChange(tab); }}
+                        className={cx(
+                          "w-full h-14 rounded-2xl flex items-center px-4 gap-4 transition-all duration-300 group",
+                          isActive ? "bg-o text-black shadow-[0_10px_30px_rgba(255,159,69,0.2)]" : "text-f hover:bg-white/5 hover:text-white"
+                        )}
+                      >
+                        <span className={cx("material-symbols-outlined text-2xl transition-transform", isActive ? "scale-110" : "group-hover:scale-110")}>{icons[tab]}</span>
+                        <span className="hidden lg:block text-[10px] font-black uppercase tracking-widest">{t(`nav.${tab}`)}</span>
+                      </button>
+                    );
+                  })}
               </nav>
 
               <div className="p-6">

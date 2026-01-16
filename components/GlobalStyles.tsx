@@ -10,6 +10,10 @@ export const GlobalStyles = () => (
     }
     
     body {
+        margin: 0;
+        padding: 0;
+        background: #0E0C09; /* Core Dark Onyx */
+        color: var(--tx);
         overscroll-behavior-y: none; /* Prevent bounce effect on body */
     }
 
@@ -111,6 +115,12 @@ export const GlobalStyles = () => (
     }
 
     /* Linting Fix Utilities */
+    /* PINK DANCE DESIGN SYSTEM TOKENS 
+       - Core: Onyx/Black (#0E0C09)
+       - Accent: Orange/District (#F97316 - var(--o))
+       - Secondary: Gold/Sand (#D8C2A2 - var(--s))
+       - Community: Blue (#3B82F6 - var(--c))
+    */
     .bg-theme-main { background: var(--bg); }
     
     .badge-dot { 

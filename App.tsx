@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { cx, triggerHaptic } from './src/utils';
-import { TabType, EventData, AmbienceState } from './types';
+import { TabType, EventData, AmbienceState } from './src/types';
 import { INITIAL_AMBIENCE } from './constants';
 import { GlobalStyles } from './components/GlobalStyles';
 import { GlobalErrorBoundary } from './components/molecules/GlobalErrorBoundary';
@@ -22,7 +22,7 @@ import { AuthProvider, useAuth } from './src/context/AuthContext';
 import { LocaleProvider, useLocale } from './src/context/LocaleContext';
 
 import { UserProfileModal } from './components/molecules/UserProfileModal';
-import { UserData } from './types';
+import { UserData } from './src/types';
 
 function AppContent() {
   const { t, locale, setLocale } = useLocale();

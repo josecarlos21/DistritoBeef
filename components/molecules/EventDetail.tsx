@@ -85,6 +85,7 @@ export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onActi
           <button
             type="button"
             onClick={() => { triggerHaptic('light'); onClose(); }}
+            aria-label={t('action.close')}
             className="absolute top-4 right-4 w-10 h-10 rounded-full backdrop-blur-md text-white flex items-center justify-center border z-10 hover:bg-white/20 transition-all active:scale-95 shadow-lg bg-black-40 border-white-15"
           >
             <span className="material-symbols-outlined text-lg">✕</span>

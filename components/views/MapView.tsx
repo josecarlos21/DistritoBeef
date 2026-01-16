@@ -59,8 +59,8 @@ const MapControls: React.FC<{
         <button
           type="button"
           onClick={onZoomIn}
-          title={labels.zoomIn}
-          aria-label={labels.zoomIn}
+          title={labels.zoomIn || "Zoom In"}
+          aria-label={labels.zoomIn || "Zoom In"}
           className="w-8 h-8 flex items-center justify-center text-tx hover:text-o active:scale-90 transition shadow-none border-none bg-transparent"
         >
           <Plus size={16} />
@@ -69,8 +69,8 @@ const MapControls: React.FC<{
         <button
           type="button"
           onClick={onLocate}
-          title={labels.locate}
-          aria-label={labels.locate}
+          title={labels.locate || "My Location"}
+          aria-label={labels.locate || "My Location"}
           className="w-8 h-8 flex items-center justify-center text-[var(--tx)] hover:text-[var(--o)] active:scale-90 transition shadow-none border-none bg-transparent"
         >
           <LocateFixed size={16} />
@@ -79,8 +79,8 @@ const MapControls: React.FC<{
         <button
           type="button"
           onClick={onZoomOut}
-          title={labels.zoomOut}
-          aria-label={labels.zoomOut}
+          title={labels.zoomOut || "Zoom Out"}
+          aria-label={labels.zoomOut || "Zoom Out"}
           className="w-8 h-8 flex items-center justify-center text-[var(--tx)] hover:text-[var(--o)] active:scale-90 transition shadow-none border-none bg-transparent"
         >
           <Minus size={16} />

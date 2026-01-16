@@ -1,5 +1,5 @@
 
-import { UserData, RecommendationData, AmbienceState } from './types';
+import { UserData, RecommendationData, AmbienceState } from './src/types';
 
 export const INITIAL_AMBIENCE: AmbienceState = { g: .52, h: 26, a: .7, t: .62 };
 

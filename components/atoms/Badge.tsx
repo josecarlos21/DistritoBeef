@@ -1,4 +1,5 @@
 import React from 'react';
+import { cx } from '../../src/utils';
 
 interface BadgeProps {
     label: string;
@@ -13,8 +14,11 @@ export const Badge: React.FC<BadgeProps> = ({ label, dot, color }) => (
 
         {dot ? (
             <span
-                className="w-1.5 h-1.5 rounded-full shadow-[0_0_8px_currentColor] bg-[var(--badge-color)]"
-                style={{ '--badge-color': color || "var(--o)" } as React.CSSProperties}
+                className={cx(
+                    "w-1.5 h-1.5 rounded-full shadow-[0_0_8px_currentColor]",
+                    !color ? "bg-[var(--o)]" : "bg-[var(--badge-color)]"
+                )}
+                style={color ? { '--badge-color': color } as React.CSSProperties : undefined}
             />
         ) : null}
         <span className="text-[10px] font-black uppercase tracking-[.16em] text-tx">{label}</span>

@@ -7,7 +7,7 @@ import { useLocale } from '../../src/context/LocaleContext';
 export const Onboarding: React.FC = () => {
   const { validatePin, login, enterAsGuest } = useAuth();
   const [step, setStep] = useState(0);
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState('2026');
   const [name, setName] = useState('');
   const [error, setError] = useState(false);
   const { t } = useLocale();
@@ -166,6 +166,15 @@ export const Onboarding: React.FC = () => {
             </button>
           </div>
         )}
+      </div>
+      <div className="absolute bottom-4 left-4 right-4 text-center z-10 pointer-events-none opacity-40">
+        <p className="text-[7px] text-f uppercase tracking-wider leading-relaxed max-w-md mx-auto">
+          AVISO LEGAL: Esta aplicación opera exclusivamente como una herramienta informativa de itinerario y guía.
+          No está afiliada oficialmente con los organizadores de los eventos.
+          La información puede cambiar sin previo aviso.
+          Verifique siempre los horarios y ubicaciones en los canales oficiales de cada evento.
+          Distrito Vallarta no asume responsabilidad por cambios de agenda, cancelaciones o errores en la información.
+        </p>
       </div>
     </div>
   );

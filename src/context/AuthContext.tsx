@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 // Explicitly labeled as DEMO PINS to avoid security confusion.
 // This is not real authentication, just a simple gate for the demo experience.
@@ -28,13 +28,10 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [hasAccess, setHasAccess] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
+
     const [user, setUser] = useState<User | null>(null);
 
-    useEffect(() => {
-        // No persistence by design: every session requires a fresh PIN entry.
-        setIsLoading(false);
-    }, []);
+
 
     const login = (name: string, img?: string) => {
         setIsAuthenticated(true);
@@ -64,7 +61,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, hasAccess, isLoading, user, login, enterAsGuest, logout, validatePin }}>
+        <AuthContext.Provider value={{ isAuthenticated, hasAccess, isLoading: false, user, login, enterAsGuest, logout, validatePin }}>
             {children}
         </AuthContext.Provider>
     );

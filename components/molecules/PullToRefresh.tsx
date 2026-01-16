@@ -59,16 +59,15 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({ children, onRefres
             <div
                 className="absolute top-0 left-0 right-0 flex justify-center items-center pointer-events-none ptr-indicator"
                 style={{
-                    // eslint-disable-next-line react-dom/no-unsafe-styles
                     '--ptr-y': translateY,
                     '--ptr-opacity': Math.min(translateY / 40, 1),
                     '--ptr-transition': refreshing ? 'transform 0.3s ease' : 'none'
-                } as React.CSSProperties}
+                } as any}
             >
                 {refreshing ? (
                     <Loader2 className="animate-spin text-o" size={20} />
                 ) : (
-                    <div className="text-[9px] font-black uppercase text-o tracking-[.2em] transition-transform duration-200 ptr-icon" style={{ '--ptr-y': translateY } as React.CSSProperties}>
+                    <div className="text-[9px] font-black uppercase text-o tracking-[.2em] transition-transform duration-200 ptr-icon" style={{ '--ptr-y': translateY } as any}>
                         ▼
                     </div>
                 )}
@@ -79,7 +78,7 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({ children, onRefres
                 style={{
                     '--ptr-y': translateY,
                     '--ptr-content-transition': !startY ? 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)' : 'none'
-                } as React.CSSProperties}
+                } as any}
             >
                 {children}
             </div>

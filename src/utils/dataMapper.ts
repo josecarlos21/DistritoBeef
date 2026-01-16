@@ -45,6 +45,7 @@ const mapColor = (track: TrackType): string => {
 };
 
 export const getEventsFromBase = (): EventData[] => {
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     return (baseData.EVENTS_MASTER as any[]).map(evt => {
         const startIso = `${evt.Fecha}T${evt.Inicio || '12:00'}:00`;
         let endIso = evt.Fin ? `${evt.Fecha}T${evt.Fin}:00` : '';

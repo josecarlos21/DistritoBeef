@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { MapPin, Flame, Award, Info, ArrowRight, Bell, CloudSun } from 'lucide-react';
+import { MapPin, Award, Info, ArrowRight, Bell, CloudSun } from 'lucide-react';
 import { EventData, TabType } from '../../types';
 import { EVENTS } from '../../constants';
 import { cx, triggerHaptic } from '../../src/utils';

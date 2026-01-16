@@ -1,6 +1,6 @@
 import React from 'react';
 import { EventData } from '../../types';
-import { Clock, MapPin, Plus } from 'lucide-react';
+import { MapPin, Plus } from 'lucide-react';
 import { getTrackStyles, getTrackLabel } from '../../src/utils/branding';
 
 interface AgendaItemProps {

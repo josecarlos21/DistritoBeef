@@ -1,9 +1,9 @@
 
 import React from 'react';
 import { EventData } from '../../types';
-import { getEventBackgroundValue, triggerHaptic, cx } from '../../src/utils';
+import { triggerHaptic, cx } from '../../src/utils';
 import { getTrackStyles, getTrackLabel } from '../../src/utils/branding';
-import { MapPin, CalendarPlus, Navigation, Clock, Calendar } from 'lucide-react';
+import { MapPin, Calendar, Clock } from 'lucide-react';
 import { useLocale } from '../../src/context/LocaleContext';
 import { useAuth } from '../../src/context/AuthContext';
 import { getSavedAgenda, toggleAgendaItem } from '../../src/utils/itinerary';
@@ -14,11 +14,11 @@ interface EventDetailProps {
   onAction: () => void;
 }
 
-export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onAction }) => {
+export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onAction: _onAction }) => {
   const { t, formatFullDate, formatTime } = useLocale();
-  const bgVal = getEventBackgroundValue(event.image, event.track, event.id);
+
+  // const bgVal = getEventBackgroundValue(event.image, event.track, event.id); // Keeping for future use if needed, but commenting out for lint
   const fullDate = formatFullDate(event.start);
-  const [hasRated, setHasRated] = React.useState(false);
   const [isInAgenda, setIsInAgenda] = React.useState(false);
   const { isAuthenticated } = useAuth();
 
@@ -29,39 +29,13 @@ export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onActi
   // Demo Logic: Hardcoded 'User is Nearby'
   const isNearby = true;
 
+  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   const canRate = React.useMemo(() => {
-    const now = new Date(); // In real app, use real time relative to event
-    // For demo/testing, we might want to force it true, or strictly check event time.
-    // User asked: "pon tambien la parte de calificar .... pero lo pones solo si es la hora y esta en el lugar.... si no detecta lo pones dehablidtado.... para dmeo ahorita hardcofe bandera true y que estoy en la zona romantica"
-    // So: if (now >= start && now <= end && isNearby)
-    // But since event dates are 2026, it will NEVER be true now (2025). 
-    // I should probably mock the check to be "always true if isNearby" for the demo purposes if the user wants to SEE it working?
-    // "pon tambien la parte de calificar .... pero lo pones solo si es la hora" -> Strict.
-    // So correct logic is strict. It will be disabled. 
-    // BUT the user said "para dmeo ahorita hardcofe bandera true y que estoy en la zona romantica". He meant "location is true". Did he mean "time is true" too?
-    // "si no detecta lo pones dehablidtado" implies he wants to see the disabled state too?
-    // I will stick to strict time check but assume he might manipulate time or wants to see the button disabled.
-    // WAIT, "para dmeo ahorita hardcofe bandera true" might apply to both?
-    // Let's implement strict check but add a comment.
-    // Actually, to evaluate "isHappeningNow", I need to parse ISOs.
-    const start = new Date(event.start);
-    const end = new Date(event.end);
-    // return isNearby && now >= start && now <= end;
-    // For the sake of the user request "para demo ahorita hardcode bandera true", I will assume he wants to be able to CLICK it.
-    // If I strictly check 2026, it will be disabled.
-    // I will add a developer bypass comment or just default to true for "isHappeningNow" for this demo session if implied, but his text "solo si es la hora" is specific.
-    // I'll stick to strict time check. If it's disabled, it's correct behavior.
+    // Demo Logic: Hardcoded 'User is Nearby'
     return isNearby;
-  }, [event, isNearby]);
+  }, [isNearby]);
 
-  const handleRate = () => {
-    if (!canRate) {
-      triggerHaptic('error');
-      return;
-    }
-    triggerHaptic('success');
-    setHasRated(true);
-  };
+
 
   const handleOpenMap = () => {
     triggerHaptic('medium');
@@ -102,7 +76,7 @@ export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onActi
 
         {/* Image Header */}
         <div className="h-80 relative shrink-0 group">
-          {/* eslint-disable-next-line react-dom/no-unsafe-styles */}
+
           <div className="w-full h-full bg-cover bg-center transition-transform duration-1000 group-hover:scale-105" style={{ backgroundImage: `url(${event.image})` }} />
           <div className="absolute inset-0 bg-gradient-to-t from-[#1a120b] via-[#1a120b]/30 to-transparent"></div>
 

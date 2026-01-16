@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { EVENTS } from '../../constants';
 import { EventData } from '../../types';
 import { AgendaItem } from '../molecules/AgendaItem';
@@ -8,13 +8,11 @@ import { ItineraryPlanner } from '../molecules/ItineraryPlanner';
 import { useLocale } from '../../src/context/LocaleContext';
 
 export const AgendaView: React.FC<{ onBack?: () => void, onEventClick?: (e: EventData) => void }> = ({ onBack, onEventClick }) => {
-    const [agendaIds, setAgendaIds] = useState<string[]>([]);
+    const [agendaIds, setAgendaIds] = useState<string[]>(() => getSavedAgenda());
     const [showPlanner, setShowPlanner] = useState(false);
     const { t } = useLocale();
 
-    useEffect(() => {
-        setAgendaIds(getSavedAgenda());
-    }, []);
+
 
     const handleToggle = (id: string) => {
         const updated = toggleAgendaItem(id);

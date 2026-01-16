@@ -16,7 +16,7 @@ interface ExploreViewProps {
   onUserClick: (u: UserData) => void;
 }
 
-export const ExploreView: React.FC<ExploreViewProps> = ({ onEventClick, onUserClick }) => {
+export const ExploreView: React.FC<ExploreViewProps> = ({ onEventClick, onUserClick: _onUserClick }) => {
   const [filter, setFilter] = useState('all');
 
 

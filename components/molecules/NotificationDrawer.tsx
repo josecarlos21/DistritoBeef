@@ -48,8 +48,7 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, on
                                 type="button"
                                 onClick={() => triggerHaptic('light')}
                                 className="w-full text-left p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 active:scale-[0.98] transition flex gap-4 animate-in slide-in-from-top-4 drawer-item"
-                                // eslint-disable-next-line react-dom/no-unsafe-styles
-                                style={{ '--delay': `${i * 100}ms` } as React.CSSProperties}
+                                style={{ '--delay': `${i * 100}ms` } as any}
                             >
                                 <div className="mt-1">
                                     {n.type === 'alert' ? <AlertTriangle size={18} className="text-o" /> : <Info size={18} className="text-s" />}

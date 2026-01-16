@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { cx, triggerHaptic } from './src/utils';
 import { TabType, EventData, AmbienceState } from './types';
 import { INITIAL_AMBIENCE } from './constants';
 import { GlobalStyles } from './components/GlobalStyles';
 import { GlobalErrorBoundary } from './components/molecules/GlobalErrorBoundary';
+import { MetaHead } from './components/atoms/MetaHead';
 import { CanvasBackground } from './components/atoms/CanvasBackground';
 import { NavBar } from './components/organisms/Navigation';
 import { AmbienceModal } from './components/molecules/AmbienceModal';
@@ -95,6 +96,7 @@ function AppContent() {
   return (
     <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-black overflow-hidden font-sans">
       <GlobalStyles />
+      <MetaHead />
 
       {/* Background Layers */}
       <div className="absolute inset-0 pointer-events-none">
@@ -112,7 +114,7 @@ function AppContent() {
           "lg:max-w-screen-lg xl:max-w-screen-xl 2xl:max-w-[1600px] mx-auto z-10"
         )}
       >
-        {!useAuth().hasAccess ? (
+        {!hasAccess ? (
           <Onboarding />
         ) : (
           <>

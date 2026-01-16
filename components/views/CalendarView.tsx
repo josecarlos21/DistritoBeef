@@ -87,8 +87,8 @@ const EventCard: React.FC<EventCardProps> = ({
          >
             {/* Bg */}
             {/* Bg */}
-            {/* eslint-disable-next-line react-dom/no-unsafe-styles */}
-            <div className="absolute inset-0 bg-cover bg-center opacity-50 mix-blend-overlay transition-transform duration-700 group-hover:scale-105 dynamic-event-bg" style={{ '--event-bg': bgVal } as React.CSSProperties} />
+
+            <div className="absolute inset-0 bg-cover bg-center opacity-50 mix-blend-overlay transition-transform duration-700 group-hover:scale-105 dynamic-event-bg" style={{ '--event-bg': bgVal } as any} />
             <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/70 to-transparent" />
 
             {/* Content */}

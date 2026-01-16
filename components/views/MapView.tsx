@@ -5,7 +5,7 @@ import { MapContainer, TileLayer, Marker, useMap, Tooltip } from 'react-leaflet'
 import L from 'leaflet';
 import { GlassContainer } from '../atoms';
 import { UnifiedHeader, HeaderTitle } from '../organisms';
-import { cx, triggerHaptic } from '../../src/utils';
+import { triggerHaptic } from '../../src/utils';
 import { EVENTS } from '../../constants';
 import { useLocale } from '../../src/context/LocaleContext';
 

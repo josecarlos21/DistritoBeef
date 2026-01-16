@@ -5,7 +5,8 @@ import { VitePWA } from 'vite-plugin-pwa';
 import WebfontDownload from 'vite-plugin-webfont-dl';
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, '.', '');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _env = loadEnv(mode, process.cwd(), '');
   return {
     server: {
       port: 3000,

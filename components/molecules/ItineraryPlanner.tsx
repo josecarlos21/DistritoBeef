@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { EventData } from '../../types';
+import { EventData } from '../../src/types';
 import { generateItinerary, saveItinerary } from '../../src/utils/itinerary';
 import { EVENTS } from '../../constants';
 import { X } from 'lucide-react';

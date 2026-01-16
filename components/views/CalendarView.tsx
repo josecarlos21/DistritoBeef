@@ -15,11 +15,12 @@ interface DayGroup {
 }
 
 // Sub-component for a single event card within a day
-interface EventCardProps {
+interface EventCardProps extends React.LiHTMLAttributes<HTMLLIElement> {
    event: EventData;
    showTime: boolean;
    isLastInDay: boolean;
    isCompact: boolean;
+   isClosest?: boolean;
    onClick: () => void;
 }
 
@@ -28,7 +29,10 @@ const EventCard: React.FC<EventCardProps> = ({
    showTime,
    isLastInDay,
    isCompact,
-   onClick
+   isClosest,
+   onClick,
+   className,
+   ...props
 }) => {
    const { formatTime } = useLocale();
    const time = formatTime(event.start);
@@ -37,7 +41,7 @@ const EventCard: React.FC<EventCardProps> = ({
    if (isCompact) {
       // COMPACT MODE RENDER
       return (
-         <div className="flex gap-4 relative group animate-in fade-in duration-300">
+         <li {...props} className={cx("flex gap-4 relative group animate-in fade-in duration-300", className)}>
             <div className="w-14 shrink-0 flex flex-col items-end pt-3">
                <span className={cx("text-[11px] font-bold tracking-wider", showTime ? "text-o opacity-100" : "opacity-0")}>{time}</span>
             </div>
@@ -49,21 +53,37 @@ const EventCard: React.FC<EventCardProps> = ({
 
             <button
                onClick={() => { triggerHaptic('light'); onClick(); }}
-               className="flex-1 py-3 pr-4 border-b border-white/5 active:opacity-50 text-left"
+               className={cx(
+                  "flex-1 py-3 pr-4 border-b border-white/5 active:opacity-50 text-left transition-all",
+                  isClosest && "relative"
+               )}
             >
+               {isClosest && (
+                  <div className="absolute inset-y-1 inset-x-[-10px] border-2 border-[var(--o)] rounded-xl pointer-events-none z-20 shadow-[0_0_20px_rgba(255,159,69,0.4)]" />
+               )}
                <div className="flex items-center gap-2 mb-1">
                   <span className="text-[9px] font-black uppercase tracking-wider text-s px-1.5 py-0.5 rounded bg-white/5">{event.track}</span>
+                  {isClosest && <span className="text-[9px] font-black uppercase tracking-wider text-o bg-o/10 px-1.5 py-0.5 rounded animate-pulse">AHORA</span>}
                </div>
-               <div className="text-sm font-bold text-white leading-tight truncate">{event.title}</div>
+               <div
+                  className={cx(
+                     "text-sm text-white leading-tight truncate",
+                     isClosest ? "underline decoration-[var(--o)] decoration-2 underline-offset-4" : ""
+                  )}
+                  // eslint-disable-next-line react-dom/no-unsafe-styles
+                  style={isClosest ? { fontWeight: 900 } as React.CSSProperties : { fontWeight: 700 } as React.CSSProperties}
+               >
+                  {event.title}
+               </div>
                <div className="text-[10px] text-f mt-0.5 truncate">{event.venue}</div>
             </button>
-         </div>
+         </li>
       );
    }
 
    // DETAILED MODE RENDER
    return (
-      <div className="flex gap-4 relative group animate-in slide-in-from-bottom-2 duration-500">
+      <li {...props} className={cx("flex gap-4 relative group animate-in slide-in-from-bottom-2 duration-500", className)}>
          {/* Left Column: Time & Connector */}
          <div className="w-14 shrink-0 flex flex-col items-center relative pt-1">
             {/* Time Label */}
@@ -83,43 +103,65 @@ const EventCard: React.FC<EventCardProps> = ({
          {/* Right Column: Card */}
          <button
             onClick={() => { triggerHaptic('medium'); onClick(); }}
-            className="flex-1 relative mb-6 rounded-[24px] overflow-hidden border border-white/10 shadow-xl active:scale-[0.98] transition-all duration-300 bg-[#14110C] min-h-[110px] text-left group-hover:border-white/25 group-hover:shadow-[0_15px_40px_rgba(0,0,0,0.6)]"
+            className={cx(
+               "flex-1 relative mb-[var(--space-md)] rounded-[40px] overflow-hidden border shadow-soft active:scale-[0.98] transition-all duration-300 bg-[var(--bg2)] min-h-[220px] text-left group-hover:shadow-[0_25px_60px_rgba(0,0,0,0.7)] hover:scale-[1.01] flex flex-col justify-start",
+               isClosest ? "border-[var(--o)] ring-4 ring-[var(--o)] ring-opacity-20 border-2" : "border-white/10"
+            )}
          >
-            {/* Bg */}
-            {/* Bg */}
-
-            {/* Bg */}
+            {/* Bg with better overlay */}
             <div
-               className="absolute inset-0 bg-cover bg-center opacity-50 mix-blend-overlay transition-transform duration-700 group-hover:scale-105 dynamic-event-bg"
+               className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-screen transition-transform duration-1000 group-hover:scale-110 dynamic-event-bg"
+               // eslint-disable-next-line react-dom/no-unsafe-styles
                style={{ '--event-bg': bgVal } as React.CSSProperties}
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/70 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/80" />
 
-            {/* Content */}
-            <div className="absolute inset-0 p-4 flex flex-col justify-center">
-               {/* Badge Row */}
-               <div className="flex items-center gap-2 mb-1.5">
-                  <span className="px-2 py-0.5 rounded bg-white/10 border border-white/5 text-[9px] font-black uppercase tracking-wider text-white backdrop-blur-md shadow-sm">
+            {/* Content Slot - Top Aligned per user request */}
+            <div className="relative z-10 p-8 flex flex-col h-full w-full">
+               {/* Top Badge Row */}
+               <div className="flex items-center gap-2 mb-4">
+                  <span className="px-3 py-1.5 rounded-xl bg-white/10 border border-white/20 text-[10px] font-black uppercase tracking-widest text-white backdrop-blur-xl shadow-sm">
                      {event.track}
                   </span>
-                  {!showTime && (
-                     <span className="flex items-center gap-1 text-[9px] font-bold text-f uppercase opacity-70">
-                        <Clock size={10} /> {time}
-                     </span>
+
+                  {isClosest && (
+                     <div className="flex items-center gap-2 bg-[var(--o)] px-3 py-1.5 rounded-full animate-pulse shadow-[0_0_20px_var(--o)] border border-white/20 ml-auto">
+                        <span className="text-[10px] font-black text-white uppercase tracking-widest">AHORA</span>
+                        <div className="w-2 h-2 rounded-full bg-white" />
+                     </div>
                   )}
                </div>
 
-               <h3 className="text-xl font-black text-white leading-[1.1] mb-2 font-display line-clamp-2 pr-2 drop-shadow-lg">
-                  {event.title}
-               </h3>
+               {/* Title & Time */}
+               <div className="flex flex-col gap-4">
+                  <h3
+                     className={cx(
+                        "text-3xl text-white font-display leading-[1.1] mb-4 pr-6 drop-shadow-[0_5px_15px_rgba(0,0,0,0.8)]",
+                        isClosest ? "underline decoration-[var(--o)] decoration-4 underline-offset-8" : ""
+                     )}
+                     // eslint-disable-next-line react-dom/no-unsafe-styles
+                     style={{ fontWeight: 900 } as React.CSSProperties}
+                  >
+                     {event.title}
+                  </h3>
 
-               <div className="flex items-center gap-1.5 text-m">
-                  <MapPin size={13} className="text-s shrink-0" strokeWidth={2.8} />
-                  <span className="text-[10px] font-bold uppercase tracking-wide truncate">{event.venue}</span>
+                  <div className="flex flex-wrap items-center gap-3">
+                     {!showTime && (
+                        <div className="flex items-center gap-2 text-[11px] font-black text-o uppercase bg-black/40 px-3 py-1.5 rounded-xl backdrop-blur-md border border-white/5 shadow-sm">
+                           <Clock size={14} strokeWidth={3} />
+                           {time}
+                        </div>
+                     )}
+
+                     <div className="flex items-center gap-2 text-f bg-white/5 px-3 py-1.5 rounded-xl backdrop-blur-md border border-white/5 shadow-sm">
+                        <MapPin size={14} className="text-s" strokeWidth={3} />
+                        <span className="text-[10px] font-black uppercase tracking-widest leading-none">{event.venue}</span>
+                     </div>
+                  </div>
                </div>
             </div>
          </button>
-      </div>
+      </li>
    );
 };
 
@@ -131,17 +173,29 @@ export const CalendarView = ({
    onOpenConfig: () => void
 }) => {
    const todayRef = useRef<HTMLDivElement>(null);
-   const [isCompact, setIsCompact] = useState(false);
+   const [isCompact, setIsCompact] = useState(true);
    const { t, formatFullDate, formatTime } = useLocale();
 
    // Group events by Day
-   const groupedEvents = useMemo(() => {
-      const sorted = [...EVENTS].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+   const { groupedEvents, closestEventId } = useMemo(() => {
+      const now = new Date();
+      const startOfToday = new Date(now);
+      startOfToday.setHours(0, 0, 0, 0);
+
+      // Filtering: Show full 'today' and all future events to satisfy "viera todo"
+      const filtered = [...EVENTS]
+         .filter(e => new Date(e.start).getTime() >= startOfToday.getTime())
+         .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+
+      // Identify the closest event: first one that is currently active or upcoming
+      const activeOrUpcoming = filtered.filter(e => new Date(e.end).getTime() > now.getTime());
+      const closestEventId = activeOrUpcoming.length > 0 ? activeOrUpcoming[0].id : null;
+
       const groups: DayGroup[] = [];
       let currentGroup: DayGroup | null = null;
-      const nowStr = new Date().toDateString();
+      const nowStr = now.toDateString();
 
-      sorted.forEach(event => {
+      filtered.forEach(event => {
          const dateObj = new Date(event.start);
          const isoDate = dateObj.toDateString();
 
@@ -157,7 +211,7 @@ export const CalendarView = ({
          currentGroup.events.push(event);
       });
 
-      return groups;
+      return { groupedEvents: groups, closestEventId };
    }, [formatFullDate]);
 
    const scrollToToday = () => {
@@ -198,30 +252,30 @@ export const CalendarView = ({
          />
 
          {/* Grouped List */}
-         <div className="flex-1 overflow-y-auto no-scrollbar pt-28 pb-32 px-4 sm:px-6 md:px-12 scroll-smooth z-0">
-            <div className="max-w-7xl mx-auto space-y-2">
+         <div className="flex-1 overflow-y-auto no-scrollbar pt-44 pb-40 px-[var(--space-md)] sm:px-[var(--space-lg)] md:px-[var(--space-xl)] scroll-smooth z-0">
+            <div className="max-w-7xl mx-auto space-y-[var(--space-xs)]" role="list">
 
                {groupedEvents.map((group, _) => (
                   <div
                      key={group.isoDate}
                      ref={group.isToday ? todayRef : null}
-                     className="relative pb-4"
+                     role="listitem"
+                     className="relative pb-[var(--space-md)]"
                   >
 
-                     {/* Sticky Date Header - Positioned to sit right below the Unified Header (24px top spacing + 64px header height = 88px) */}
-                     {/* Top-20 (~80px) ensures it clears the 64px header + spacing */}
-                     <div className="sticky top-[88px] z-30 pt-4 pb-2 mb-2 transition-all">
-                        {/* Gradient Mask for scrolling content */}
-                        <div className="absolute inset-x-[-20px] -top-10 bottom-0 bg-[var(--bg)]/95 backdrop-blur-xl border-b border-white/5 shadow-lg mask-image-gradient mask-gradient-bottom"></div>
+                     {/* Sticky Date Header - Positioned higher to clear UnifiedHeader area */}
+                     <div className="sticky top-[20px] z-20 py-4 mb-4">
+                        {/* More transparent backdrop as per "barra vacía" request */}
+                        <div className="absolute inset-x-[-24px] -top-20 bottom-0 bg-[var(--bg)]/40 backdrop-blur-md border-b border-white/5 mask-image-bento-top"></div>
 
-                        <h2 className={cx("text-xs font-black uppercase tracking-[0.2em] pl-14 relative flex items-center z-10 transition-colors duration-300", group.isToday ? "text-o scale-105 origin-left" : "text-white")}>
-                           <span className={cx("absolute left-3 top-1/2 -translate-y-1/2 w-8 h-0.5 rounded-full shadow-[0_0_10px_currentColor] transition-colors", group.isToday ? "bg-o" : "bg-white/50")} />
+                        <h2 className={cx("text-[9px] font-black uppercase tracking-[0.4em] pl-14 relative flex items-center z-10 transition-colors duration-300", group.isToday ? "text-o" : "text-white/40")}>
+                           <span className={cx("absolute left-3 top-1/2 -translate-y-1/2 w-8 h-px transition-colors", group.isToday ? "bg-o shadow-[0_0_8px_var(--o)]" : "bg-white/20")} />
                            {group.isToday ? t('calendar.today') : ""}{group.dateLabel}
                         </h2>
                      </div>
 
                      {/* Events */}
-                     <div className="pl-0 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-8">
+                     <ul className="pl-0 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-[var(--space-lg)] list-none">
                         {group.events.map((event, i) => {
                            const prevEvent = group.events[i - 1];
                            const isSameTime = prevEvent && formatTime(prevEvent.start) === formatTime(event.start);
@@ -233,17 +287,18 @@ export const CalendarView = ({
                                  showTime={!isSameTime}
                                  isLastInDay={i === group.events.length - 1}
                                  isCompact={isCompact}
+                                 isClosest={event.id === closestEventId}
                                  onClick={() => onEventClick(event)}
                               />
                            );
                         })}
-                     </div>
+                     </ul>
 
                   </div>
                ))}
 
                {/* End of List Spacer */}
-               <div className="h-32 flex flex-col items-center justify-center opacity-30 gap-2 mt-8">
+               <div role="presentation" className="h-32 flex flex-col items-center justify-center opacity-30 gap-2 mt-8">
                   <div className="text-[10px] font-black uppercase tracking-[0.2em]">{t('list.endOfSchedule')}</div>
                   <div className="flex gap-2">
                      <div className="w-1 h-1 rounded-full bg-white" />

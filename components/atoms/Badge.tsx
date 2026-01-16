@@ -26,6 +26,7 @@ export const Badge: React.FC<BadgeProps> = ({ label, dot, color, track }) => {
                         "w-1.5 h-1.5 rounded-full shadow-[0_0_8px_currentColor]",
                         dotColorClass ? dotColorClass : "bg-[var(--badge-color,var(--o))]"
                     )}
+                    //! eslint-disable-next-line react-dom/no-unsafe-styles
                     style={!dotColorClass && color ? { '--badge-color': color } as React.CSSProperties : undefined}
                 />
             ) : null}

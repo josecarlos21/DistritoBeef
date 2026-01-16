@@ -1,5 +1,6 @@
-import { generateItinerary } from '../../src/utils/itinerary';
-import { EventData } from '../../types';
+import { describe, it, expect } from 'vitest';
+import { generateItinerary } from '../utils/itinerary';
+import { EventData } from '../types';
 
 describe('generateItinerary', () => {
     const events: EventData[] = [

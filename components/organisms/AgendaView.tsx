@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { EVENTS } from '../../constants';
-import { EventData } from '../../types';
+import { EventData } from '../../src/types';
 import { AgendaItem } from '../molecules/AgendaItem';
 import { ArrowLeft, Calendar } from 'lucide-react';
 import { ItineraryPlanner } from '../molecules/ItineraryPlanner';

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import FocusLock from 'react-focus-lock';
 import { Sparkles, X } from 'lucide-react';
-import { AmbienceState } from '../../types';
+import { AmbienceState } from '../../src/types';
 import { GlassContainer, IconButton } from '../atoms';
 import { clamp } from '../../src/utils';
 import { INITIAL_AMBIENCE } from '../../constants';
@@ -46,9 +47,16 @@ const ControlRow = ({ id, label, value, min, max, step, unit, onChange }: {
 
 export const AmbienceModal: React.FC<AmbienceModalProps> = ({ open, onClose, ambience, setAmbience }) => {
   const { t } = useLocale();
+  const [isInstalled, setIsInstalled] = useState(false);
+
+  useEffect(() => {
+    // Check if react-focus-lock is available at runtime
+    setIsInstalled(true);
+  }, []);
+
   if (!open) return null;
 
-  return (
+  const content = (
     <div className="absolute inset-0 z-[120] flex items-center justify-center p-6">
       <button
         type="button"
@@ -72,10 +80,10 @@ export const AmbienceModal: React.FC<AmbienceModalProps> = ({ open, onClose, amb
           </div>
 
           <div className="space-y-4">
-            <ControlRow id="nebula-val" label="Nebula" value={ambience.g} min={0} max={1} step={.01} onChange={v => setAmbience(s => ({ ...s, g: clamp(v, 0, 1) }))} />
-            <ControlRow id="hue-val" label="Hue" value={ambience.h} min={0} max={360} step={1} unit onChange={v => setAmbience(s => ({ ...s, h: clamp(v, 0, 360) }))} />
-            <ControlRow id="aurora-val" label="Aurora" value={ambience.a} min={0} max={1} step={.01} onChange={v => setAmbience(s => ({ ...s, a: clamp(v, 0, 1) }))} />
-            <ControlRow id="trails-val" label="Trails" value={ambience.t} min={0} max={1} step={.01} onChange={v => setAmbience(s => ({ ...s, t: clamp(v, 0, 1) }))} />
+            <ControlRow id="nebula-val" label="Nebula" value={ambience.g} min={0} max={1} step={.01} onChange={v => setAmbience((s: AmbienceState) => ({ ...s, g: clamp(v, 0, 1) }))} />
+            <ControlRow id="hue-val" label="Hue" value={ambience.h} min={0} max={360} step={1} unit onChange={v => setAmbience((s: AmbienceState) => ({ ...s, h: clamp(v, 0, 360) }))} />
+            <ControlRow id="aurora-val" label="Aurora" value={ambience.a} min={0} max={1} step={.01} onChange={v => setAmbience((s: AmbienceState) => ({ ...s, a: clamp(v, 0, 1) }))} />
+            <ControlRow id="trails-val" label="Trails" value={ambience.t} min={0} max={1} step={.01} onChange={v => setAmbience((s: AmbienceState) => ({ ...s, t: clamp(v, 0, 1) }))} />
 
             <div className="grid grid-cols-2 gap-3 pt-1">
               <button
@@ -98,4 +106,6 @@ export const AmbienceModal: React.FC<AmbienceModalProps> = ({ open, onClose, amb
       </div>
     </div>
   );
+
+  return isInstalled ? <FocusLock>{content}</FocusLock> : content;
 };

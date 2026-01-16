@@ -132,11 +132,11 @@ export const MapView: React.FC<MapViewProps> = ({ onEventClick }) => {
       className: 'custom-marker',
       html: `
         <div class="flex flex-col items-center group cursor-pointer transition-all duration-500" style="transform: translate(-50%, -100%);">
-          <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center relative transition-transform shadow-[0_0_20px_rgba(0,0,0,0.5)] ${isSelected ? "scale-125 bg-[var(--o)] border-white" : "bg-[#14110C] border-[var(--o)]"}">
+          <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center relative transition-transform shadow-[0_0_20px_rgba(0,0,0,0.5)] ${isSelected ? "scale-125 bg-[var(--o)] border-white" : "bg-[var(--bg)] border-[var(--o)]"}">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${isSelected ? "black" : "var(--o)"}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="relative z-10"><path d="M20 10c0 6-10 13-10 13S0 16 0 10a10 10 0 1 1 20 0z"/><circle cx="10" cy="10" r="3"/></svg>
             ${isSelected ? '<div class="absolute inset-0 rounded-full bg-[var(--o)] animate-ping opacity-40"></div>' : ''}
           </div>
-          <div class="mt-2 px-3 py-1.5 rounded-lg border backdrop-blur-md bg-black/80 border-[var(--b)] flex flex-col items-center shadow-xl transition-all duration-300 origin-top ${isSelected ? "opacity-100 scale-100" : "opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100"}">
+          <div class="mt-2 px-3 py-1.5 rounded-[12px] border backdrop-blur-md bg-black/80 border-[var(--b)] flex flex-col items-center shadow-bento transition-all duration-300 origin-top ${isSelected ? "opacity-100 scale-100" : "opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100"}">
             <span class="text-[9px] font-black uppercase tracking-[.05em] text-white whitespace-nowrap">${venue}</span>
           </div>
         </div>
@@ -161,7 +161,7 @@ export const MapView: React.FC<MapViewProps> = ({ onEventClick }) => {
         right={<div className="w-10" />}
       />
 
-      <div className="flex-1 relative overflow-hidden bg-[#1a1612] w-full h-full">
+      <div className="flex-1 relative overflow-hidden bg-[var(--bg)] w-full h-full">
         <MapContainer
           center={ZR_CENTER}
           zoom={zoom}
@@ -171,7 +171,7 @@ export const MapView: React.FC<MapViewProps> = ({ onEventClick }) => {
           zoomControl={false}
           attributionControl={false}
           className="w-full h-full"
-          style={{ background: '#1a1612' }}
+          style={{ background: 'var(--bg)' }}
           ref={setMapInstance}
         >
           <TileLayer
@@ -265,7 +265,7 @@ export const MapView: React.FC<MapViewProps> = ({ onEventClick }) => {
                   target="_blank"
                   rel="noreferrer"
                   onClick={() => triggerHaptic('medium')}
-                  className="px-4 py-2.5 bg-white text-black rounded-xl text-[9px] font-black uppercase hover:bg-gray-200 transition shadow-lg shrink-0"
+                  className="px-4 py-2.5 bg-[var(--tx)] text-black rounded-2xl text-[9px] font-black uppercase hover:bg-white transition shadow-bento shrink-0"
                 >
                   {t('action.viewRoute')}
                 </a>

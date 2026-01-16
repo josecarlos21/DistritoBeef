@@ -1,5 +1,5 @@
 import React from 'react';
-import { EventData } from '../../types';
+import { EventData } from '../../src/types';
 import { MapPin, Plus } from 'lucide-react';
 import { getTrackStyles, getTrackLabel } from '../../src/utils/branding';
 

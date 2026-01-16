@@ -12,9 +12,12 @@ export const GlobalStyles = () => (
     body {
         margin: 0;
         padding: 0;
-        background: #0E0C09; /* Core Dark Onyx */
+        background: var(--bg);
         color: var(--tx);
+        font-family: 'Inter', 'Space Grotesk', system-ui, -apple-system, sans-serif;
+        line-height: 1.5;
         overscroll-behavior-y: none; /* Prevent bounce effect on body */
+        -webkit-font-smoothing: antialiased;
     }
 
     /* Animation Polyfills & Optimizations */
@@ -137,6 +140,13 @@ export const GlobalStyles = () => (
     .mask-gradient-bottom {
         mask-image: linear-gradient(to bottom, black 85%, transparent);
         -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent);
+    }
+
+    /* Bento Utilities */
+    .shadow-bento {
+        box-shadow: 
+            0 4px 24px -1px rgba(0, 0, 0, 0.2),
+            0 0 0 1px rgba(255, 255, 255, 0.05) inset;
     }
     
     .drawer-item { 

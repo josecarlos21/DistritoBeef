@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Home, Calendar, Map as MapIcon, Wallet, User } from 'lucide-react';
-import { TabType } from '../../types';
+import { TabType } from '../../src/types';
 import { GlassContainer } from '../atoms';
 import { cx, triggerHaptic } from '../../src/utils';
 import { useAuth } from '../../src/context/AuthContext';

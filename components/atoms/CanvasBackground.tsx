@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { AmbienceState } from '../../types';
+import { AmbienceState } from '../../src/types';
 
 interface CanvasBackgroundProps {
   ambience: AmbienceState;

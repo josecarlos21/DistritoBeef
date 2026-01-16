@@ -12,7 +12,7 @@ const CATEGORY_IMAGES: Record<string, string> = {
     foam: "https://images.unsplash.com/photo-1530103043960-ef38714abb15?auto=format&fit=crop&w=800&q=60",
     activity: "https://images.unsplash.com/photo-1545128485-c400e7702796?auto=format&fit=crop&w=800&q=60",
     bear: "https://images.unsplash.com/photo-1572511443159-462a7424d67e?auto=format&fit=crop&w=800&q=60",
-    default: "https://images.unsplash.com/photo-1514525253361-bee8718a7439?auto=format&fit=crop&w=800&q=60"
+    default: "/bear_toon.png"
 };
 
 const mapTrack = (group: string): TrackType => {

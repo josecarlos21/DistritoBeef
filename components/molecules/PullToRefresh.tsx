@@ -67,7 +67,6 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({ children, onRefres
                 {refreshing ? (
                     <Loader2 className="animate-spin text-o" size={20} />
                 ) : (
-                    // eslint-disable-next-line react-dom/no-unsafe-styles
                     <div className="text-[9px] font-black uppercase text-o tracking-[.2em] transition-transform duration-200 ptr-icon" style={{ '--ptr-y': translateY } as React.CSSProperties}>
                         ▼
                     </div>

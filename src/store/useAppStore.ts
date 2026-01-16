@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { z } from 'zod';
+import { EventData } from '../types';
 
 // --- Schemas ---
 export const AgendaSchema = z.array(z.string());
@@ -16,7 +17,7 @@ export type User = z.infer<typeof UserSchema>;
 
 export interface AppState {
     agendaIds: string[];
-    itinerary: any[];
+    itinerary: EventData[];
     user: User;
     hasAccess: boolean;
     isAuthenticated: boolean;
@@ -24,7 +25,7 @@ export interface AppState {
     // Actions
     toggleAgendaItem: (id: string) => void;
     setAgendaIds: (ids: string[]) => void;
-    setItinerary: (itinerary: any[]) => void;
+    setItinerary: (itinerary: EventData[]) => void;
     login: (name: string, img?: string) => void;
     enterAsGuest: () => void;
     logout: () => void;

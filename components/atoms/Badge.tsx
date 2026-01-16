@@ -12,7 +12,6 @@ export const Badge: React.FC<BadgeProps> = ({ label, dot, color }) => (
     >
 
         {dot ? (
-            // eslint-disable-next-line react-dom/no-unsafe-styles
             <span
                 className="w-1.5 h-1.5 rounded-full shadow-[0_0_8px_currentColor] bg-[var(--badge-color)]"
                 style={{ '--badge-color': color || "var(--o)" } as React.CSSProperties}

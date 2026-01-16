@@ -1,8 +1,7 @@
 import { useAppStore } from '../store/useAppStore';
 import { EventData } from '../types';
 
-const AGENDA_KEY = 'distrito_beef_agenda';
-const ITINERARY_KEY = 'distrito_beef_itinerary';
+
 
 // --- Agenda Management (Legacy Bridge) ---
 // Note: New code should use useAppStore().agendaIds directly.

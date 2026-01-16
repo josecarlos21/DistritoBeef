@@ -1,12 +1,11 @@
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { EventData } from '../../src/types';
 import { triggerHaptic, cx } from '../../src/utils';
 import { getTrackStyles, getTrackLabel } from '../../src/utils/branding';
 import { MapPin, Calendar, Clock } from 'lucide-react';
 import { useLocale } from '../../src/context/LocaleContext';
-import { useAuth } from '../../src/context/AuthContext';
-import { getSavedAgenda, toggleAgendaItem } from '../../src/utils/itinerary';
+
 
 import { useAppStore } from '../../src/store/useAppStore';
 

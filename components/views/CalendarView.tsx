@@ -67,7 +67,7 @@ const EventCard: React.FC<EventCardProps> = ({
          {/* Left Column: Time & Connector */}
          <div className="w-14 shrink-0 flex flex-col items-center relative pt-1">
             {/* Time Label */}
-            <div className={`text-[11px] font-bold tracking-wider mb-1 transition-opacity duration-300 ${showTime ? 'text-o opacity-100' : 'opacity-0 h-0 overflow-hidden'}`}>
+            <div className={`text-[11px] font-black tracking-wider mb-1 transition-opacity duration-300 ${showTime ? 'text-o opacity-100' : 'opacity-0 h-0 overflow-hidden'}`}>
                {time}
             </div>
 
@@ -83,7 +83,7 @@ const EventCard: React.FC<EventCardProps> = ({
          {/* Right Column: Card */}
          <button
             onClick={() => { triggerHaptic('medium'); onClick(); }}
-            className="flex-1 relative mb-6 rounded-[24px] overflow-hidden border border-white/10 shadow-lg active:scale-[0.98] transition-all duration-300 bg-[#14110C] min-h-[110px] text-left group-hover:border-white/25 group-hover:shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
+            className="flex-1 relative mb-6 rounded-[24px] overflow-hidden border border-white/10 shadow-xl active:scale-[0.98] transition-all duration-300 bg-[#14110C] min-h-[110px] text-left group-hover:border-white/25 group-hover:shadow-[0_15px_40px_rgba(0,0,0,0.6)]"
          >
             {/* Bg */}
             {/* Bg */}
@@ -105,12 +105,12 @@ const EventCard: React.FC<EventCardProps> = ({
                   )}
                </div>
 
-               <h3 className="text-lg font-black text-white leading-tight mb-2 font-display line-clamp-2 pr-2 drop-shadow-md">
+               <h3 className="text-xl font-black text-white leading-[1.1] mb-2 font-display line-clamp-2 pr-2 drop-shadow-lg">
                   {event.title}
                </h3>
 
                <div className="flex items-center gap-1.5 text-m">
-                  <MapPin size={13} className="text-s shrink-0" strokeWidth={2.5} />
+                  <MapPin size={13} className="text-s shrink-0" strokeWidth={2.8} />
                   <span className="text-[10px] font-bold uppercase tracking-wide truncate">{event.venue}</span>
                </div>
             </div>
@@ -204,9 +204,9 @@ export const CalendarView = ({
                      className="relative pb-4"
                   >
 
-                     {/* Sticky Date Header - Positioned to sit right below the Unified Header */}
+                     {/* Sticky Date Header - Positioned to sit right below the Unified Header (24px top spacing + 64px header height = 88px) */}
                      {/* Top-20 (~80px) ensures it clears the 64px header + spacing */}
-                     <div className="sticky top-[-1px] z-30 pt-4 pb-2 mb-2 transition-all">
+                     <div className="sticky top-[88px] z-30 pt-4 pb-2 mb-2 transition-all">
                         {/* Gradient Mask for scrolling content */}
                         <div className="absolute inset-x-[-20px] -top-10 bottom-0 bg-[var(--bg)]/95 backdrop-blur-xl border-b border-white/5 shadow-lg mask-image-gradient mask-gradient-bottom"></div>
 

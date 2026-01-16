@@ -129,13 +129,13 @@ export const ExploreView: React.FC<ExploreViewProps> = ({ onEventClick, onUserCl
                   key={e.id}
                   type="button"
                   onClick={() => { triggerHaptic('medium'); onEventClick(e); }}
-                  className="flex-shrink-0 w-48 h-64 relative overflow-hidden border active:scale-[.99] transition-transform rounded-[28px] animate-in fade-in zoom-in-95 duration-500 bg-[#14110C] border-b"
+                  className="flex-shrink-0 w-52 h-72 relative overflow-hidden border active:scale-[.99] transition-transform rounded-[32px] animate-in fade-in zoom-in-95 duration-500 bg-[#14110C] border-b shadow-lg"
                 >
-                  <img src={e.image} className="absolute inset-0 w-full h-full object-cover grayscale-[18%]" alt={e.title} loading="lazy" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <div className="text-white font-black text-xs uppercase leading-tight text-left font-display">{e.title}</div>
-                    <div className="text-[9px] font-black uppercase tracking-[.16em] mt-1 text-left text-o">{e.venue}</div>
+                  <img src={e.image} className="absolute inset-0 w-full h-full object-cover grayscale-[10%]" alt={e.title} loading="lazy" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-transparent" />
+                  <div className="absolute bottom-5 left-5 right-5">
+                    <div className="text-white font-black text-sm uppercase leading-tight text-left font-display drop-shadow-md">{e.title}</div>
+                    <div className="text-[10px] font-black uppercase tracking-[.16em] mt-1.5 text-left text-o drop-shadow-sm">{e.venue}</div>
                   </div>
                 </button>
               ))}

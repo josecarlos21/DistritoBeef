@@ -166,7 +166,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({ onEventClick, onUserCl
                   <div className="flex h-28">
                     <img src={it.img} className="w-28 h-full object-cover" alt={it.title} loading="lazy" />
                     <div className="flex-1 p-4 flex flex-col justify-center">
-                      <Badge label={it.type} dot color={it.type === "tip" ? "var(--o)" : "var(--c)"} />
+                      <Badge label={it.type} dot track={it.type === "tip" ? "beefdip" : "community"} />
                       <div className="text-sm font-black uppercase mt-2 font-display text-tx">{it.title}</div>
                       <div className="text-[10px] font-bold mt-1 leading-snug text-f">{it.content}</div>
                     </div>

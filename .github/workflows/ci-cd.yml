@@ -120,6 +120,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Verify Deployment Secret
+        run: |
+          if [ -z "${{ secrets.CLOUDFLARE_PROJECT_NAME }}" ]; then
+            echo "::error::CLOUDFLARE_PROJECT_NAME secret is missing. Deployment cancelled."
+            exit 1
+          fi
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -133,6 +140,13 @@ jobs:
         run: npm run build
         env:
           VITE_ACCESS_PINS: ${{ secrets.VITE_ACCESS_PINS_PROD }}
+
+      - name: Verify Build Artifacts
+        run: |
+          if [ ! -d "dist" ] || [ ! -f "dist/index.html" ]; then
+            echo "::error::Build artifacts not found in dist/ directory."
+            exit 1
+          fi
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/pages-action@v1

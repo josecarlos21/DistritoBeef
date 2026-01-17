@@ -8,7 +8,9 @@
                 "http://localhost:4173"
             ],
             "settings": {
-                "chromeFlags": "--no-sandbox --disable-dev-shm-usage --disable-gpu"
+                "chromeFlags": "--no-sandbox --disable-dev-shm-usage --disable-gpu",
+                "maxWaitForFcp": 30000,
+                "maxWaitForLoad": 45000
             }
         },
         "assert": {

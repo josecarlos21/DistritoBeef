@@ -183,9 +183,20 @@ export const CalendarView = ({
          .filter(e => new Date(e.start).getTime() >= startOfToday.getTime())
          .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
 
-      // Identify the closest event: first one that is currently active or upcoming
-      const activeOrUpcoming = filtered.filter(e => new Date(e.end).getTime() > now.getTime());
-      const closestEventId = activeOrUpcoming.length > 0 ? activeOrUpcoming[0].id : null;
+      // Identify the closest event logic
+      const nowTime = now.getTime();
+
+      // 1. Check for Active Events (happening right now)
+      const activeEvent = filtered.find(e => {
+         const start = new Date(e.start).getTime();
+         const end = new Date(e.end).getTime();
+         return nowTime >= start && nowTime <= end;
+      });
+
+      // 2. If no active event, look for the next upcoming valid event
+      const nextEvent = filtered.find(e => new Date(e.start).getTime() > nowTime);
+
+      const closestEventId = activeEvent ? activeEvent.id : (nextEvent ? nextEvent.id : null);
 
       const groups: DayGroup[] = [];
       let currentGroup: DayGroup | null = null;

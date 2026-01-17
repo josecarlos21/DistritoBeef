@@ -48,9 +48,29 @@ export const getEventsFromBase = (): EventData[] => {
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     return (baseData.EVENTS_MASTER as any[]).map(evt => {
         const startIso = `${evt.Fecha}T${evt.Inicio || '12:00'}:00`;
-        let endIso = evt.Fin ? `${evt.Fecha}T${evt.Fin}:00` : '';
+        let endIso = '';
 
-        if (!endIso) {
+        if (evt.Fin) {
+            // Check for midnight crossover
+            // Treat strictly as strings first to verify hours
+            const startHour = parseInt((evt.Inicio || '12:00').split(':')[0], 10);
+            const endHour = parseInt(evt.Fin.split(':')[0], 10);
+
+            // If end hour is significantly smaller than start hour (e.g. 03 vs 21), assume next day
+            // Or if explicit date is same, but time is earlier.
+
+            // Simple approach: Construct dates
+            const startDate = new Date(startIso);
+            const endDate = new Date(`${evt.Fecha}T${evt.Fin}:00`);
+
+            if (endDate < startDate) {
+                // Determine if this is a crossover (end time is simply next day)
+                // Add 1 day to endDate
+                endDate.setDate(endDate.getDate() + 1);
+            }
+            endIso = endDate.toISOString().split('.')[0];
+        } else {
+            // Default duration 3h
             const startDate = new Date(startIso);
             startDate.setHours(startDate.getHours() + 3);
             endIso = startDate.toISOString().split('.')[0];

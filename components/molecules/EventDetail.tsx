@@ -3,12 +3,13 @@ import React, { useMemo } from 'react';
 import { EventData } from '../../src/types';
 import { triggerHaptic, cx } from '../../src/utils';
 import { getTrackStyles, getTrackLabel } from '../../src/utils/branding';
-import { Share2, MapPin, Clock, Calendar, ChevronLeft, Ticket, Heart } from 'lucide-react';
+import { Share2, MapPin, Clock, Calendar, ChevronLeft, Ticket, Heart, Navigation } from 'lucide-react';
 import { MetaHead } from '../atoms/MetaHead';
 import { useLocale } from '../../src/context/LocaleContext';
 
 
 import { useAppStore } from '../../src/store/useAppStore';
+import { useGeofence } from '../../src/hooks/useGeofence';
 
 interface EventDetailProps {
   event: EventData;
@@ -25,8 +26,8 @@ export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onActi
   const { agendaIds, toggleAgendaItem, isAuthenticated } = useAppStore();
   const isInAgenda = agendaIds.includes(event.id);
 
-  // Demo Logic: Hardcoded 'User is Nearby'
-  const isNearby = true;
+  // Real Geolocation Logic
+  const { isNearby, loading: geoLoading } = useGeofence();
 
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   const canRate = useMemo(() => {
@@ -98,6 +99,23 @@ export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onActi
             >
               <span className="material-symbols-outlined text-lg">close</span>
             </button>
+
+            {/* Geofence Status Badge */}
+            <div className="absolute top-4 left-4 z-10">
+              {!geoLoading && (
+                <div className={cx(
+                  "px-3 py-1.5 rounded-full backdrop-blur-md border flex items-center gap-1.5 shadow-lg",
+                  isNearby
+                    ? "bg-emerald-500/20 border-emerald-500/30 text-emerald-300"
+                    : "bg-red-500/20 border-red-500/30 text-red-300"
+                )}>
+                  <Navigation size={10} className={cx(isNearby ? "fill-current" : "")} />
+                  <span className="text-[9px] font-black uppercase tracking-widest">
+                    {isNearby ? "Zona District" : "Fuera de Zona"}
+                  </span>
+                </div>
+              )}
+            </div>
 
             <div className="absolute bottom-6 left-6 right-6">
               <div className="flex flex-col gap-2">

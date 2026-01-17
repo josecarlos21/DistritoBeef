@@ -5,11 +5,11 @@ import { TrackType } from '../../src/types';
 interface BadgeProps {
     label: string;
     dot?: boolean;
-    color?: string;
     track?: TrackType | 'featured';
+    className?: string;
 }
 
-export const Badge: React.FC<BadgeProps> = ({ label, dot, color, track }) => {
+export const Badge: React.FC<BadgeProps> = ({ label, dot, track, className }) => {
     const dotColorClass = useMemo(() => {
         if (track === 'beefdip') return 'bg-o';
         if (track === 'bearadise') return 'bg-purple-500';
@@ -19,7 +19,7 @@ export const Badge: React.FC<BadgeProps> = ({ label, dot, color, track }) => {
     }, [track]);
 
     return (
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border backdrop-blur-md bg-black-40 border-b">
+        <div className={cx("inline-flex items-center gap-2 px-3 py-1.5 rounded-full border backdrop-blur-md bg-black-40 border-b", className)}>
             {dot ? (
                 <span
                     className={cx(

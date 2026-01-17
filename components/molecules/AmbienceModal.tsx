@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import FocusLock from 'react-focus-lock';
 import { Sparkles, X } from 'lucide-react';
 import { AmbienceState } from '@/types';

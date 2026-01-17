@@ -1,146 +1,146 @@
 name: CI/CD Pipeline
 
 on:
-    push:
-        branches: [main, develop]
-    pull_request:
-        branches: [main]
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
 
 env:
-    NODE_VERSION: "20"
+  NODE_VERSION: "20"
 
 jobs:
-    lint-and-typecheck:
-        name: Lint & Type Check
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
+  lint-and-typecheck:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: ${{ env.NODE_VERSION }}
-                  cache: "npm"
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
 
-            - name: Install dependencies
-              run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-            - name: Run ESLint
-              run: npm run lint
+      - name: Run ESLint
+        run: npm run lint
 
-            - name: Run TypeScript check
-              run: npm run typecheck
+      - name: Run TypeScript check
+        run: npm run typecheck
 
-    test:
-        name: Unit Tests
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: ${{ env.NODE_VERSION }}
-                  cache: "npm"
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
 
-            - name: Install dependencies
-              run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-            - name: Run tests
-              run: npm test
+      - name: Run tests
+        run: npm test
 
-    build:
-        name: Build & Lighthouse
-        runs-on: ubuntu-latest
-        needs: [lint-and-typecheck, test]
-        steps:
-            - uses: actions/checkout@v4
+  build:
+    name: Build & Lighthouse
+    runs-on: ubuntu-latest
+    needs: [lint-and-typecheck, test]
+    steps:
+      - uses: actions/checkout@v4
 
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: ${{ env.NODE_VERSION }}
-                  cache: "npm"
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
 
-            - name: Install dependencies
-              run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-            - name: Build
-              run: npm run build
-              env:
-                  VITE_ACCESS_PINS: ${{ secrets.VITE_ACCESS_PINS }}
+      - name: Build
+        run: npm run build
+        env:
+          VITE_ACCESS_PINS: ${{ secrets.VITE_ACCESS_PINS }}
 
-            - name: Run Lighthouse CI
-              uses: treosh/lighthouse-ci-action@v11
-              with:
-                  urls: |
-                      http://localhost:3000
-                  uploadArtifacts: true
-                  temporaryPublicStorage: true
-                  runs: 3
-                  budgetPath: .lighthouserc.json
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v11
+        with:
+          urls: |
+            http://localhost:3000
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+          runs: 3
+          budgetPath: .lighthouserc.json
 
-    deploy-preview:
-        name: Deploy Preview (Cloudflare Pages)
-        runs-on: ubuntu-latest
-        needs: [build]
-        if: github.event_name == 'pull_request'
-        steps:
-            - uses: actions/checkout@v4
+  deploy-preview:
+    name: Deploy Preview (Cloudflare Pages)
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
 
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: ${{ env.NODE_VERSION }}
-                  cache: "npm"
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
 
-            - name: Install dependencies
-              run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-            - name: Build
-              run: npm run build
-              env:
-                  VITE_ACCESS_PINS: ${{ secrets.VITE_ACCESS_PINS }}
+      - name: Build
+        run: npm run build
+        env:
+          VITE_ACCESS_PINS: ${{ secrets.VITE_ACCESS_PINS }}
 
-            - name: Deploy to Cloudflare Pages
-              uses: cloudflare/pages-action@v1
-              with:
-                  apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-                  accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-                  projectName: distrito-beef-preview
-                  directory: dist
-                  gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: distrito-beef-preview
+          directory: dist
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
-    deploy-production:
-        name: Deploy Production
-        runs-on: ubuntu-latest
-        needs: [build]
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        environment:
-            name: production
-            url: https://distritobeef.com
-        steps:
-            - uses: actions/checkout@v4
+  deploy-production:
+    name: Deploy Production
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment:
+      name: "production"
+      url: "https://distritobeef.com"
+    steps:
+      - uses: actions/checkout@v4
 
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: ${{ env.NODE_VERSION }}
-                  cache: "npm"
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
 
-            - name: Install dependencies
-              run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-            - name: Build
-              run: npm run build
-              env:
-                  VITE_ACCESS_PINS: ${{ secrets.VITE_ACCESS_PINS_PROD }}
+      - name: Build
+        run: npm run build
+        env:
+          VITE_ACCESS_PINS: ${{ secrets.VITE_ACCESS_PINS_PROD }}
 
-            - name: Deploy to Cloudflare Pages
-              uses: cloudflare/pages-action@v1
-              with:
-                  apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-                  accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-                  projectName: ${{ secrets.CLOUDFLARE_PROJECT_NAME }}
-                  directory: dist
-                  gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: ${{ secrets.CLOUDFLARE_PROJECT_NAME }}
+          directory: dist
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}

@@ -50,7 +50,8 @@ export const Onboarding: React.FC = () => {
     // Mock simulation
     setTimeout(() => {
       const mockName = provider === 'apple' ? 'iUser' : provider === 'facebook' ? 'Amigo FB' : 'Distrito X';
-      login(mockName, provider as any);
+      // @ts-expect-error - provider comes from button click, mapped safely
+      login(mockName, provider);
       setIsConnecting(false);
     }, 1500);
   };

@@ -17,9 +17,11 @@ export const useGeofence = () => {
     useEffect(() => {
         if (typeof window === 'undefined') return;
 
-        if (!navigator.geolocation) {
-            setError('Geolocation not supported');
-            setLoading(false);
+        if (!('geolocation' in navigator)) {
+            setTimeout(() => {
+                setError('Geolocation not supported');
+                setLoading(false);
+            }, 0);
             return;
         }
 

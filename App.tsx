@@ -48,7 +48,7 @@ function AppContent() {
   const [isNotifOpen, setIsNotifOpen] = useState(false);
 
   // Auth State from Context
-  const { isAuthenticated, hasAccess, isLoading, user, logout } = useAuth();
+  const { isAuthenticated, hasAccess, isLoading, logout } = useAuth();
   const [notification, setNotification] = useState<{ msg: string, type: 'info' | 'alert' } | null>(null);
 
   const handleTabChange = (tab: TabType) => {

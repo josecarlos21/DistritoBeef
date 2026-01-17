@@ -49,10 +49,24 @@ jobs:
       - name: Run tests
         run: npm test
 
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+      - name: Audit components
+        run: npm audit --audit-level=high
+
   build:
     name: Build & Lighthouse
     runs-on: ubuntu-latest
-    needs: [lint-and-typecheck, test]
+    needs: [lint-and-typecheck, test, security]
     steps:
       - uses: actions/checkout@v4
 
@@ -85,6 +99,13 @@ jobs:
     if: github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v4
+
+      - name: Verify Deployment Secrets
+        run: |
+          MISSING=0
+          if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ]; then echo "::error::Missing CLOUDFLARE_API_TOKEN"; MISSING=1; fi
+          if [ -z "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ]; then echo "::error::Missing CLOUDFLARE_ACCOUNT_ID"; MISSING=1; fi
+          if [ $MISSING -eq 1 ]; then exit 1; fi
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -120,12 +141,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Verify Deployment Secret
+      - name: Verify Deployment Secrets
         run: |
-          if [ -z "${{ secrets.CLOUDFLARE_PROJECT_NAME }}" ]; then
-            echo "::error::CLOUDFLARE_PROJECT_NAME secret is missing. Deployment cancelled."
-            exit 1
-          fi
+          MISSING=0
+          if [ -z "${{ secrets.CLOUDFLARE_PROJECT_NAME }}" ]; then echo "::error::Missing CLOUDFLARE_PROJECT_NAME"; MISSING=1; fi
+          if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ]; then echo "::error::Missing CLOUDFLARE_API_TOKEN"; MISSING=1; fi
+          if [ -z "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ]; then echo "::error::Missing CLOUDFLARE_ACCOUNT_ID"; MISSING=1; fi
+          if [ -z "${{ secrets.VITE_ACCESS_PINS_PROD }}" ]; then echo "::warning::Missing VITE_ACCESS_PINS_PROD (Login will fail)"; fi
+          if [ $MISSING -eq 1 ]; then exit 1; fi
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

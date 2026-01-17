@@ -68,10 +68,8 @@ const EventCard: React.FC<EventCardProps> = ({
                <div
                   className={cx(
                      "text-sm text-white leading-tight truncate",
-                     isClosest ? "underline decoration-[var(--o)] decoration-2 underline-offset-4" : ""
+                     isClosest ? "underline decoration-[var(--o)] decoration-2 underline-offset-4 font-black" : "font-bold"
                   )}
-                  // eslint-disable-next-line react-dom/no-unsafe-styles
-                  style={isClosest ? { fontWeight: 900 } as React.CSSProperties : { fontWeight: 700 } as React.CSSProperties}
                >
                   {event.title}
                </div>
@@ -136,11 +134,9 @@ const EventCard: React.FC<EventCardProps> = ({
                <div className="flex flex-col gap-4">
                   <h3
                      className={cx(
-                        "text-3xl text-white font-display leading-[1.1] mb-4 pr-6 drop-shadow-[0_5px_15px_rgba(0,0,0,0.8)]",
+                        "text-3xl text-white font-display font-black leading-[1.1] pr-6 drop-shadow-[0_5px_15px_rgba(0,0,0,0.8)]",
                         isClosest ? "underline decoration-[var(--o)] decoration-4 underline-offset-8" : ""
                      )}
-                     // eslint-disable-next-line react-dom/no-unsafe-styles
-                     style={{ fontWeight: 900 } as React.CSSProperties}
                   >
                      {event.title}
                   </h3>

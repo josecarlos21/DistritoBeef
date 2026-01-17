@@ -5,6 +5,7 @@ import { INITIAL_AMBIENCE } from '@/constants';
 import { GlobalStyles } from './components/GlobalStyles';
 import { GlobalErrorBoundary } from './components/molecules/GlobalErrorBoundary';
 import { MetaHead } from './components/atoms/MetaHead';
+import { OfflineIndicator } from './components/atoms/OfflineIndicator';
 import { CanvasBackground } from './components/atoms/CanvasBackground';
 import { NavBar } from './components/organisms/Navigation';
 import { AmbienceModal } from './components/molecules/AmbienceModal';
@@ -25,6 +26,7 @@ const WalletView = React.lazy(() => import('./components/views/WalletView').then
 const MapView = React.lazy(() => import('./components/views/MapView').then(module => ({ default: module.MapView })));
 const AgendaView = React.lazy(() => import('./components/organisms/AgendaView').then(module => ({ default: module.AgendaView })));
 import { EventDetail } from './components/molecules/EventDetail';
+import { HelmetProvider } from 'react-helmet-async';
 
 function LoadingFallback() {
   return (
@@ -56,8 +58,6 @@ function AppContent() {
     setSelectedUser(null);
     setActiveTab(tab);
   };
-
-
 
   const handleWeather = () => {
     triggerHaptic('light');
@@ -109,6 +109,7 @@ function AppContent() {
   return (
     <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-black overflow-hidden font-sans">
       <GlobalStyles />
+      <OfflineIndicator />
       <MetaHead />
 
       {/* Background Layers */}
@@ -250,8 +251,6 @@ function AppContent() {
     </div>
   );
 }
-
-import { HelmetProvider } from 'react-helmet-async';
 
 export default function App() {
   return (

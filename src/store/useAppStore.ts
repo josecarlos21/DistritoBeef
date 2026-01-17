@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { idbStorage } from '@/utils/storage';
 import { z } from 'zod';
 import { EventData } from '../types';
 
@@ -25,11 +26,14 @@ export interface AppState {
     hasAccess: boolean;
     isAuthenticated: boolean;
 
+    userRatings: Record<string, number>;
+
     // Actions
     toggleAgendaItem: (id: string) => void;
     setAgendaIds: (ids: string[]) => void;
     setItinerary: (itinerary: EventData[]) => void;
     login: (name: string, provider: 'apple' | 'facebook' | 'x' | 'pin' | 'guest', img?: string) => void;
+    rateEvent: (eventId: string, rating: number) => void;
     enterAsGuest: () => void;
     logout: () => void;
 }
@@ -40,6 +44,7 @@ export const useAppStore = create<AppState>()(
         (set) => ({
             agendaIds: [],
             itinerary: [],
+            userRatings: {},
             user: null,
             hasAccess: false,
             isAuthenticated: false,
@@ -55,6 +60,10 @@ export const useAppStore = create<AppState>()(
             }),
 
             setAgendaIds: (ids) => set({ agendaIds: AgendaSchema.parse(ids) }),
+
+            rateEvent: (eventId, rating) => set((state) => ({
+                userRatings: { ...state.userRatings, [eventId]: rating }
+            })),
 
             login: (name, provider, img) => {
                 const newUser = {
@@ -94,18 +103,21 @@ export const useAppStore = create<AppState>()(
                     hasAccess: false,
                     agendaIds: [],
                     itinerary: [],
+                    userRatings: {},
                 });
             },
         }),
         {
             name: 'distrito-beef-storage',
+            storage: createJSONStorage(() => idbStorage),
             partialize: (state) => ({
                 agendaIds: state.agendaIds,
                 itinerary: state.itinerary,
                 user: state.user,
+                userRatings: state.userRatings,
                 hasAccess: state.hasAccess,
                 isAuthenticated: state.isAuthenticated,
-            }),
+            } as AppState),
         }
     )
 );

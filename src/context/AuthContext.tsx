@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useEffect } from 'react';
-import { useAppStore } from '../store/useAppStore';
+import { useAppStore } from '@/store/useAppStore';
+import { logger } from '@/utils/logger';
+import { rateLimiter } from '@/utils/rateLimiter';
 
 // Explicitly labeled as DEMO PINS to avoid security confusion.
 const DEMO_PINS = (import.meta.env.VITE_ACCESS_PINS || '').split(',').filter(Boolean);
@@ -29,8 +31,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     }, [store.hasAccess]);
 
-    const validatePin = (pin: string) => {
-        return DEMO_PINS.includes(pin);
+    const validatePin = (pin: string): boolean => {
+        // Check rate limit first
+        const identifier = `pin-validation-${navigator.userAgent.slice(0, 50)}`; // Simple fingerprint
+        const limitCheck = rateLimiter.checkLimit(identifier);
+
+        if (!limitCheck.allowed) {
+            logger.warn('PIN validation rate limit exceeded', {
+                identifier,
+                resetAt: limitCheck.resetAt?.toISOString(),
+            });
+            return false;
+        }
+
+        const isValid = DEMO_PINS.includes(pin);
+
+        if (isValid) {
+            logger.info('Successful PIN validation', {
+                pinLength: pin.length,
+                remaining: limitCheck.remaining,
+            });
+            // Reset rate limit on successful auth
+            rateLimiter.reset(identifier);
+        } else {
+            logger.warn('Failed PIN validation attempt', {
+                pinLength: pin.length,
+                remaining: limitCheck.remaining,
+            });
+        }
+
+        return isValid;
     };
 
     return (

@@ -16,5 +16,5 @@
     - Sugerencia: Mover `components/` y archivos `.tsx` raíz a `src/` para cumplir totalmente con el estándar Vite/Atomic.
 
 ## Recomendaciones SEO/Perf
-- Remover el script CDN de Tailwind (Hecho).
+- Removido temporalmente el script CDN de Tailwind (ADVERTENCIA: Se ha restaurado ya que el proyecto depende de él en runtime).
 - Optimizar las imágenes cargadas desde Unsplash (Pendiente: Implementar Image component local alternativo).

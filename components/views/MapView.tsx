@@ -2,13 +2,14 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { Navigation, Plus, Minus, Map as MapIcon, LocateFixed, Calendar } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, useMap, Tooltip } from 'react-leaflet';
-import { EventData } from '../../src/types';
+import { EventData } from '@/types';
 import L from 'leaflet';
 import { GlassContainer } from '../atoms';
 import { UnifiedHeader, HeaderTitle } from '../organisms';
-import { triggerHaptic } from '../../src/utils';
-import { EVENTS } from '../../constants';
-import { useLocale } from '../../src/context/LocaleContext';
+import { triggerHaptic } from '@/utils';
+import { EVENTS } from '@/constants';
+import { useLocale } from '@/context/LocaleContext';
+import { useLocation } from '@/hooks/useLocation';
 
 // Real GPS Coordinates for Zona Romántica Venues
 const VENUE_COORDS: Record<string, { lat: number; lng: number }> = {
@@ -109,7 +110,7 @@ export const MapView: React.FC<MapViewProps> = ({ onEventClick }) => {
   // Normalize venues for mapping pins
   const uniqueVenueNames = useMemo(() => {
     const names = new Set<string>();
-    EVENTS.forEach(e => {
+    EVENTS.forEach((e: EventData) => {
       const normalized = VENUE_MAPPER[e.venue] || e.venue;
       if (VENUE_COORDS[normalized]) names.add(normalized);
     });
@@ -118,7 +119,7 @@ export const MapView: React.FC<MapViewProps> = ({ onEventClick }) => {
 
   const selectedVenueEvents = useMemo(() => {
     if (!selectedVenue) return [];
-    return EVENTS.filter(e => (VENUE_MAPPER[e.venue] || e.venue) === selectedVenue);
+    return EVENTS.filter((e: EventData) => (VENUE_MAPPER[e.venue] || e.venue) === selectedVenue);
   }, [selectedVenue]);
 
   const nextEvent = useMemo(() => {
@@ -146,10 +147,24 @@ export const MapView: React.FC<MapViewProps> = ({ onEventClick }) => {
     });
   }, []);
 
+  // Real Location hook
+  const { coords: userCoords, loading: locationLoading } = useLocation();
+
+  const isNearby = useMemo(() => {
+    if (!userCoords) return false;
+    const distance = calculateDistance(userCoords.lat, userCoords.lng, ZR_CENTER[0], ZR_CENTER[1]);
+    return distance <= 20; // 20km limit for map 'nearby'
+  }, [userCoords]);
+
   const handleLocate = () => {
     triggerHaptic('medium');
     if (mapInstance) {
-      mapInstance.flyTo([20.5990, -105.2380], 18);
+      if (userCoords) {
+        mapInstance.flyTo([userCoords.lat, userCoords.lng], 18);
+      } else {
+        // Fallback to center if location not available yet
+        mapInstance.flyTo(ZR_CENTER, 17);
+      }
     }
   };
 
@@ -157,7 +172,15 @@ export const MapView: React.FC<MapViewProps> = ({ onEventClick }) => {
     <div className="h-full flex flex-col animate-in fade-in duration-500">
       <UnifiedHeader
         left={<div className="w-10" />}
-        center={<HeaderTitle title={t('header.map')} subtitle={t('map.subtitle')} />}
+        center={
+          <HeaderTitle
+            title={t('header.map')}
+            subtitle={
+              locationLoading ? "Buscando GPS..." :
+                (userCoords && !isNearby) ? "Fuera de Vallarta" : t('map.subtitle')
+            }
+          />
+        }
         right={<div className="w-10" />}
       />
 
@@ -205,19 +228,22 @@ export const MapView: React.FC<MapViewProps> = ({ onEventClick }) => {
             );
           })}
 
-          <Marker
-            position={[20.5990, -105.2380]}
-            icon={L.divIcon({
-              className: 'user-location',
-              html: '<div class="w-6 h-6 border-2 border-white rounded-full bg-[var(--o)] shadow-lg animate-pulse"></div>',
-              iconSize: [24, 24],
-              iconAnchor: [12, 12]
-            })}
-          >
-            <Tooltip direction="top" offset={[0, -12]} opacity={0.9} permanent className="custom-tooltip">
-              <span className="text-[10px] font-black uppercase tracking-wider">Tu Ubicación</span>
-            </Tooltip>
-          </Marker>
+          {userCoords && (
+            <Marker
+              position={[userCoords.lat, userCoords.lng]}
+              icon={L.divIcon({
+                className: 'user-location',
+                html: '<div class="w-6 h-6 border-2 border-white rounded-full bg-[var(--o)] shadow-lg animate-pulse"></div>',
+                iconSize: [24, 24],
+                iconAnchor: [12, 12]
+              })}
+              zIndexOffset={1000}
+            >
+              <Tooltip direction="top" offset={[0, -12]} opacity={0.9} permanent className="custom-tooltip">
+                <span className="text-[10px] font-black uppercase tracking-wider">Tu Ubicación</span>
+              </Tooltip>
+            </Marker>
+          )}
         </MapContainer>
 
         <MapControls
@@ -231,61 +257,89 @@ export const MapView: React.FC<MapViewProps> = ({ onEventClick }) => {
           }}
         />
 
-        <div className="absolute bottom-28 left-4 right-4 z-[2000]">
-          {selectedVenue ? (
-            <GlassContainer strong className="p-4 flex items-center justify-between animate-in slide-in-from-bottom-4 duration-300">
-              <div className="flex items-center gap-3 overflow-hidden">
-                <div className="w-10 h-10 rounded-full bg-[var(--o)] flex items-center justify-center text-black shrink-0">
-                  <MapIcon size={18} strokeWidth={2.5} />
-                </div>
-                <div className="overflow-hidden">
-                  <div className="text-[11px] font-black text-white uppercase truncate">{selectedVenue}</div>
-                  {nextEvent ? (
-                    <div className="flex items-center gap-1 text-[8px] font-bold text-[var(--ok)] uppercase mt-0.5 animate-in fade-in slide-in-from-left-2 duration-500">
-                      <Calendar size={10} strokeWidth={3} />
-                      <span className="truncate">{nextEvent.title} • {formatTime(nextEvent.start)}</span>
-                    </div>
-                  ) : (
-                    <div className="text-[9px] font-bold text-[var(--f)] uppercase">{t('map.subtitle')}</div>
-                  )}
-                </div>
+        {userCoords && !isNearby && (
+          <div className="absolute top-32 left-4 right-4 z-[3000]">
+            <GlassContainer strong className="p-4 bg-red-500/10 border-red-500/30 flex items-center justify-center gap-3 animate-in fade-in zoom-in duration-500">
+              <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center text-red-500">
+                <Navigation size={14} className="rotate-45" />
               </div>
-              <div className="flex gap-2 shrink-0 ml-4">
-                {nextEvent && onEventClick && (
-                  <button
-                    type="button"
-                    onClick={() => { triggerHaptic('medium'); onEventClick(nextEvent); }}
-                    className="px-4 py-2.5 bg-[var(--o)] text-black rounded-xl text-[9px] font-black uppercase hover:opacity-90 transition shadow-lg"
-                  >
-                    {t('home.viewInfo')}
-                  </button>
+              <div className="text-[10px] font-black uppercase text-red-200 tracking-widest text-center">
+                Detectado en CDMX / Remoto. <br />
+                <span className="opacity-60">Mostrando mapa de Vallarta.</span>
+              </div>
+            </GlassContainer>
+          </div>
+        )}
+        {selectedVenue ? (
+          <GlassContainer strong className="p-4 flex items-center justify-between animate-in slide-in-from-bottom-4 duration-300">
+            <div className="flex items-center gap-3 overflow-hidden">
+              <div className="w-10 h-10 rounded-full bg-[var(--o)] flex items-center justify-center text-black shrink-0">
+                <MapIcon size={18} strokeWidth={2.5} />
+              </div>
+              <div className="overflow-hidden">
+                <div className="text-[11px] font-black text-white uppercase truncate">{selectedVenue}</div>
+                {nextEvent ? (
+                  <div className="flex items-center gap-1 text-[8px] font-bold text-[var(--ok)] uppercase mt-0.5 animate-in fade-in slide-in-from-left-2 duration-500">
+                    <Calendar size={10} strokeWidth={3} />
+                    <span className="truncate">{nextEvent.title} • {formatTime(nextEvent.start)}</span>
+                  </div>
+                ) : (
+                  <div className="text-[9px] font-bold text-[var(--f)] uppercase">{t('map.subtitle')}</div>
                 )}
-                <a
-                  href={`https://maps.google.com/?q=${encodeURIComponent(selectedVenue + " Puerto Vallarta")}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={() => triggerHaptic('medium')}
-                  className="px-4 py-2.5 bg-[var(--tx)] text-black rounded-2xl text-[9px] font-black uppercase hover:bg-white transition shadow-bento shrink-0"
+              </div>
+            </div>
+            <div className="flex gap-2 shrink-0 ml-4">
+              {nextEvent && onEventClick && (
+                <button
+                  type="button"
+                  onClick={() => { triggerHaptic('medium'); onEventClick(nextEvent); }}
+                  className="px-4 py-2.5 bg-[var(--o)] text-black rounded-xl text-[9px] font-black uppercase hover:opacity-90 transition shadow-lg"
                 >
-                  {t('action.viewRoute')}
-                </a>
+                  {t('home.viewInfo')}
+                </button>
+              )}
+              <a
+                href={`https://maps.google.com/?q=${encodeURIComponent(selectedVenue + " Puerto Vallarta")}`}
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => triggerHaptic('medium')}
+                className="px-4 py-2.5 bg-[var(--tx)] text-black rounded-2xl text-[9px] font-black uppercase hover:bg-white transition shadow-bento shrink-0"
+              >
+                {t('action.viewRoute')}
+              </a>
+            </div>
+          </GlassContainer>
+        ) : (
+          <GlassContainer strong className="p-3 flex items-center justify-between opacity-80">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-[var(--f)]/20 flex items-center justify-center text-white">
+                <Navigation size={14} strokeWidth={3} className="rotate-45" />
               </div>
-            </GlassContainer>
-          ) : (
-            <GlassContainer strong className="p-3 flex items-center justify-between opacity-80">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-[var(--f)]/20 flex items-center justify-center text-white">
-                  <Navigation size={14} strokeWidth={3} className="rotate-45" />
-                </div>
-                <div>
-                  <div className="text-[10px] font-black text-white uppercase">{t('map.explore')}</div>
-                  <div className="text-[8px] font-bold text-[var(--f)] uppercase">{t('map.tapPoint')}</div>
-                </div>
+              <div>
+                <div className="text-[10px] font-black text-white uppercase">{t('map.explore')}</div>
+                <div className="text-[8px] font-bold text-[var(--f)] uppercase">{t('map.tapPoint')}</div>
               </div>
-            </GlassContainer>
-          )}
-        </div>
+            </div>
+          </GlassContainer>
+        )}
       </div>
     </div>
   );
 };
+
+// Haversine formula for distance
+function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
+  const R = 6371; // Radius of the earth in km
+  const dLat = deg2rad(lat2 - lat1);
+  const dLon = deg2rad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+function deg2rad(deg: number) {
+  return deg * (Math.PI / 180);
+}

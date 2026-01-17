@@ -1,7 +1,7 @@
 import React, { useState, Suspense } from 'react';
-import { cx, triggerHaptic } from './src/utils';
-import { TabType, EventData, AmbienceState } from './src/types';
-import { INITIAL_AMBIENCE } from './constants';
+import { cx, triggerHaptic } from '@/utils';
+import { TabType, EventData, AmbienceState } from '@/types';
+import { INITIAL_AMBIENCE } from '@/constants';
 import { GlobalStyles } from './components/GlobalStyles';
 import { GlobalErrorBoundary } from './components/molecules/GlobalErrorBoundary';
 import { MetaHead } from './components/atoms/MetaHead';
@@ -11,11 +11,11 @@ import { AmbienceModal } from './components/molecules/AmbienceModal';
 import { Onboarding } from './components/views/OnboardingView';
 import { Toast } from './components/molecules/Toast';
 import { NotificationDrawer } from './components/molecules/NotificationDrawer';
-import { AuthProvider, useAuth } from './src/context/AuthContext';
-import { LocaleProvider, useLocale } from './src/context/LocaleContext';
+import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { LocaleProvider, useLocale } from '@/context/LocaleContext';
 
 import { UserProfileModal } from './components/molecules/UserProfileModal';
-import { UserData } from './src/types';
+import { UserData } from '@/types';
 
 // Lazy Load Main Views
 const HomeView = React.lazy(() => import('./components/views/HomeView').then(module => ({ default: module.HomeView })));
@@ -90,7 +90,7 @@ function AppContent() {
       case "calendar":
         return <CalendarView onEventClick={setSelectedEvent} onOpenConfig={handleConfig} />;
       case "wallet":
-        return <WalletView userName={user?.name || "Invitado"} onOpenConfig={handleConfig} onLogout={logout} />;
+        return <WalletView onOpenConfig={handleConfig} />;
       case "map":
         return <MapView onEventClick={setSelectedEvent} />;
       case "agenda":

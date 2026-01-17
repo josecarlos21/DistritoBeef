@@ -2,14 +2,14 @@ import React, { createContext, useContext, useEffect } from 'react';
 import { useAppStore } from '../store/useAppStore';
 
 // Explicitly labeled as DEMO PINS to avoid security confusion.
-const DEMO_PINS = ['2026', '0000'];
+const DEMO_PINS = (import.meta.env.VITE_ACCESS_PINS || '').split(',').filter(Boolean);
 
 interface AuthContextType {
     isAuthenticated: boolean;
     hasAccess: boolean;
     isLoading: boolean;
-    user: { name: string; img?: string; isDemoUser: boolean } | null;
-    login: (name: string, img?: string) => void;
+    user: { id: string; name: string; img?: string; provider: string; isDemoUser: boolean } | null;
+    login: (name: string, provider: 'apple' | 'facebook' | 'x' | 'pin' | 'guest', img?: string) => void;
     enterAsGuest: () => void;
     logout: () => void;
     validatePin: (pin: string) => boolean;

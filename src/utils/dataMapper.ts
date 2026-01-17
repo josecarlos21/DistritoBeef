@@ -52,10 +52,6 @@ export const getEventsFromBase = (): EventData[] => {
 
         if (evt.Fin) {
             // Check for midnight crossover
-            // Treat strictly as strings first to verify hours
-            const startHour = parseInt((evt.Inicio || '12:00').split(':')[0], 10);
-            const endHour = parseInt(evt.Fin.split(':')[0], 10);
-
             // If end hour is significantly smaller than start hour (e.g. 03 vs 21), assume next day
             // Or if explicit date is same, but time is earlier.
 

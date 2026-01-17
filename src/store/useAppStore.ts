@@ -7,8 +7,11 @@ import { EventData } from '../types';
 export const AgendaSchema = z.array(z.string());
 
 export const UserSchema = z.object({
+    id: z.string(),
     name: z.string(),
     img: z.string().optional(),
+    provider: z.enum(['apple', 'facebook', 'x', 'pin', 'guest']),
+    lastLogin: z.string(),
     isDemoUser: z.boolean().default(true),
 }).nullable();
 
@@ -26,7 +29,7 @@ export interface AppState {
     toggleAgendaItem: (id: string) => void;
     setAgendaIds: (ids: string[]) => void;
     setItinerary: (itinerary: EventData[]) => void;
-    login: (name: string, img?: string) => void;
+    login: (name: string, provider: 'apple' | 'facebook' | 'x' | 'pin' | 'guest', img?: string) => void;
     enterAsGuest: () => void;
     logout: () => void;
 }
@@ -53,17 +56,36 @@ export const useAppStore = create<AppState>()(
 
             setAgendaIds: (ids) => set({ agendaIds: AgendaSchema.parse(ids) }),
 
-            login: (name, img) => set({
-                user: UserSchema.parse({ name, img, isDemoUser: true }),
-                isAuthenticated: true,
-                hasAccess: true,
-            }),
+            login: (name, provider, img) => {
+                const newUser = {
+                    id: `db-${Math.random().toString(36).substr(2, 9)}`,
+                    name,
+                    img,
+                    provider,
+                    lastLogin: new Date().toISOString(),
+                    isDemoUser: true,
+                };
+                set({
+                    user: UserSchema.parse(newUser),
+                    isAuthenticated: true,
+                    hasAccess: true,
+                });
+            },
 
-            enterAsGuest: () => set({
-                user: null,
-                isAuthenticated: false,
-                hasAccess: true,
-            }),
+            enterAsGuest: () => {
+                const guestUser = {
+                    id: 'guest',
+                    name: 'Guest User',
+                    provider: 'guest' as const,
+                    lastLogin: new Date().toISOString(),
+                    isDemoUser: true,
+                };
+                set({
+                    user: UserSchema.parse(guestUser),
+                    isAuthenticated: false,
+                    hasAccess: true,
+                });
+            },
 
             logout: () => {
                 set({

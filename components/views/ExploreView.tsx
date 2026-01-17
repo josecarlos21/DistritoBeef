@@ -1,15 +1,15 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, Filter, Sparkles, Camera, X } from 'lucide-react';
-import { EventData } from '../../src/types';
-import { EVENTS, RECOMMENDATIONS } from '../../constants';
+import { EventData, UserData } from '@/types';
+import { EVENTS, RECOMMENDATIONS } from '@/constants';
 import { GlassContainer, Badge } from '../atoms';
 import { FilterTabs, PullToRefresh } from '../molecules';
 import { UnifiedHeader, HeaderTitle, HeaderAction } from '../organisms';
-import { triggerHaptic } from '../../src/utils';
-import { useLocale } from '../../src/context/LocaleContext';
+import { triggerHaptic } from '@/utils';
+import { useLocale } from '@/context/LocaleContext';
 
-import { UserData } from '../../src/types';
+
 
 interface ExploreViewProps {
   onEventClick: (e: EventData) => void;
@@ -43,7 +43,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({ onEventClick, onUserCl
     setIsSearchOpen(false);
   };
 
-  const filteredEvents = EVENTS.filter(e => {
+  const filteredEvents = EVENTS.filter((e: EventData) => {
     const matchesFilter = filter === 'all' || e.track === filter;
     const matchesSearch = searchQuery === '' ||
       e.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -124,7 +124,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({ onEventClick, onUserCl
             </div>
 
             <ul className="flex gap-[var(--space-md)] overflow-x-auto no-scrollbar pb-6 px-[var(--space-md)] -mx-[var(--space-md)] pl-[var(--space-lg)] md:pl-[var(--space-xl)] list-none">
-              {filteredEvents.slice(0, 5).map(e => (
+              {filteredEvents.slice(0, 5).map((e: EventData) => (
                 <li key={e.id} className="flex-shrink-0 first:pl-0 last:pr-[var(--space-lg)]">
                   <button
                     type="button"

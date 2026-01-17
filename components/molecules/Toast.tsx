@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { X, Bell } from 'lucide-react';
-import { cx, triggerHaptic } from '../../src/utils';
-import { useLocale } from '../../src/context/LocaleContext';
+import { cx, triggerHaptic } from '@/utils';
+import { useLocale } from '@/context/LocaleContext';
 
 interface ToastProps {
     message: string;

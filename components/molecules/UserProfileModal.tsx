@@ -1,9 +1,9 @@
 import React from 'react';
 import { X, MapPin, MessageCircle, UserPlus, Music, Shield } from 'lucide-react';
-import { UserData } from '../../src/types';
+import { UserData } from '@/types';
 import { GlassContainer, IconButton } from '../atoms';
-import { useLocale } from '../../src/context/LocaleContext';
-import { triggerHaptic } from '../../src/utils';
+import { useLocale } from '@/context/LocaleContext';
+import { triggerHaptic } from '@/utils';
 import FocusLock from 'react-focus-lock';
 
 interface UserProfileModalProps {

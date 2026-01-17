@@ -1,11 +1,11 @@
 
 import React, { useMemo, useRef, useState } from 'react';
 import { SlidersHorizontal, Clock, MapPin, ChevronDown, List, Rows } from 'lucide-react';
-import { EventData } from '../../src/types';
-import { EVENTS } from '../../constants';
-import { getEventBackgroundValue, triggerHaptic, cx } from '../../src/utils';
+import { EventData } from '@/types';
+import { EVENTS } from '@/constants';
+import { getEventBackgroundValue, triggerHaptic, cx } from '@/utils';
 import { UnifiedHeader, HeaderTitle, HeaderAction } from '../organisms';
-import { useLocale } from '../../src/context/LocaleContext';
+import { useLocale } from '@/context/LocaleContext';
 
 interface DayGroup {
    dateLabel: string;
@@ -108,9 +108,10 @@ const EventCard: React.FC<EventCardProps> = ({
          >
             {/* Bg with better overlay */}
             <div
+               ref={(el) => {
+                  if (el) el.style.setProperty('--event-bg', bgVal);
+               }}
                className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-screen transition-transform duration-1000 group-hover:scale-110 dynamic-event-bg"
-               // eslint-disable-next-line react-dom/no-unsafe-styles
-               style={{ '--event-bg': bgVal } as React.CSSProperties}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/80" />
 
@@ -185,13 +186,17 @@ export const CalendarView = ({
 
       // Identify the closest event logic
       const nowTime = now.getTime();
+      const PRE_START_BUFFER = 15 * 60 * 1000; // 15 mins
 
-      // 1. Check for Active Events (happening right now)
-      const activeEvent = filtered.find(e => {
+      // 1. Check for Active Events (happening right now OR starting in 15 mins)
+      const activeEvents = filtered.filter(e => {
          const start = new Date(e.start).getTime();
          const end = new Date(e.end).getTime();
-         return nowTime >= start && nowTime <= end;
+         return nowTime >= (start - PRE_START_BUFFER) && nowTime <= end;
       });
+
+      // Pick the one that started latest (more relevant/fresh)
+      const activeEvent = activeEvents.length > 0 ? activeEvents[activeEvents.length - 1] : null;
 
       // 2. If no active event, look for the next upcoming valid event
       const nextEvent = filtered.find(e => new Date(e.start).getTime() > nowTime);

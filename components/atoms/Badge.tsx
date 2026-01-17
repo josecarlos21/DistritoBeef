@@ -11,10 +11,10 @@ interface BadgeProps {
 
 export const Badge: React.FC<BadgeProps> = ({ label, dot, color, track }) => {
     const dotColorClass = useMemo(() => {
-        if (track === 'beefdip') return 'bg-orange-500';
+        if (track === 'beefdip') return 'bg-o';
         if (track === 'bearadise') return 'bg-purple-500';
-        if (track === 'community') return 'bg-blue-500';
-        if (track === 'featured') return 'bg-white';
+        if (track === 'community') return 'bg-c';
+        if (track === 'featured') return 'bg-o';
         return null;
     }, [track]);
 
@@ -24,10 +24,8 @@ export const Badge: React.FC<BadgeProps> = ({ label, dot, color, track }) => {
                 <span
                     className={cx(
                         "w-1.5 h-1.5 rounded-full shadow-[0_0_8px_currentColor]",
-                        dotColorClass ? dotColorClass : "bg-[var(--badge-color,var(--o))]"
+                        dotColorClass ? dotColorClass : "bg-o"
                     )}
-                    //! eslint-disable-next-line react-dom/no-unsafe-styles
-                    style={!dotColorClass && color ? { '--badge-color': color } as React.CSSProperties : undefined}
                 />
             ) : null}
             <span className="text-[10px] font-black uppercase tracking-[.16em] text-tx">{label}</span>

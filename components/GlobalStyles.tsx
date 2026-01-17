@@ -94,14 +94,7 @@ export const GlobalStyles = () => (
     
     .border-white-10 { border-color: rgba(255,255,255,0.1); }
     .border-white-20 { border-color: rgba(255,255,255,0.2); }
-    .border-b { border-color: var(--b); }
     
-    .text-tx { color: var(--tx); }
-    .text-o { color: var(--o); }
-    .text-s { color: var(--s); }
-    .text-f { color: var(--f); }
-    .text-m { color: var(--m); }
-    .text-ok { color: var(--ok); }
     .text-white-45 { color: rgba(255,255,255,0.45); }
     
     .accent-o { accent-color: var(--o); }

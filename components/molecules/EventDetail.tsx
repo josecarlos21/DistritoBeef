@@ -1,15 +1,15 @@
 
 import React, { useMemo } from 'react';
-import { EventData } from '../../src/types';
-import { triggerHaptic, cx } from '../../src/utils';
-import { getTrackStyles, getTrackLabel } from '../../src/utils/branding';
-import { Share2, MapPin, Clock, Calendar, ChevronLeft, Ticket, Heart, Navigation } from 'lucide-react';
+import { EventData } from '@/types';
+import { triggerHaptic, cx } from '@/utils';
+import { getTrackStyles, getTrackLabel } from '@/utils/branding';
+import { Clock, Calendar, Navigation, MapPin } from 'lucide-react';
 import { MetaHead } from '../atoms/MetaHead';
-import { useLocale } from '../../src/context/LocaleContext';
+import { useLocale } from '@/context/LocaleContext';
 
 
-import { useAppStore } from '../../src/store/useAppStore';
-import { useGeofence } from '../../src/hooks/useGeofence';
+import { useAppStore } from '@/store/useAppStore';
+import { useGeofence } from '@/hooks/useGeofence';
 
 interface EventDetailProps {
   event: EventData;

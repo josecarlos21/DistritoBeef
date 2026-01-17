@@ -15,6 +15,8 @@ export const useGeofence = () => {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        if (typeof window === 'undefined') return;
+
         if (!navigator.geolocation) {
             setError('Geolocation not supported');
             setLoading(false);

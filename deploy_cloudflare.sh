@@ -44,11 +44,12 @@ fi
 
 # 5. Deploy to Cloudflare Pages
 # Using 'dist' as the build output directory (standard for Vite)
-PROJECT_NAME="distrito-beef-app"
+PROJECT_NAME="${CLOUDFLARE_PROJECT_NAME:-distrito-beef-app}"
 
 echo -e "${YELLOW}🚀 Deploying to Cloudflare Pages...${NC}"
 echo -e "Target Project: ${PROJECT_NAME}"
 
+# Ensure VITE_ACCESS_PINS is present if set in shell
 npx wrangler pages deploy dist --project-name "$PROJECT_NAME"
 
 if [ $? -eq 0 ]; then

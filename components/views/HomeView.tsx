@@ -1,13 +1,13 @@
 
 import React, { useMemo } from 'react';
 import { MapPin, Award, Info, ArrowRight, Bell, CloudSun } from 'lucide-react';
-import { EventData, TabType } from '../../src/types';
-import { EVENTS } from '../../constants';
-import { cx, triggerHaptic } from '../../src/utils';
+import { EventData, TabType } from '@/types';
+import { EVENTS } from '@/constants';
+import { cx, triggerHaptic } from '@/utils';
 import { Badge, GlassContainer } from '../atoms';
 import { PullToRefresh } from '../molecules';
 import { UnifiedHeader, HeaderAction } from '../organisms';
-import { useLocale } from '../../src/context/LocaleContext';
+import { useLocale } from '@/context/LocaleContext';
 
 interface HomeViewProps {
   onEventClick: (e: EventData) => void;
@@ -20,8 +20,8 @@ export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate, on
   const featuredEvent = useMemo(() => {
     const now = new Date();
     // Only show events that haven't ended yet
-    const currentOrFuture = EVENTS.filter(e => new Date(e.end).getTime() > now.getTime());
-    return currentOrFuture.find(e => e.isFeatured) || currentOrFuture[0] || EVENTS[0];
+    const currentOrFuture = EVENTS.filter((e: EventData) => new Date(e.end).getTime() > now.getTime());
+    return currentOrFuture.find((e: EventData) => e.isFeatured) || currentOrFuture[0] || EVENTS[0];
   }, []);
   const { t } = useLocale();
 
@@ -83,7 +83,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate, on
                 <div className="absolute inset-0 hero-gradient" />
 
                 <div className="absolute top-6 left-6 flex gap-2">
-                  <Badge label={t('home.featured')} dot color="var(--o)" />
+                  <Badge label={t('home.featured')} dot track="featured" />
                   <Badge label={featuredEvent.track} />
                 </div>
 

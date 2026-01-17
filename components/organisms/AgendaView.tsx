@@ -1,11 +1,11 @@
 import React, { useState, useCallback } from 'react';
-import { EVENTS } from '../../constants';
-import { EventData } from '../../src/types';
+import { EVENTS } from '@/constants';
+import { EventData } from '@/types';
 import { AgendaItem } from '../molecules/AgendaItem';
 import { ArrowLeft, Calendar } from 'lucide-react';
 import { ItineraryPlanner } from '../molecules/ItineraryPlanner';
-import { useLocale } from '../../src/context/LocaleContext';
-import { useAppStore } from '../../src/store/useAppStore';
+import { useLocale } from '@/context/LocaleContext';
+import { useAppStore } from '@/store/useAppStore';
 
 export const AgendaView: React.FC<{ onBack?: () => void, onEventClick?: (e: EventData) => void }> = ({ onBack, onEventClick }) => {
     const { agendaIds, toggleAgendaItem, isAuthenticated } = useAppStore();
@@ -17,7 +17,7 @@ export const AgendaView: React.FC<{ onBack?: () => void, onEventClick?: (e: Even
         toggleAgendaItem(id);
     }, [isAuthenticated, toggleAgendaItem]);
 
-    const savedEvents = isAuthenticated ? EVENTS.filter(evt => agendaIds.includes(evt.id)) : [];
+    const savedEvents = isAuthenticated ? EVENTS.filter((evt: EventData) => agendaIds.includes(evt.id)) : [];
 
     return (
         <>
@@ -37,7 +37,7 @@ export const AgendaView: React.FC<{ onBack?: () => void, onEventClick?: (e: Even
                         <div className="flex items-center gap-3 mt-1 opacity-70">
                             <div className="text-[10px] font-bold uppercase tracking-wider">{savedEvents.length} {t('checkout.quantity', 'EVENTOS')}</div>
                             <div className="w-1 h-1 bg-white/30 rounded-full" />
-                            <div className="text-[10px] font-bold uppercase tracking-wider">{new Set(savedEvents.map(e => e.venue)).size} {t('event.venue', 'LOCATIONS')}</div>
+                            <div className="text-[10px] font-bold uppercase tracking-wider">{new Set(savedEvents.map((e: EventData) => e.venue)).size} {t('event.venue', 'LOCATIONS')}</div>
                         </div>
                         <button
                             onClick={() => isAuthenticated && setShowPlanner(true)}
@@ -63,7 +63,7 @@ export const AgendaView: React.FC<{ onBack?: () => void, onEventClick?: (e: Even
                             </p>
                         </div>
                     ) : (
-                        savedEvents.map(evt => (
+                        savedEvents.map((evt: EventData) => (
                             <AgendaItem
                                 key={evt.id}
                                 event={evt}

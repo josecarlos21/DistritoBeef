@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import FocusLock from 'react-focus-lock';
 import { Sparkles, X } from 'lucide-react';
-import { AmbienceState } from '../../src/types';
+import { AmbienceState } from '@/types';
 import { GlassContainer, IconButton } from '../atoms';
-import { clamp } from '../../src/utils';
-import { INITIAL_AMBIENCE } from '../../constants';
-import { useLocale } from '../../src/context/LocaleContext';
+import { clamp } from '@/utils';
+import { INITIAL_AMBIENCE } from '@/constants';
+import { useLocale } from '@/context/LocaleContext';
 
 interface AmbienceModalProps {
   open: boolean;
@@ -47,12 +47,7 @@ const ControlRow = ({ id, label, value, min, max, step, unit, onChange }: {
 
 export const AmbienceModal: React.FC<AmbienceModalProps> = ({ open, onClose, ambience, setAmbience }) => {
   const { t } = useLocale();
-  const [isInstalled, setIsInstalled] = useState(false);
-
-  useEffect(() => {
-    // Check if react-focus-lock is available at runtime
-    setIsInstalled(true);
-  }, []);
+  const [isInstalled] = useState(() => typeof window !== 'undefined');
 
   if (!open) return null;
 

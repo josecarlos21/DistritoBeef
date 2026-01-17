@@ -3,23 +3,36 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { Award, RefreshCw, ShieldCheck, HelpCircle, SlidersHorizontal } from 'lucide-react';
 import { GlassContainer } from '../atoms';
 import { UnifiedHeader, HeaderTitle, HeaderAction } from '../organisms';
-import { triggerHaptic, cx } from '../../src/utils';
-import { useLocale } from '../../src/context/LocaleContext';
+import { triggerHaptic, cx } from '@/utils';
+import { useLocale } from '@/context/LocaleContext';
+import { useAuth } from '@/context/AuthContext';
+import { Apple, Facebook, X, Key, User as UserIcon } from 'lucide-react';
 
 interface WalletViewProps {
     onOpenConfig: () => void;
-    onLogout: () => void;
-    userName: string;
 }
 
-export const WalletView: React.FC<WalletViewProps> = ({ onOpenConfig, onLogout, userName }) => {
+export const WalletView: React.FC<WalletViewProps> = ({ onOpenConfig }) => {
+    const { user, logout } = useAuth();
+    const userName = user?.name || "Invitado";
     // Simulate dynamic QR noise
     const [seed, setSeed] = useState(0);
     const { t } = useLocale();
 
     useEffect(() => {
-        const interval = setInterval(() => setSeed(s => s + 1), 2000);
-        return () => clearInterval(interval);
+        let lastUpdate = 0;
+        let frameId: number;
+
+        const loop = (time: number) => {
+            if (document.visibilityState === 'visible' && (time - lastUpdate) > 2000) {
+                setSeed(s => s + 1);
+                lastUpdate = time;
+            }
+            frameId = requestAnimationFrame(loop);
+        };
+
+        frameId = requestAnimationFrame(loop);
+        return () => cancelAnimationFrame(frameId);
     }, []);
 
     const handleRefresh = () => {
@@ -84,8 +97,12 @@ export const WalletView: React.FC<WalletViewProps> = ({ onOpenConfig, onLogout, 
                             <div className="text-3xl font-black uppercase tracking-tight text-center mt-5 text-white font-display text-ellipsis overflow-hidden w-full whitespace-nowrap">{userName}</div>
 
                             <div className="mt-3 flex items-center gap-2 bg-white/5 px-4 py-1.5 rounded-full border border-white/5">
-                                <Award size={14} className="text-o" strokeWidth={3} />
-                                <span className="text-[10px] font-black uppercase tracking-[.15em] text-o">{t('wallet.member')}</span>
+                                {user?.provider === 'apple' && <Apple size={12} className="text-white" />}
+                                {user?.provider === 'facebook' && <Facebook size={12} className="text-[#1877F2]" />}
+                                {user?.provider === 'x' && <X size={12} className="text-white" />}
+                                {user?.provider === 'pin' && <Key size={12} className="text-o" />}
+                                {user?.provider === 'guest' && <UserIcon size={12} className="text-f" />}
+                                <span className="text-[10px] font-black uppercase tracking-[.15em] text-f">{user?.provider || 'member'}</span>
                             </div>
                         </div>
 
@@ -124,7 +141,7 @@ export const WalletView: React.FC<WalletViewProps> = ({ onOpenConfig, onLogout, 
                             </div>
                             <div className="text-center">
                                 <div className="text-[9px] font-bold text-f uppercase mb-1">{t('wallet.id')}</div>
-                                <div className="text-xs font-black text-white">#{Math.abs(userName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) * 13).toString().slice(0, 4)}</div>
+                                <div className="text-xs font-black text-white">{user?.id.toUpperCase() || '#0000'}</div>
                             </div>
                         </div>
 
@@ -143,7 +160,7 @@ export const WalletView: React.FC<WalletViewProps> = ({ onOpenConfig, onLogout, 
                         <div className="w-px h-3 bg-white/10" />
                         <button
                             type="button"
-                            onClick={() => { triggerHaptic('medium'); onLogout(); }}
+                            onClick={() => { triggerHaptic('medium'); logout(); }}
                             className="flex items-center gap-2 text-red-500 text-[10px] font-bold uppercase tracking-wider p-2"
                         >
                             {t('action.logout')}

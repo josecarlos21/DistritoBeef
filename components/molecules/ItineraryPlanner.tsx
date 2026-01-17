@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { EventData } from '../../src/types';
-import { generateItinerary, saveItinerary } from '../../src/utils/itinerary';
-import { EVENTS } from '../../constants';
+import { EventData } from '@/types';
+import { generateItinerary, saveItinerary } from '@/utils/itinerary';
+import { EVENTS } from '@/constants';
 import { X } from 'lucide-react';
-import { useAuth } from '../../src/context/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 
 interface ItineraryPlannerProps {
     eventIds: string[];
@@ -43,8 +43,8 @@ export const ItineraryPlanner: React.FC<ItineraryPlannerProps> = ({ eventIds, on
                 </p>
                 <ul className="space-y-2">
                     {allEvents
-                        .filter(evt => eventIds.includes(evt.id))
-                        .map(evt => (
+                        .filter((evt: EventData) => eventIds.includes(evt.id))
+                        .map((evt: EventData) => (
                             <li key={evt.id} className="flex items-center justify-between">
                                 <span>{evt.title} ({new Date(evt.start).toLocaleString()})</span>
                                 <input

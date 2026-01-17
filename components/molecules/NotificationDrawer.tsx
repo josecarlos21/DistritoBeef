@@ -2,8 +2,8 @@
 import React from 'react';
 import { X, Bell, Info, AlertTriangle } from 'lucide-react';
 import { IconButton } from '../atoms';
-import { triggerHaptic } from '../../src/utils';
-import { useLocale } from '../../src/context/LocaleContext';
+import { triggerHaptic, cx } from '@/utils';
+import { useLocale } from '@/context/LocaleContext';
 
 interface NotificationDrawerProps {
     open: boolean;
@@ -47,9 +47,10 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ open, on
                                 key={n.id}
                                 type="button"
                                 onClick={() => triggerHaptic('light')}
-                                className="w-full text-left p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 active:scale-[0.98] transition flex gap-4 animate-in slide-in-from-top-4 drawer-item"
-                                // eslint-disable-next-line react-dom/no-unsafe-styles
-                                style={{ '--delay': `${i * 100}ms` } as React.CSSProperties}
+                                className={cx(
+                                    "w-full text-left p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 active:scale-[0.98] transition flex gap-4 animate-in slide-in-from-top-4 drawer-item",
+                                    i === 0 ? "delay-0" : i === 1 ? "delay-100" : i === 2 ? "delay-200" : "delay-300"
+                                )}
                             >
                                 <div className="mt-1">
                                     {n.type === 'alert' ? <AlertTriangle size={18} className="text-o" /> : <Info size={18} className="text-s" />}

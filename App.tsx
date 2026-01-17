@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { cx, triggerHaptic } from './src/utils';
 import { TabType, EventData, AmbienceState } from './src/types';
 import { INITIAL_AMBIENCE } from './constants';
@@ -10,19 +10,32 @@ import { NavBar } from './components/organisms/Navigation';
 import { AmbienceModal } from './components/molecules/AmbienceModal';
 import { Onboarding } from './components/views/OnboardingView';
 import { Toast } from './components/molecules/Toast';
-import { HomeView } from './components/views/HomeView';
-import { ExploreView } from './components/views/ExploreView';
-import { CalendarView } from './components/views/CalendarView';
-import { WalletView } from './components/views/WalletView';
-import { MapView } from './components/views/MapView';
-import { AgendaView } from './components/organisms/AgendaView';
-import { EventDetail } from './components/molecules/EventDetail';
 import { NotificationDrawer } from './components/molecules/NotificationDrawer';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
 import { LocaleProvider, useLocale } from './src/context/LocaleContext';
 
 import { UserProfileModal } from './components/molecules/UserProfileModal';
 import { UserData } from './src/types';
+
+// Lazy Load Main Views
+const HomeView = React.lazy(() => import('./components/views/HomeView').then(module => ({ default: module.HomeView })));
+const ExploreView = React.lazy(() => import('./components/views/ExploreView').then(module => ({ default: module.ExploreView })));
+const CalendarView = React.lazy(() => import('./components/views/CalendarView').then(module => ({ default: module.CalendarView })));
+const WalletView = React.lazy(() => import('./components/views/WalletView').then(module => ({ default: module.WalletView })));
+const MapView = React.lazy(() => import('./components/views/MapView').then(module => ({ default: module.MapView })));
+const AgendaView = React.lazy(() => import('./components/organisms/AgendaView').then(module => ({ default: module.AgendaView })));
+import { EventDetail } from './components/molecules/EventDetail';
+
+function LoadingFallback() {
+  return (
+    <div className="w-full h-full flex items-center justify-center">
+      <div className="flex flex-col items-center gap-4 animate-pulse">
+        <div className="w-12 h-12 rounded-full border-4 border-white/10 border-t-o animate-spin" />
+        <div className="text-[10px] font-black uppercase tracking-widest text-white/40">Loading District...</div>
+      </div>
+    </div>
+  );
+}
 
 function AppContent() {
   const { t, locale, setLocale } = useLocale();
@@ -174,7 +187,9 @@ function AppContent() {
             {/* Main Content */}
             <main className="relative flex-1 h-full overflow-hidden flex flex-col">
               <div className="flex-1 relative overflow-hidden z-0">
-                {renderView()}
+                <Suspense fallback={<LoadingFallback />}>
+                  {renderView()}
+                </Suspense>
               </div>
 
               <div className="md:hidden">

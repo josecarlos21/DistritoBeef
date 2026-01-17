@@ -42,8 +42,18 @@ export const DatasetProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }, []);
 
     useEffect(() => {
-        load(false);
-    }, [load]);
+        let cancelled = false;
+
+        (async () => {
+            const result = await loadDataset(false);
+            if (cancelled) return;
+            handleResult(result);
+        })();
+
+        return () => {
+            cancelled = true;
+        };
+    }, []);
 
     return (
         <DatasetContext.Provider value={{

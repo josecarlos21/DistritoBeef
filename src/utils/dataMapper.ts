@@ -1,6 +1,6 @@
 
 import { EventData, TrackType } from '../types';
-import baseData from '../context/base.json';
+import { Dataset } from '@/schemas/dataset';
 
 const CATEGORY_IMAGES: Record<string, string> = {
     pool: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=60",
@@ -44,9 +44,9 @@ const mapColor = (track: TrackType): string => {
     }
 };
 
-export const getEventsFromBase = (): EventData[] => {
+export const mapDatasetToEvents = (data: Pick<Dataset, 'EVENTS_MASTER'>): EventData[] => {
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    return (baseData.EVENTS_MASTER as any[]).map(evt => {
+    return (data.EVENTS_MASTER as any[]).map(evt => {
         const startIso = `${evt.Fecha}T${evt.Inicio || '12:00'}:00`;
         let endIso = '';
 
@@ -89,4 +89,11 @@ export const getEventsFromBase = (): EventData[] => {
             url: evt['URL fuente']
         };
     });
+};
+
+export const getLocalEvents = async (): Promise<EventData[]> => {
+    const baseModule = await import('@/context/base.json');
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    const dataset = (baseModule as any).default ?? baseModule;
+    return mapDatasetToEvents(dataset).sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
 };

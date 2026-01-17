@@ -2,12 +2,12 @@
 import React, { useMemo } from 'react';
 import { MapPin, Award, Info, ArrowRight, Bell, CloudSun } from 'lucide-react';
 import { EventData, TabType } from '@/types';
-import { EVENTS } from '@/constants';
 import { cx, triggerHaptic } from '@/utils';
 import { Badge, GlassContainer } from '../atoms';
 import { PullToRefresh } from '../molecules';
 import { UnifiedHeader, HeaderAction } from '../organisms';
 import { useLocale } from '@/context/LocaleContext';
+import { useDataset } from '@/context/DatasetContext';
 
 interface HomeViewProps {
   onEventClick: (e: EventData) => void;
@@ -17,12 +17,12 @@ interface HomeViewProps {
 }
 
 export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate, onWeather, onNotifications }) => {
+  const { events } = useDataset();
   const featuredEvent = useMemo(() => {
     const now = new Date();
-    // Only show events that haven't ended yet
-    const currentOrFuture = EVENTS.filter((e: EventData) => new Date(e.end).getTime() > now.getTime());
-    return currentOrFuture.find((e: EventData) => e.isFeatured) || currentOrFuture[0] || EVENTS[0];
-  }, []);
+    const currentOrFuture = events.filter((e: EventData) => new Date(e.end).getTime() > now.getTime());
+    return currentOrFuture.find((e: EventData) => e.isFeatured) || currentOrFuture[0] || events[0];
+  }, [events]);
   const { t } = useLocale();
 
   const refreshData = async () => {

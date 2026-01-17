@@ -7,9 +7,9 @@ import L from 'leaflet';
 import { GlassContainer } from '../atoms';
 import { UnifiedHeader, HeaderTitle } from '../organisms';
 import { triggerHaptic } from '@/utils';
-import { EVENTS } from '@/constants';
 import { useLocale } from '@/context/LocaleContext';
 import { useLocation } from '@/hooks/useLocation';
+import { useDataset } from '@/context/DatasetContext';
 
 // Real GPS Coordinates for Zona Romántica Venues
 const VENUE_COORDS: Record<string, { lat: number; lng: number }> = {
@@ -106,21 +106,22 @@ export const MapView: React.FC<MapViewProps> = ({ onEventClick }) => {
   const [zoom, setZoom] = useState(17);
   const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
   const { t, formatTime } = useLocale();
+  const { events } = useDataset();
 
   // Normalize venues for mapping pins
   const uniqueVenueNames = useMemo(() => {
     const names = new Set<string>();
-    EVENTS.forEach((e: EventData) => {
+    events.forEach((e: EventData) => {
       const normalized = VENUE_MAPPER[e.venue] || e.venue;
       if (VENUE_COORDS[normalized]) names.add(normalized);
     });
     return Array.from(names);
-  }, []);
+  }, [events]);
 
   const selectedVenueEvents = useMemo(() => {
     if (!selectedVenue) return [];
-    return EVENTS.filter((e: EventData) => (VENUE_MAPPER[e.venue] || e.venue) === selectedVenue);
-  }, [selectedVenue]);
+    return events.filter((e: EventData) => (VENUE_MAPPER[e.venue] || e.venue) === selectedVenue);
+  }, [events, selectedVenue]);
 
   const nextEvent = useMemo(() => {
     if (selectedVenueEvents.length === 0) return null;

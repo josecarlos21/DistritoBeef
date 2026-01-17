@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { EventData } from '@/types';
 import { generateItinerary, saveItinerary } from '@/utils/itinerary';
-import { EVENTS } from '@/constants';
 import { X } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { useDataset } from '@/context/DatasetContext';
 
 interface ItineraryPlannerProps {
     eventIds: string[];
@@ -11,7 +11,8 @@ interface ItineraryPlannerProps {
 }
 
 export const ItineraryPlanner: React.FC<ItineraryPlannerProps> = ({ eventIds, onClose }) => {
-    const allEvents = EVENTS;
+    const { events } = useDataset();
+    const allEvents = useMemo(() => events, [events]);
     const initialItinerary = generateItinerary(eventIds, allEvents);
     const [selectedIds, setSelectedIds] = useState<string[]>(initialItinerary.map((e: EventData) => e.id));
     const { isAuthenticated } = useAuth();

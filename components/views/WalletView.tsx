@@ -7,6 +7,7 @@ import { triggerHaptic, cx } from '@/utils';
 import { useLocale } from '@/context/LocaleContext';
 import { useAuth } from '@/context/AuthContext';
 import { Apple, Facebook, X, Key, User as UserIcon } from 'lucide-react';
+import { BackupPanel } from '../molecules/BackupPanel';
 
 interface WalletViewProps {
     onOpenConfig: () => void;
@@ -168,6 +169,9 @@ export const WalletView: React.FC<WalletViewProps> = ({ onOpenConfig }) => {
                     </div>
                 </div>
 
+                <div className="w-full max-w-sm px-4 mt-8">
+                    <BackupPanel />
+                </div>
 
             </div>
         </div>

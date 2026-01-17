@@ -14,9 +14,11 @@ import { Toast } from './components/molecules/Toast';
 import { NotificationDrawer } from './components/molecules/NotificationDrawer';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { LocaleProvider, useLocale } from '@/context/LocaleContext';
+import { DatasetProvider } from '@/context/DatasetContext';
 
 import { UserProfileModal } from './components/molecules/UserProfileModal';
 import { UserData } from '@/types';
+import { useDataset } from '@/context/DatasetContext';
 
 // Lazy Load Main Views
 const HomeView = React.lazy(() => import('./components/views/HomeView').then(module => ({ default: module.HomeView })));
@@ -48,6 +50,7 @@ function AppContent() {
   const [ambience, setAmbience] = useState<AmbienceState>(INITIAL_AMBIENCE);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const { status: datasetStatus, message: datasetMessage } = useDataset();
 
   // Auth State from Context
   const { isAuthenticated, hasAccess, isLoading, logout } = useAuth();
@@ -128,6 +131,13 @@ function AppContent() {
           "lg:max-w-screen-lg xl:max-w-screen-xl 2xl:max-w-[1600px] mx-auto z-10"
         )}
       >
+        {datasetStatus !== 'ready' && (
+          <div className="absolute top-2 left-2 right-2 z-50">
+            <div className="text-[10px] font-black uppercase tracking-[.18em] px-4 py-2 rounded-xl border border-white/10 bg-black/60 text-yellow-200">
+              Dataset {datasetStatus}. {datasetMessage || 'Usando caché local.'}
+            </div>
+          </div>
+        )}
         {!hasAccess ? (
           <Onboarding />
         ) : (
@@ -256,11 +266,13 @@ export default function App() {
   return (
     <HelmetProvider>
       <LocaleProvider>
-        <AuthProvider>
-          <GlobalErrorBoundary>
-            <AppContent />
-          </GlobalErrorBoundary>
-        </AuthProvider>
+        <DatasetProvider>
+          <AuthProvider>
+            <GlobalErrorBoundary>
+              <AppContent />
+            </GlobalErrorBoundary>
+          </AuthProvider>
+        </DatasetProvider>
       </LocaleProvider>
     </HelmetProvider>
   );

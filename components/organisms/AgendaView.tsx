@@ -1,14 +1,15 @@
-import React, { useState, useCallback } from 'react';
-import { EVENTS } from '@/constants';
+import React, { useState, useCallback, useMemo } from 'react';
 import { EventData } from '@/types';
 import { AgendaItem } from '../molecules/AgendaItem';
 import { ArrowLeft, Calendar } from 'lucide-react';
 import { ItineraryPlanner } from '../molecules/ItineraryPlanner';
 import { useLocale } from '@/context/LocaleContext';
 import { useAppStore } from '@/store/useAppStore';
+import { useDataset } from '@/context/DatasetContext';
 
 export const AgendaView: React.FC<{ onBack?: () => void, onEventClick?: (e: EventData) => void }> = ({ onBack, onEventClick }) => {
     const { agendaIds, toggleAgendaItem, isAuthenticated } = useAppStore();
+    const { events } = useDataset();
     const [showPlanner, setShowPlanner] = useState(false);
     const { t } = useLocale();
 
@@ -17,7 +18,10 @@ export const AgendaView: React.FC<{ onBack?: () => void, onEventClick?: (e: Even
         toggleAgendaItem(id);
     }, [isAuthenticated, toggleAgendaItem]);
 
-    const savedEvents = isAuthenticated ? EVENTS.filter((evt: EventData) => agendaIds.includes(evt.id)) : [];
+    const savedEvents = useMemo(() => {
+        if (!isAuthenticated) return [];
+        return events.filter((evt: EventData) => agendaIds.includes(evt.id));
+    }, [agendaIds, events, isAuthenticated]);
 
     return (
         <>

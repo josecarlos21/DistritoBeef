@@ -1,5 +1,5 @@
 
-import { UserData, RecommendationData, AmbienceState, EventData } from '@/types';
+import { UserData, RecommendationData, AmbienceState } from '@/types';
 
 export const INITIAL_AMBIENCE: AmbienceState = { g: .52, h: 26, a: .7, t: .62 };
 
@@ -11,11 +11,6 @@ export const TRACK_LABELS: Record<string, string> = {
 
 export const TRACK_OPTIONS = ['ALL', 'community', 'beefdip', 'bearadise'];
 
-
-
-import { getEventsFromBase } from '@/utils/dataMapper';
-
-export const EVENTS: EventData[] = getEventsFromBase().sort((a: EventData, b: EventData) => new Date(a.start).getTime() - new Date(b.start).getTime());
 
 export const USERS: UserData[] = [
   { id: 1, name: "Beto", age: 34, dist: "AQUÍ", img: "https://i.pravatar.cc/240?u=1", online: true },

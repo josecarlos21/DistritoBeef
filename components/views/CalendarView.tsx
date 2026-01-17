@@ -2,10 +2,10 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { SlidersHorizontal, Clock, MapPin, ChevronDown, List, Rows } from 'lucide-react';
 import { EventData } from '@/types';
-import { EVENTS } from '@/constants';
 import { getEventBackgroundValue, triggerHaptic, cx } from '@/utils';
 import { UnifiedHeader, HeaderTitle, HeaderAction } from '../organisms';
 import { useLocale } from '@/context/LocaleContext';
+import { useDataset } from '@/context/DatasetContext';
 
 interface DayGroup {
    dateLabel: string;
@@ -172,6 +172,7 @@ export const CalendarView = ({
    const todayRef = useRef<HTMLDivElement>(null);
    const [isCompact, setIsCompact] = useState(true);
    const { t, formatFullDate, formatTime } = useLocale();
+   const { events } = useDataset();
 
    // Group events by Day
    const { groupedEvents, closestEventId } = useMemo(() => {
@@ -180,7 +181,7 @@ export const CalendarView = ({
       startOfToday.setHours(0, 0, 0, 0);
 
       // Filtering: Show full 'today' and all future events to satisfy "viera todo"
-      const filtered = [...EVENTS]
+      const filtered = [...events]
          .filter(e => new Date(e.start).getTime() >= startOfToday.getTime())
          .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
 
@@ -224,7 +225,7 @@ export const CalendarView = ({
       });
 
       return { groupedEvents: groups, closestEventId };
-   }, [formatFullDate]);
+   }, [events, formatFullDate]);
 
    const scrollToToday = () => {
       if (todayRef.current) {

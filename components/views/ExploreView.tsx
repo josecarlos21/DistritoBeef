@@ -2,12 +2,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, Filter, Sparkles, Camera, X } from 'lucide-react';
 import { EventData, UserData } from '@/types';
-import { EVENTS, RECOMMENDATIONS } from '@/constants';
+import { RECOMMENDATIONS } from '@/constants';
 import { GlassContainer, Badge } from '../atoms';
 import { FilterTabs, PullToRefresh } from '../molecules';
 import { UnifiedHeader, HeaderTitle, HeaderAction } from '../organisms';
 import { triggerHaptic } from '@/utils';
 import { useLocale } from '@/context/LocaleContext';
+import { useDataset } from '@/context/DatasetContext';
 
 
 
@@ -18,6 +19,7 @@ interface ExploreViewProps {
 
 export const ExploreView: React.FC<ExploreViewProps> = ({ onEventClick, onUserClick: _onUserClick }) => {
   const [filter, setFilter] = useState('all');
+  const { events } = useDataset();
 
 
   const [showFilters, setShowFilters] = useState(false);
@@ -43,7 +45,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({ onEventClick, onUserCl
     setIsSearchOpen(false);
   };
 
-  const filteredEvents = EVENTS.filter((e: EventData) => {
+  const filteredEvents = events.filter((e: EventData) => {
     const matchesFilter = filter === 'all' || e.track === filter;
     const matchesSearch = searchQuery === '' ||
       e.title.toLowerCase().includes(searchQuery.toLowerCase()) ||

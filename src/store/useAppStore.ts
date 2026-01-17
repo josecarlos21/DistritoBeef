@@ -27,6 +27,7 @@ export interface AppState {
     isAuthenticated: boolean;
 
     userRatings: Record<string, number>;
+    restoreFromBackup: (data: Partial<AppState>) => void;
 
     // Actions
     toggleAgendaItem: (id: string) => void;
@@ -48,6 +49,14 @@ export const useAppStore = create<AppState>()(
             user: null,
             hasAccess: false,
             isAuthenticated: false,
+            restoreFromBackup: (data) => set(() => ({
+                agendaIds: data.agendaIds ?? [],
+                itinerary: data.itinerary ?? [],
+                user: data.user ?? null,
+                hasAccess: data.hasAccess ?? false,
+                isAuthenticated: data.isAuthenticated ?? false,
+                userRatings: data.userRatings ?? {},
+            })),
 
             setItinerary: (itinerary) => set({ itinerary }),
 

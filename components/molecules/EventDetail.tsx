@@ -3,7 +3,8 @@ import React, { useMemo } from 'react';
 import { EventData } from '../../src/types';
 import { triggerHaptic, cx } from '../../src/utils';
 import { getTrackStyles, getTrackLabel } from '../../src/utils/branding';
-import { MapPin, Calendar, Clock } from 'lucide-react';
+import { Share2, MapPin, Clock, Calendar, ChevronLeft, Ticket, Heart } from 'lucide-react';
+import { MetaHead } from '../atoms/MetaHead';
 import { useLocale } from '../../src/context/LocaleContext';
 
 
@@ -62,8 +63,13 @@ export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onActi
   };
 
   return (
-    <div className="absolute inset-0 z-[150] flex flex-col items-center justify-end sm:justify-center p-0 sm:p-4 pointer-events-auto">
-      {/* Backdrop */}
+    <div className="fixed inset-0 z-50 flex flex-col md:flex-row bg-background-dark/95 backdrop-blur-xl animate-in slide-in-from-bottom-5 duration-300">
+      <MetaHead
+        title={event.title}
+        description={`${event.venue} - ${t('agenda.addToItinerary')}`}
+        image={event.image}
+      />
+      {/* Desktop: Left side image */}
       <div
         className="absolute inset-0 backdrop-blur-md transition-opacity animate-in fade-in duration-300 bg-black-85"
         onClick={() => { triggerHaptic('light'); onClose(); }}

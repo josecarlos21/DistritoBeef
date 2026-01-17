@@ -251,14 +251,18 @@ function AppContent() {
   );
 }
 
+import { HelmetProvider } from 'react-helmet-async';
+
 export default function App() {
   return (
-    <LocaleProvider>
-      <AuthProvider>
-        <GlobalErrorBoundary>
-          <AppContent />
-        </GlobalErrorBoundary>
-      </AuthProvider>
-    </LocaleProvider>
+    <HelmetProvider>
+      <LocaleProvider>
+        <AuthProvider>
+          <GlobalErrorBoundary>
+            <AppContent />
+          </GlobalErrorBoundary>
+        </AuthProvider>
+      </LocaleProvider>
+    </HelmetProvider>
   );
 }

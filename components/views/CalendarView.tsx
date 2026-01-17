@@ -41,7 +41,7 @@ const EventCard: React.FC<EventCardProps> = ({
    if (isCompact) {
       // COMPACT MODE RENDER
       return (
-         <li {...props} className={cx("flex gap-4 relative group animate-in fade-in duration-300", className)}>
+         <li id={`event-${event.id}`} {...props} className={cx("flex gap-4 relative group animate-in fade-in duration-300", className)}>
             <div className="w-14 shrink-0 flex flex-col items-end pt-3">
                <span className={cx("text-[11px] font-bold tracking-wider", showTime ? "text-o opacity-100" : "opacity-0")}>{time}</span>
             </div>
@@ -81,7 +81,7 @@ const EventCard: React.FC<EventCardProps> = ({
 
    // DETAILED MODE RENDER
    return (
-      <li {...props} className={cx("flex gap-4 relative group animate-in slide-in-from-bottom-2 duration-500", className)}>
+      <li id={`event-${event.id}`} {...props} className={cx("flex gap-4 relative group animate-in slide-in-from-bottom-2 duration-500", className)}>
          {/* Left Column: Time & Connector */}
          <div className="w-14 shrink-0 flex flex-col items-center relative pt-1">
             {/* Time Label */}
@@ -219,6 +219,22 @@ export const CalendarView = ({
    };
 
    const hasToday = groupedEvents.some(g => g.isToday);
+
+   // Auto-scroll to closest event
+   React.useEffect(() => {
+      if (closestEventId) {
+         const element = document.getElementById(`event-${closestEventId}`);
+         if (element) {
+            setTimeout(() => {
+               element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 500); // Delay to ensure render
+         }
+      } else if (todayRef.current) {
+         setTimeout(() => {
+            todayRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+         }, 500);
+      }
+   }, [closestEventId]);
 
    return (
       <div className="h-full relative font-sans animate-in fade-in duration-300 flex flex-col">

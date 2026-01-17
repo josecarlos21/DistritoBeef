@@ -28,7 +28,7 @@ export const FilterTabs: React.FC<FilterTabsProps> = ({ options, selectedId, onS
                     aria-label={f.label}
                     className={cx(
                         "px-4 py-2 rounded-full border text-[10px] font-black uppercase tracking-[.15em] transition-all flex-shrink-0 active:scale-95",
-                        active ? "bg-[#D8C2A2] text-[#0E0C09] border-[#D8C2A2] shadow-[0_0_15px_rgba(216,194,162,0.3)]" : "bg-transparent text-f border-b hover:border-s"
+                        active ? "bg-[var(--s)] text-[var(--bg)] border-[var(--s)] shadow-[0_0_15px_rgba(215,182,118,0.3)]" : "bg-transparent text-f border-b hover:border-s"
                     )}
                 >
                     {f.label}

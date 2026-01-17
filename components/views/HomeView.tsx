@@ -1,7 +1,7 @@
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { MapPin, Award, Info, ArrowRight, Bell, CloudSun } from 'lucide-react';
-import { EventData, TabType } from '../../types';
+import { EventData, TabType } from '../../src/types';
 import { EVENTS } from '../../constants';
 import { cx, triggerHaptic } from '../../src/utils';
 import { Badge, GlassContainer } from '../atoms';
@@ -17,7 +17,12 @@ interface HomeViewProps {
 }
 
 export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate, onWeather, onNotifications }) => {
-  const featuredEvent = EVENTS.find(e => e.isFeatured) || EVENTS[0];
+  const featuredEvent = useMemo(() => {
+    const now = new Date();
+    // Only show events that haven't ended yet
+    const currentOrFuture = EVENTS.filter(e => new Date(e.end).getTime() > now.getTime());
+    return currentOrFuture.find(e => e.isFeatured) || currentOrFuture[0] || EVENTS[0];
+  }, []);
   const { t } = useLocale();
 
   const refreshData = async () => {
@@ -48,11 +53,11 @@ export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate, on
       />
 
       <PullToRefresh onRefresh={refreshData}>
-        <div className="max-w-7xl mx-auto space-y-6 pb-32 pt-28 px-4 md:px-8 xl:px-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="max-w-7xl mx-auto space-y-[var(--space-lg)] pb-40 pt-36 px-[var(--space-md)] md:px-[var(--space-lg)] xl:px-[var(--space-xl)] animate-in fade-in slide-in-from-bottom-4 duration-500">
 
           {/* Featured Card - Now the Hero element */}
           <div>
-            <div className="mb-4 flex items-center justify-between px-2">
+            <div className="mb-[var(--space-sm)] flex items-center justify-between px-2">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-ok animate-pulse shadow-[0_0_8px_var(--ok)]" />
                 <span className="text-[10px] font-black uppercase tracking-[.2em] text-m">{t('home.happeningNow')}</span>
@@ -64,15 +69,16 @@ export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate, on
                 type="button"
                 onClick={() => { triggerHaptic('medium'); onEventClick(featuredEvent); }}
                 className={cx(
-                  "relative w-full h-[500px] overflow-hidden border transition-all duration-300 rounded-[44px] group transform-gpu text-left border-b",
-                  "active:scale-[.995] hover:scale-[1.01]",
-                  "shadow-[0_30px_80px_rgba(0,0,0,.5)]"
+                  "relative w-full h-[500px] overflow-hidden border transition-all duration-300 rounded-[32px] group transform-gpu text-left border-white/10",
+                  "active:scale-[.995] hover:scale-[1.01] hover:shadow-bento focus:scale-[1.01] outline-none",
+                  "shadow-bento"
                 )}
               >
                 <img
                   src={featuredEvent.image}
                   className="absolute inset-0 w-full h-full object-cover grayscale-[10%] scale-[1.03] group-hover:scale-[1.06] transition-transform duration-700 ease-out will-change-transform"
                   alt="Destacado"
+                  loading="eager"
                 />
                 <div className="absolute inset-0 hero-gradient" />
 
@@ -81,22 +87,22 @@ export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate, on
                   <Badge label={featuredEvent.track} />
                 </div>
 
-                <div className="absolute bottom-8 left-8 right-8">
-                  <div className="text-5xl font-black uppercase tracking-tighter leading-[.9] font-display drop-shadow-xl text-tx">{featuredEvent.title}</div>
-                  <div className="flex items-center gap-2 mt-5 mb-8 text-s">
-                    <MapPin size={18} className="text-o" strokeWidth={2.8} />
-                    <span className="text-sm font-bold tracking-wide text-white shadow-black drop-shadow-md">{featuredEvent.venue}</span>
+                <div className="absolute bottom-10 left-8 right-8 cursor-pointer">
+                  <div className="text-5xl font-black uppercase tracking-tighter leading-[.85] font-display drop-shadow-2xl text-tx group-hover:scale-[1.02] transition-transform duration-500 origin-left">{featuredEvent.title}</div>
+                  <div className="flex items-center gap-3 mt-6 mb-10 text-s bg-black/30 backdrop-blur-md w-fit px-4 py-2 rounded-2xl border border-white/5">
+                    <MapPin size={20} className="text-o" strokeWidth={3} />
+                    <span className="text-sm font-black tracking-[.1em] uppercase text-white shadow-black drop-shadow-md">{featuredEvent.venue}</span>
                   </div>
 
-                  <div className="flex gap-3">
+                  <div className="flex gap-4">
                     <div
-                      className="flex-1 h-14 rounded-2xl font-black uppercase tracking-[.18em] text-[11px] flex items-center justify-center gap-2 shadow-lg backdrop-blur-md bg-[rgba(255,159,69,0.9)] text-[#000]"
+                      className="flex-1 h-14 rounded-2xl font-black uppercase tracking-[.22em] text-[11px] flex items-center justify-center gap-3 shadow-xl backdrop-blur-xl bg-[rgba(255,159,69,0.95)] text-black active:scale-95 transition-all"
                     >
-                      <Info size={16} strokeWidth={3} />
+                      <Info size={18} strokeWidth={3} />
                       {t('home.viewInfo')}
                     </div>
-                    <div className="h-14 w-14 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
-                      <ArrowRight size={20} color="white" />
+                    <div className="h-14 w-14 rounded-2xl bg-white/10 backdrop-blur-xl flex items-center justify-center border border-white/10 hover:bg-white/20 transition-colors">
+                      <ArrowRight size={24} className="text-white" />
                     </div>
                   </div>
                 </div>
@@ -104,24 +110,32 @@ export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate, on
             )}
           </div>
 
+          <hr className="border-t border-white/5 mx-2 my-8" />
+
           {/* Live Status Widgets */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-
-
-            <button type="button" onClick={() => { triggerHaptic('light'); onNavigate('social'); }} className="text-left group relative">
-              <div className="absolute inset-0 bg-[var(--s)] opacity-0 group-hover:opacity-5 rounded-[28px] transition-opacity duration-500" />
-              <GlassContainer className="p-6 h-full transition-colors duration-300 border-white/10">
-                <div className="text-[10px] font-black uppercase tracking-[.22em] text-f">{t('home.vibe')}</div>
-                <div className="flex items-center gap-2 mt-3">
-                  <Award size={20} className="text-s" strokeWidth={2.8} />
-                  <div className="text-2xl font-black font-display text-tx">{t('home.top')}</div>
-                </div>
-                <div className="mt-2 text-[10px] font-bold text-m opacity-80">{t('home.goodVibe')}</div>
-              </GlassContainer>
-            </button>
-          </div>
+          <ul className="grid grid-cols-2 lg:grid-cols-4 gap-[var(--space-md)] list-none">
+            <li>
+              <button
+                type="button"
+                onClick={() => { triggerHaptic('light'); onNavigate('social'); }}
+                className="w-full text-left group relative outline-none focus:scale-[1.02] transition-transform"
+              >
+                <div className="absolute inset-0 bg-[var(--s)] opacity-0 group-hover:opacity-5 rounded-[28px] transition-opacity duration-500" />
+                <GlassContainer className="p-8 h-full transition-colors duration-300 border-white/5 group-hover:bg-white/5 flex flex-col justify-between min-h-[160px]">
+                  <div className="text-[10px] font-black uppercase tracking-[.25em] text-s opacity-70 leading-none">{t('home.vibe')}</div>
+                  <div>
+                    <div className="flex items-center gap-3 mt-4">
+                      <Award size={24} className="text-o" strokeWidth={3} />
+                      <div className="text-3xl font-black font-display text-tx tracking-tighter uppercase">{t('home.top')}</div>
+                    </div>
+                    <div className="mt-3 text-[10px] font-black uppercase tracking-widest text-m opacity-60 leading-tight">{t('home.goodVibe')}</div>
+                  </div>
+                </GlassContainer>
+              </button>
+            </li>
+          </ul>
         </div>
-      </PullToRefresh>
+      </PullToRefresh >
     </>
   );
 };

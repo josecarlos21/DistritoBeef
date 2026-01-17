@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { cx, triggerHaptic } from './src/utils';
-import { TabType, EventData, AmbienceState } from './types';
+import { TabType, EventData, AmbienceState } from './src/types';
 import { INITIAL_AMBIENCE } from './constants';
 import { GlobalStyles } from './components/GlobalStyles';
 import { GlobalErrorBoundary } from './components/molecules/GlobalErrorBoundary';
@@ -22,7 +22,7 @@ import { AuthProvider, useAuth } from './src/context/AuthContext';
 import { LocaleProvider, useLocale } from './src/context/LocaleContext';
 
 import { UserProfileModal } from './components/molecules/UserProfileModal';
-import { UserData } from './types';
+import { UserData } from './src/types';
 
 function AppContent() {
   const { t, locale, setLocale } = useLocale();
@@ -79,7 +79,7 @@ function AppContent() {
       case "wallet":
         return <WalletView userName={user?.name || "Invitado"} onOpenConfig={handleConfig} onLogout={logout} />;
       case "map":
-        return <MapView />;
+        return <MapView onEventClick={setSelectedEvent} />;
       case "agenda":
         return <AgendaView onBack={() => handleTabChange('home')} onEventClick={setSelectedEvent} />;
       default:
@@ -144,7 +144,7 @@ function AppContent() {
                         onClick={() => { triggerHaptic('light'); handleTabChange(tab); }}
                         className={cx(
                           "w-full h-14 rounded-2xl flex items-center px-4 gap-4 transition-all duration-300 group",
-                          isActive ? "bg-o text-black shadow-[0_10px_30px_rgba(255,159,69,0.2)]" : "text-f hover:bg-white/5 hover:text-white"
+                          isActive ? "bg-[var(--o)] text-black shadow-[0_10px_30px_rgba(255,159,69,0.2)]" : "text-[var(--f)] hover:bg-white/5 hover:text-[var(--tx)]"
                         )}
                       >
                         <span className={cx("material-symbols-outlined text-2xl transition-transform", isActive ? "scale-110" : "group-hover:scale-110")}>{icons[tab]}</span>

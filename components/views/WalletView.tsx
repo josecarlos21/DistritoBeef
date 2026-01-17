@@ -52,7 +52,7 @@ export const WalletView: React.FC<WalletViewProps> = ({ onOpenConfig, onLogout, 
                 <div className="w-full max-w-sm relative group px-4">
 
                     {/* Glow Effect */}
-                    <div className="absolute -inset-1 bg-gradient-to-b from-[var(--o)] to-[var(--c)] rounded-[40px] opacity-20 blur-xl group-hover:opacity-30 transition-opacity duration-1000 mx-4" />
+                    <div className="absolute -inset-1 bg-gradient-to-b from-[var(--o)] to-[var(--c)] rounded-[32px] opacity-20 blur-xl group-hover:opacity-30 transition-opacity duration-1000 mx-4" />
 
                     <GlassContainer strong className="p-8 relative overflow-hidden">
                         {/* Top Pattern */}
@@ -71,7 +71,7 @@ export const WalletView: React.FC<WalletViewProps> = ({ onOpenConfig, onLogout, 
                                 <div className="w-28 h-28 rounded-full border-4 border-[var(--bg)] shadow-[0_0_20px_rgba(255,138,29,0.3)] overflow-hidden bg-white/10 flex items-center justify-center">
                                     {/* Use transparent background placeholder if no specific image logic is present (generic user) */}
                                     <img
-                                        src={`https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=1a120b&color=f97316&size=240&bold=true`}
+                                        src={`https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=161310&color=f97316&size=240&bold=true`}
                                         alt="Profile"
                                         className="w-full h-full object-cover"
                                     />
@@ -90,7 +90,7 @@ export const WalletView: React.FC<WalletViewProps> = ({ onOpenConfig, onLogout, 
                         </div>
 
                         {/* Dynamic QR Area */}
-                        <div className="mt-8 mb-4 relative bg-white rounded-[36px] p-5 shadow-[0_0_40px_rgba(255,255,255,0.08)]">
+                        <div className="mt-8 mb-4 relative bg-white rounded-[32px] p-5 shadow-bento">
                             <div className="w-full aspect-square grid grid-cols-4 gap-2">
                                 {blocks.map((x, i) => (
                                     <div

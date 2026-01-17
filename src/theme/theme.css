@@ -1,45 +1,51 @@
+/* src/theme/theme.css */
 :root {
-  --bg: #0E0C09;
-  --bg2: #14110C;
-  --vig: rgba(0,0,0,.52);
-  --c: #5A3A25;
-  --o: #FF9F45;
-  --s: #E8D8C0;
-  --ok: #2CD67C;
-  --tx: #FFFFFF;
-  --m: rgba(255,255,255,.85);
-  --f: rgba(255,255,255,.60);
-  --gl: rgba(30,25,20,.65);
-  --gs: rgba(30,25,20,.85);
-  --b: rgba(255,255,255,.15);
-  --bs: rgba(255,255,255,.25);
-  --ease-ios: cubic-bezier(0.32, 0.72, 0, 1);
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+
+  /* Font sizes */
+  --font-base: 14px;
+  --font-sm: 16px;
+  --font-md: 18px;
+  --font-lg: 21px;
+  --font-xl: 24px;
+  --font-2xl: 30px;
+
+  /* Core palette (warm noir + citrus accent) */
+  --bg: #0f0b09;
+  --bg2: #18100c;
+  --vig: rgba(0, 0, 0, 0.55);
+  --tx: #f6f1ea;
+  --f: #c5bfb6;     /* muted text */
+  --m: #8f8578;     /* mid text */
+  --b: #2f261f;     /* borders */
+  --bs: #3c3129;    /* soft borders */
+
+  --o: #ff9f45;     /* accent orange */
+  --s: #d7b676;     /* sand/gold secondary */
+  --c: #4f8bff;     /* electric blue accent */
+  --ok: #5ee7d6;    /* success/mint */
+
+  --gl: rgba(255, 255, 255, 0.04); /* light glass */
+  --gs: rgba(0, 0, 0, 0.35);       /* strong glass */
+
+  /* Motion */
+  --ease-ios: cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
-html,
-body,
-#root {
-  height: 100%;
+/* Utility helpers */
+.mt-var {
+  margin-top: var(--space-md);
 }
 
-body {
-  margin: 0;
-  padding: 0;
-  background-color: #000;
-  font-family: 'Inter', sans-serif;
-  -webkit-font-smoothing: antialiased;
+.pt-var {
+  padding-top: var(--space-lg);
 }
 
-/* Custom scrollbar hiding */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none; 
-}
-
-input[type=range] {
-  accent-color: var(--o);
+.pb-var {
+  padding-bottom: var(--space-lg);
 }

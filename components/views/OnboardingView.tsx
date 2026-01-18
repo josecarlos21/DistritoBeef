@@ -57,7 +57,7 @@ export const Onboarding: React.FC = () => {
   };
 
   return (
-    <div className="absolute inset-0 z-[200] flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-700 bg-deep">
+    <div className="absolute inset-0 z-[200] flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-700 bg-deep overflow-y-auto no-scrollbar">
 
       {/* Background Ambience */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -69,8 +69,8 @@ export const Onboarding: React.FC = () => {
           <div className="space-y-8 animate-in slide-in-from-bottom-8 duration-700">
             <div>
               <div className="text-[10px] font-black uppercase tracking-[.4em] mb-4 text-o">{t('onboarding.welcomeTo')}</div>
-              <h1 className="text-5xl font-black tracking-tighter text-white mb-2 leading-[0.9] font-display">
-                DISTRICT<br /><span className="text-s"><span className="text-o">V</span>ALLARTA</span> <span className="text-[8px] text-white/30 font-bold tracking-wider">1.0.1</span>
+              <h1 className="text-4xl sm:text-5xl font-black tracking-tighter text-white mb-2 leading-[0.9] font-display">
+                DISTRICT<br /><span className="text-s"><span className="text-o">V</span>ALLARTA</span> <span className="text-[8px] text-white/30 font-bold tracking-wider">1.5.0</span>
               </h1>
             </div>
 
@@ -198,8 +198,8 @@ export const Onboarding: React.FC = () => {
           </div>
         )}
       </div>
-      <div className="absolute bottom-4 left-4 right-4 text-center z-10 pointer-events-none opacity-40">
-        <p className="text-[7px] text-f uppercase tracking-wider leading-relaxed max-w-md mx-auto">
+      <div className="mt-12 pb-4 text-center z-10 opacity-40">
+        <p className="text-[7px] text-f uppercase tracking-wider leading-relaxed max-w-xs sm:max-w-md mx-auto">
           AVISO LEGAL: Esta aplicación opera exclusivamente como una herramienta informativa de itinerario y guía.
           No está afiliada oficialmente con los organizadores de los eventos.
           La información puede cambiar sin previo aviso.

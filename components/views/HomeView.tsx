@@ -21,7 +21,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate, on
 
   if (status === 'loading') {
     return (
-      <div className="h-full bg-theme-main flex flex-col pt-32 animate-in fade-in duration-500">
+      <div className="h-full bg-theme-main flex flex-col pt-24 sm:pt-32 animate-in fade-in duration-500">
         <div className="px-5 mb-8 space-y-2">
           <Skeleton variant="text" className="h-4 w-24" />
           <Skeleton variant="text" className="h-10 w-64" />

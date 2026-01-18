@@ -32,7 +32,7 @@ import { HelmetProvider } from 'react-helmet-async';
 
 function LoadingFallback() {
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center p-8 space-y-8 bg-theme-main">
+    <div className="w-full h-full flex flex-col items-center justify-center p-6 sm:p-8 space-y-6 sm:space-y-8 bg-theme-main">
       <div className="flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-1000">
         <div className="w-16 h-16 rounded-full border-4 border-white/5 border-t-o animate-spin" />
         <div className="text-[12px] font-black uppercase tracking-[.3em] text-white/60">Distrito Vallarta</div>

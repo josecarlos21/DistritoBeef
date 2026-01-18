@@ -13,12 +13,12 @@ export const TRACK_OPTIONS = ['ALL', 'community', 'beefdip', 'bearadise'];
 
 
 export const USERS: UserData[] = [
-  { id: 1, name: "Beto", age: 34, dist: "AQUÍ", img: "https://i.pravatar.cc/240?u=1", online: true },
-  { id: 2, name: "Carlos", age: 29, dist: "150m", img: "https://i.pravatar.cc/240?u=2", online: true },
-  { id: 3, name: "Sergio", age: 41, dist: "300m", img: "https://i.pravatar.cc/240?u=3", online: false },
-  { id: 4, name: "Marcus", age: 38, dist: "500m", img: "https://i.pravatar.cc/240?u=4", online: true },
-  { id: 5, name: "David", age: 35, dist: "1km", img: "https://i.pravatar.cc/240?u=5", online: false },
-  { id: 6, name: "Iván", age: 31, dist: "1.2km", img: "https://i.pravatar.cc/240?u=6", online: true },
+  { id: 1, name: "Beto", age: 34, dist: "AQUÍ", img: "https://images.unsplash.com/photo-1531384441138-2736e62e0f19?auto=format&fit=crop&w=240&q=80", online: true },
+  { id: 2, name: "Carlos", age: 29, dist: "150m", img: "https://images.unsplash.com/photo-1542596594-649edbc13630?auto=format&fit=crop&w=240&q=80", online: true },
+  { id: 3, name: "Sergio", age: 41, dist: "300m", img: "https://images.unsplash.com/photo-1556157382-97eda2d62296?auto=format&fit=crop&w=240&q=80", online: false },
+  { id: 4, name: "Marcus", age: 38, dist: "500m", img: "https://images.unsplash.com/photo-1520635360276-79f3dbd809f6?auto=format&fit=crop&w=240&q=80", online: true },
+  { id: 5, name: "David", age: 35, dist: "1km", img: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=240&q=80", online: false },
+  { id: 6, name: "Iván", age: 31, dist: "1.2km", img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=240&q=80", online: true },
 ];
 
 export const RECOMMENDATIONS: RecommendationData[] = [

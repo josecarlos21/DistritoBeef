@@ -3,16 +3,16 @@ import { EventData, TrackType } from '../types';
 import { Dataset } from '@/schemas/dataset';
 
 const CATEGORY_IMAGES: Record<string, string> = {
-    pool: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=60",
-    night: "https://images.unsplash.com/photo-1566737236500-c8ac40014582?auto=format&fit=crop&w=800&q=60",
-    drag: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=800&q=60",
-    beach: "https://images.unsplash.com/photo-1571216664264-83984715f271?auto=format&fit=crop&w=800&q=60",
-    dining: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=800&q=60",
-    leather: "https://images.unsplash.com/photo-1514525253361-bee8718a7439?auto=format&fit=crop&w=800&q=60",
-    foam: "https://images.unsplash.com/photo-1530103043960-ef38714abb15?auto=format&fit=crop&w=800&q=60",
-    activity: "https://images.unsplash.com/photo-1545128485-c400e7702796?auto=format&fit=crop&w=800&q=60",
-    bear: "https://images.unsplash.com/photo-1572511443159-462a7424d67e?auto=format&fit=crop&w=800&q=60",
-    default: "/bear_toon.png"
+    pool: "https://images.unsplash.com/photo-1576402187878-974f70c890a5?auto=format&fit=crop&w=800&q=80", // Pool Party (Floaties/Water)
+    night: "https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=800&q=80", // Club/Night lights
+    drag: "https://images.unsplash.com/photo-1596700813958-316496bac7d0?auto=format&fit=crop&w=800&q=80", // Drag performer (Vibrant)
+    beach: "https://images.unsplash.com/photo-1507525428034-b723cf961d3c?auto=format&fit=crop&w=800&q=80", // Tropical Beach
+    dining: "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=800&q=80", // Outdoor Dining/Cocktails
+    leather: "https://images.unsplash.com/photo-1614713568397-b31b779d0498?auto=format&fit=crop&w=800&q=80", // Dark aesthetic (Leather/Night)
+    foam: "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=800&q=80", // Splash/Foam
+    activity: "https://images.unsplash.com/photo-1544551763-77ef2d0cfc6c?auto=format&fit=crop&w=800&q=80", // Boat/Adventure
+    bear: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&q=80", // Nature/Forest (Bearadise vibe)
+    default: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=800&q=80" // Abstract Gradient
 };
 
 const mapTrack = (group: string): TrackType => {

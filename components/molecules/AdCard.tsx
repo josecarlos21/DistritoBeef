@@ -33,7 +33,7 @@ export const AdCard: React.FC = () => {
                 <div className="z-10 mt-4">
                     <div className="text-[10px] font-black uppercase tracking-widest text-f mb-1">Publicidad</div>
                     <div className="text-sm font-bold text-white leading-tight group-hover:text-o transition-colors pr-4">
-                        ¿Te interesa estar aquí?
+                        Anúnciate aquí
                     </div>
                     <div className="text-[9px] text-white/50 mt-1 font-mono">
                         contacto@administracion.ai

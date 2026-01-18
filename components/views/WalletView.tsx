@@ -146,7 +146,7 @@ export const WalletView: React.FC<WalletViewProps> = ({ onOpenConfig }) => {
                             </div>
                             <div className="text-center">
                                 <div className="text-[9px] font-bold text-f uppercase mb-1">{t('wallet.id')}</div>
-                                <div className="text-xs font-black text-white">{user?.id.toUpperCase() || '#0000'}</div>
+                                <div className="text-xs font-black text-white">{user?.id.toUpperCase() || '--'}</div>
                             </div>
                         </div>
 

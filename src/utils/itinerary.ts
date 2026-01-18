@@ -1,38 +1,23 @@
-import { EventData } from '../../types';
+import { useAppStore } from '../store/useAppStore';
+import { EventData } from '../types';
 
-const AGENDA_KEY = 'distrito_beef_agenda';
-const ITINERARY_KEY = 'distrito_beef_itinerary';
 
-// --- Agenda Management (List of Saved Event IDs) ---
+
+// --- Agenda Management (Legacy Bridge) ---
+// Note: New code should use useAppStore().agendaIds directly.
 
 export const getSavedAgenda = (): string[] => {
-    try {
-        const saved = localStorage.getItem(AGENDA_KEY);
-        return saved ? JSON.parse(saved) : [];
-    } catch (e) {
-        console.error('Error loading agenda', e);
-        return [];
-    }
+    // Bridge to allow non-reactive code to read current state
+    return useAppStore.getState().agendaIds;
 };
 
 export const saveAgenda = (eventIds: string[]): void => {
-    try {
-        localStorage.setItem(AGENDA_KEY, JSON.stringify(eventIds));
-    } catch (e) {
-        console.error('Error saving agenda', e);
-    }
+    useAppStore.getState().setAgendaIds(eventIds);
 };
 
 export const toggleAgendaItem = (eventId: string): string[] => {
-    const current = getSavedAgenda();
-    let updated: string[];
-    if (current.includes(eventId)) {
-        updated = current.filter(id => id !== eventId);
-    } else {
-        updated = [...current, eventId];
-    }
-    saveAgenda(updated);
-    return updated;
+    useAppStore.getState().toggleAgendaItem(eventId);
+    return useAppStore.getState().agendaIds;
 };
 
 export const isEventInAgenda = (eventId: string, agendaIds: string[]): boolean => {
@@ -51,22 +36,12 @@ export const generateItinerary = (eventIds: string[], allEvents: EventData[]): E
     return selected.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
 };
 
-/** Save the final itinerary to localStorage */
+/** Save the final itinerary to the store */
 export const saveItinerary = (itinerary: EventData[]): void => {
-    try {
-        localStorage.setItem(ITINERARY_KEY, JSON.stringify(itinerary));
-    } catch (e) {
-        console.error('Error saving itinerary', e);
-    }
+    useAppStore.getState().setItinerary(itinerary);
 };
 
-/** Load saved itinerary */
+/** Load saved itinerary from the store */
 export const loadItinerary = (): EventData[] => {
-    try {
-        const saved = localStorage.getItem(ITINERARY_KEY);
-        return saved ? JSON.parse(saved) : [];
-    } catch (e) {
-        console.error('Error loading itinerary', e);
-        return [];
-    }
+    return useAppStore.getState().itinerary as EventData[];
 };

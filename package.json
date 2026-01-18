@@ -1,7 +1,7 @@
 {
   "name": "beefy_pre_01",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.2.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -14,11 +14,16 @@
   },
   "dependencies": {
     "@types/leaflet": "^1.9.21",
+    "idb": "^8.0.3",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.562.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "react-leaflet": "^5.0.0"
+    "react-focus-lock": "^2.13.7",
+    "react-helmet-async": "^2.0.5",
+    "react-leaflet": "^5.0.0",
+    "zod": "^4.3.5",
+    "zustand": "^5.0.10"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
@@ -31,6 +36,7 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.26",
+    "fake-indexeddb": "^6.2.5",
     "jsdom": "^27.4.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.0",

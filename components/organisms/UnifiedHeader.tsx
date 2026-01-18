@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { GlassContainer } from '../atoms';
-import { cx } from '../../src/utils';
+import { cx } from '@/utils';
 
 interface UnifiedHeaderProps {
   left?: React.ReactNode;

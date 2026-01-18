@@ -10,7 +10,14 @@ export const GlobalStyles = () => (
     }
     
     body {
+        margin: 0;
+        padding: 0;
+        background: var(--bg);
+        color: var(--tx);
+        font-family: 'Inter', 'Space Grotesk', system-ui, -apple-system, sans-serif;
+        line-height: 1.5;
         overscroll-behavior-y: none; /* Prevent bounce effect on body */
+        -webkit-font-smoothing: antialiased;
     }
 
     /* Animation Polyfills & Optimizations */
@@ -87,14 +94,7 @@ export const GlobalStyles = () => (
     
     .border-white-10 { border-color: rgba(255,255,255,0.1); }
     .border-white-20 { border-color: rgba(255,255,255,0.2); }
-    .border-b { border-color: var(--b); }
     
-    .text-tx { color: var(--tx); }
-    .text-o { color: var(--o); }
-    .text-s { color: var(--s); }
-    .text-f { color: var(--f); }
-    .text-m { color: var(--m); }
-    .text-ok { color: var(--ok); }
     .text-white-45 { color: rgba(255,255,255,0.45); }
     
     .accent-o { accent-color: var(--o); }
@@ -111,6 +111,12 @@ export const GlobalStyles = () => (
     }
 
     /* Linting Fix Utilities */
+    /* PINK DANCE DESIGN SYSTEM TOKENS 
+       - Core: Onyx/Black (#0E0C09)
+       - Accent: Orange/District (#F97316 - var(--o))
+       - Secondary: Gold/Sand (#D8C2A2 - var(--s))
+       - Community: Blue (#3B82F6 - var(--c))
+    */
     .bg-theme-main { background: var(--bg); }
     
     .badge-dot { 
@@ -127,6 +133,13 @@ export const GlobalStyles = () => (
     .mask-gradient-bottom {
         mask-image: linear-gradient(to bottom, black 85%, transparent);
         -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent);
+    }
+
+    /* Bento Utilities */
+    .shadow-bento {
+        box-shadow: 
+            0 4px 24px -1px rgba(0, 0, 0, 0.2),
+            0 0 0 1px rgba(255, 255, 255, 0.05) inset;
     }
     
     .drawer-item { 

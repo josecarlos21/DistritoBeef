@@ -1,11 +1,11 @@
 
 import React from 'react';
 import { Home, Calendar, Map as MapIcon, Wallet, User } from 'lucide-react';
-import { TabType } from '../../types';
+import { TabType } from '@/types';
 import { GlassContainer } from '../atoms';
-import { cx, triggerHaptic } from '../../src/utils';
-import { useAuth } from '../../src/context/AuthContext';
-import { useLocale } from '../../src/context/LocaleContext';
+import { cx, triggerHaptic } from '@/utils';
+import { useAuth } from '@/context/AuthContext';
+import { useLocale } from '@/context/LocaleContext';
 
 // NavBar
 interface NavBarProps {

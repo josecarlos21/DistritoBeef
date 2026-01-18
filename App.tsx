@@ -1,28 +1,45 @@
-import React, { useState } from 'react';
-import { cx, triggerHaptic } from './src/utils';
-import { TabType, EventData, AmbienceState } from './types';
-import { INITIAL_AMBIENCE } from './constants';
+import React, { useState, Suspense } from 'react';
+import { cx, triggerHaptic } from '@/utils';
+import { TabType, EventData, AmbienceState } from '@/types';
+import { INITIAL_AMBIENCE } from '@/constants';
 import { GlobalStyles } from './components/GlobalStyles';
 import { GlobalErrorBoundary } from './components/molecules/GlobalErrorBoundary';
 import { MetaHead } from './components/atoms/MetaHead';
+import { OfflineIndicator } from './components/atoms/OfflineIndicator';
 import { CanvasBackground } from './components/atoms/CanvasBackground';
 import { NavBar } from './components/organisms/Navigation';
 import { AmbienceModal } from './components/molecules/AmbienceModal';
 import { Onboarding } from './components/views/OnboardingView';
 import { Toast } from './components/molecules/Toast';
-import { HomeView } from './components/views/HomeView';
-import { ExploreView } from './components/views/ExploreView';
-import { CalendarView } from './components/views/CalendarView';
-import { WalletView } from './components/views/WalletView';
-import { MapView } from './components/views/MapView';
-import { AgendaView } from './components/organisms/AgendaView';
-import { EventDetail } from './components/molecules/EventDetail';
 import { NotificationDrawer } from './components/molecules/NotificationDrawer';
-import { AuthProvider, useAuth } from './src/context/AuthContext';
-import { LocaleProvider, useLocale } from './src/context/LocaleContext';
+import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { LocaleProvider, useLocale } from '@/context/LocaleContext';
+import { DatasetProvider } from '@/context/DatasetContext';
 
 import { UserProfileModal } from './components/molecules/UserProfileModal';
-import { UserData } from './types';
+import { UserData } from '@/types';
+import { useDataset } from '@/context/DatasetContext';
+
+// Lazy Load Main Views
+const HomeView = React.lazy(() => import('./components/views/HomeView').then(module => ({ default: module.HomeView })));
+const ExploreView = React.lazy(() => import('./components/views/ExploreView').then(module => ({ default: module.ExploreView })));
+const CalendarView = React.lazy(() => import('./components/views/CalendarView').then(module => ({ default: module.CalendarView })));
+const WalletView = React.lazy(() => import('./components/views/WalletView').then(module => ({ default: module.WalletView })));
+const MapView = React.lazy(() => import('./components/views/MapView').then(module => ({ default: module.MapView })));
+const AgendaView = React.lazy(() => import('./components/organisms/AgendaView').then(module => ({ default: module.AgendaView })));
+import { EventDetail } from './components/molecules/EventDetail';
+import { HelmetProvider } from 'react-helmet-async';
+
+function LoadingFallback() {
+  return (
+    <div className="w-full h-full flex items-center justify-center">
+      <div className="flex flex-col items-center gap-4 animate-pulse">
+        <div className="w-12 h-12 rounded-full border-4 border-white/10 border-t-o animate-spin" />
+        <div className="text-[10px] font-black uppercase tracking-widest text-white/40">Loading District...</div>
+      </div>
+    </div>
+  );
+}
 
 function AppContent() {
   const { t, locale, setLocale } = useLocale();
@@ -33,9 +50,10 @@ function AppContent() {
   const [ambience, setAmbience] = useState<AmbienceState>(INITIAL_AMBIENCE);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const { status: datasetStatus, message: datasetMessage } = useDataset();
 
   // Auth State from Context
-  const { isAuthenticated, hasAccess, isLoading, user, logout } = useAuth();
+  const { isAuthenticated, hasAccess, isLoading, logout } = useAuth();
   const [notification, setNotification] = useState<{ msg: string, type: 'info' | 'alert' } | null>(null);
 
   const handleTabChange = (tab: TabType) => {
@@ -43,8 +61,6 @@ function AppContent() {
     setSelectedUser(null);
     setActiveTab(tab);
   };
-
-
 
   const handleWeather = () => {
     triggerHaptic('light');
@@ -77,9 +93,9 @@ function AppContent() {
       case "calendar":
         return <CalendarView onEventClick={setSelectedEvent} onOpenConfig={handleConfig} />;
       case "wallet":
-        return <WalletView userName={user?.name || "Invitado"} onOpenConfig={handleConfig} onLogout={logout} />;
+        return <WalletView onOpenConfig={handleConfig} />;
       case "map":
-        return <MapView />;
+        return <MapView onEventClick={setSelectedEvent} />;
       case "agenda":
         return <AgendaView onBack={() => handleTabChange('home')} onEventClick={setSelectedEvent} />;
       default:
@@ -96,6 +112,7 @@ function AppContent() {
   return (
     <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-black overflow-hidden font-sans">
       <GlobalStyles />
+      <OfflineIndicator />
       <MetaHead />
 
       {/* Background Layers */}
@@ -114,6 +131,13 @@ function AppContent() {
           "lg:max-w-screen-lg xl:max-w-screen-xl 2xl:max-w-[1600px] mx-auto z-10"
         )}
       >
+        {datasetStatus !== 'ready' && (
+          <div className="absolute top-2 left-2 right-2 z-50">
+            <div className="text-[10px] font-black uppercase tracking-[.18em] px-4 py-2 rounded-xl border border-white/10 bg-black/60 text-yellow-200">
+              Dataset {datasetStatus}. {datasetMessage || 'Usando caché local.'}
+            </div>
+          </div>
+        )}
         {!hasAccess ? (
           <Onboarding />
         ) : (
@@ -144,7 +168,7 @@ function AppContent() {
                         onClick={() => { triggerHaptic('light'); handleTabChange(tab); }}
                         className={cx(
                           "w-full h-14 rounded-2xl flex items-center px-4 gap-4 transition-all duration-300 group",
-                          isActive ? "bg-o text-black shadow-[0_10px_30px_rgba(255,159,69,0.2)]" : "text-f hover:bg-white/5 hover:text-white"
+                          isActive ? "bg-[var(--o)] text-black shadow-[0_10px_30px_rgba(255,159,69,0.2)]" : "text-[var(--f)] hover:bg-white/5 hover:text-[var(--tx)]"
                         )}
                       >
                         <span className={cx("material-symbols-outlined text-2xl transition-transform", isActive ? "scale-110" : "group-hover:scale-110")}>{icons[tab]}</span>
@@ -174,7 +198,9 @@ function AppContent() {
             {/* Main Content */}
             <main className="relative flex-1 h-full overflow-hidden flex flex-col">
               <div className="flex-1 relative overflow-hidden z-0">
-                {renderView()}
+                <Suspense fallback={<LoadingFallback />}>
+                  {renderView()}
+                </Suspense>
               </div>
 
               <div className="md:hidden">
@@ -238,12 +264,16 @@ function AppContent() {
 
 export default function App() {
   return (
-    <LocaleProvider>
-      <AuthProvider>
-        <GlobalErrorBoundary>
-          <AppContent />
-        </GlobalErrorBoundary>
-      </AuthProvider>
-    </LocaleProvider>
+    <HelmetProvider>
+      <LocaleProvider>
+        <DatasetProvider>
+          <AuthProvider>
+            <GlobalErrorBoundary>
+              <AppContent />
+            </GlobalErrorBoundary>
+          </AuthProvider>
+        </DatasetProvider>
+      </LocaleProvider>
+    </HelmetProvider>
   );
 }

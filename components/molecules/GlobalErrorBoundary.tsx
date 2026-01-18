@@ -1,6 +1,6 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { RefreshCw, AlertTriangle } from 'lucide-react';
-import { triggerHaptic } from '../../src/utils';
+import { triggerHaptic } from '@/utils';
 
 interface Props {
     children: ReactNode;

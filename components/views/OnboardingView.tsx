@@ -1,15 +1,18 @@
 
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, Lock } from 'lucide-react';
-import { cx } from '../../src/utils';
-import { useAuth } from '../../src/context/AuthContext';
-import { useLocale } from '../../src/context/LocaleContext';
+import { cx } from '@/utils';
+import { useAuth } from '@/context/AuthContext';
+import { useLocale } from '@/context/LocaleContext';
+import { ThirdPartyLoginButton } from '../atoms/ThirdPartyLoginButton';
+
 export const Onboarding: React.FC = () => {
   const { validatePin, login, enterAsGuest } = useAuth();
   const [step, setStep] = useState(0);
   const [code, setCode] = useState('2026');
   const [name, setName] = useState('');
   const [error, setError] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
   const { t } = useLocale();
 
   const handleCode = (val: string) => {
@@ -38,8 +41,19 @@ export const Onboarding: React.FC = () => {
 
   const submitName = () => {
     if (name.trim().length > 0) {
-      login(name);
+      login(name, 'pin');
     }
+  };
+
+  const handleThirdParty = (provider: string) => {
+    setIsConnecting(true);
+    // Mock simulation
+    setTimeout(() => {
+      const mockName = provider === 'apple' ? 'iUser' : provider === 'facebook' ? 'Amigo FB' : 'Distrito X';
+      // @ts-expect-error - provider comes from button click, mapped safely
+      login(mockName, provider);
+      setIsConnecting(false);
+    }, 1500);
   };
 
   return (
@@ -56,7 +70,7 @@ export const Onboarding: React.FC = () => {
             <div>
               <div className="text-[10px] font-black uppercase tracking-[.4em] mb-4 text-o">{t('onboarding.welcomeTo')}</div>
               <h1 className="text-5xl font-black tracking-tighter text-white mb-2 leading-[0.9] font-display">
-                DISTRICT<br /><span className="text-s">VALLARTA</span>
+                DISTRICT<br /><span className="text-s"><span className="text-o">V</span>ALLARTA</span> <span className="text-[8px] text-white/30 font-bold tracking-wider">1.0.1</span>
               </h1>
             </div>
 
@@ -84,7 +98,24 @@ export const Onboarding: React.FC = () => {
               Continuar como Invitado
             </button>
 
-            {/* Third-party shortcuts removed to enforce PIN-only entry */}
+            {/* Third-party shortcuts reinstated */}
+            <div className="pt-4 border-t border-white/5 space-y-3">
+              <div className="text-[9px] font-bold text-f uppercase tracking-widest mb-4 opacity-50">O accede simbólicamente con</div>
+              <div className="grid grid-cols-1 gap-1">
+                <ThirdPartyLoginButton provider="apple" onClick={handleThirdParty} />
+                <ThirdPartyLoginButton provider="facebook" onClick={handleThirdParty} />
+                <ThirdPartyLoginButton provider="x" onClick={handleThirdParty} />
+              </div>
+            </div>
+          </div>
+        ) : isConnecting ? (
+          <div className="space-y-6 animate-in fade-in zoom-in-95 duration-500">
+            <div className="flex justify-center">
+              <div className="w-16 h-16 rounded-3xl border-2 border-b border-t-o animate-spin" />
+            </div>
+            <div className="text-[10px] font-black uppercase tracking-[.3em] text-white animate-pulse">
+              Conectando con {t('header.wallet')}...
+            </div>
           </div>
         ) : step === 1 ? (
           <div className="space-y-6 animate-in zoom-in-95 duration-300">

@@ -1,4 +1,4 @@
-import { TrackType } from '../../types';
+import { TrackType } from '../types';
 
 export const getTrackStyles = (track: TrackType) => {
     switch (track) {

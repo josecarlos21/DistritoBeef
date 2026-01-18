@@ -14,7 +14,8 @@ describe('utils', () => {
     });
 
     it('getHour extracts time correctly', () => {
-        expect(getHour('2026-01-24T21:00:00')).toBe('21:00');
+        // 2026-01-25T03:00:00Z is 21:00 in Mexico City (CST/UTC-6)
+        expect(getHour('2026-01-25T03:00:00Z')).toBe('21:00');
     });
 
     it('getFullDateLabel returns human readable Spanish date', () => {

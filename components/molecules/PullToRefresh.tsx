@@ -48,6 +48,31 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({ children, onRefres
         }
     };
 
+    const indicatorRef = useRef<HTMLDivElement>(null);
+    const iconRef = useRef<HTMLDivElement>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
+
+    React.useLayoutEffect(() => {
+        if (indicatorRef.current) {
+            indicatorRef.current.style.setProperty('--ptr-y', translateY.toString());
+            indicatorRef.current.style.setProperty('--ptr-opacity', Math.min(translateY / 40, 1).toString());
+            indicatorRef.current.style.setProperty('--ptr-transition', refreshing ? 'transform 0.3s ease' : 'none');
+        }
+    }, [translateY, refreshing]);
+
+    React.useLayoutEffect(() => {
+        if (iconRef.current) {
+            iconRef.current.style.setProperty('--ptr-y', translateY.toString());
+        }
+    }, [translateY]);
+
+    React.useLayoutEffect(() => {
+        if (contentRef.current) {
+            contentRef.current.style.setProperty('--ptr-y', translateY.toString());
+            contentRef.current.style.setProperty('--ptr-content-transition', !startY ? 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)' : 'none');
+        }
+    }, [translateY, startY]);
+
     return (
         <div
             ref={containerRef}
@@ -57,28 +82,21 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({ children, onRefres
             onTouchEnd={handleTouchEnd}
         >
             <div
+                ref={indicatorRef}
                 className="absolute top-0 left-0 right-0 flex justify-center items-center pointer-events-none ptr-indicator"
-                style={{
-                    '--ptr-y': translateY,
-                    '--ptr-opacity': Math.min(translateY / 40, 1),
-                    '--ptr-transition': refreshing ? 'transform 0.3s ease' : 'none'
-                } as any}
             >
                 {refreshing ? (
                     <Loader2 className="animate-spin text-o" size={20} />
                 ) : (
-                    <div className="text-[9px] font-black uppercase text-o tracking-[.2em] transition-transform duration-200 ptr-icon" style={{ '--ptr-y': translateY } as any}>
+                    <div ref={iconRef} className="text-[9px] font-black uppercase text-o tracking-[.2em] transition-transform duration-200 ptr-icon">
                         ▼
                     </div>
                 )}
             </div>
 
             <div
+                ref={contentRef}
                 className="ptr-content"
-                style={{
-                    '--ptr-y': translateY,
-                    '--ptr-content-transition': !startY ? 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)' : 'none'
-                } as any}
             >
                 {children}
             </div>

@@ -1,23 +1,17 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
+import { useAppStore } from '@/store/useAppStore';
+import { logger } from '@/utils/logger';
+import { rateLimiter } from '@/utils/rateLimiter';
 
 // Explicitly labeled as DEMO PINS to avoid security confusion.
-// This is not real authentication, just a simple gate for the demo experience.
-const DEMO_PINS = ['2026', '0000'];
-
-export const IS_DEMO_MODE = true;
-
-interface User {
-    name: string;
-    img?: string;
-    isDemoUser: boolean;
-}
+const DEMO_PINS = (import.meta.env.VITE_ACCESS_PINS || '').split(',').filter(Boolean);
 
 interface AuthContextType {
     isAuthenticated: boolean;
     hasAccess: boolean;
     isLoading: boolean;
-    user: User | null;
-    login: (name: string, img?: string) => void;
+    user: { id: string; name: string; img?: string; provider: string; isDemoUser: boolean } | null;
+    login: (name: string, provider: 'apple' | 'facebook' | 'x' | 'pin' | 'guest', img?: string) => void;
     enterAsGuest: () => void;
     logout: () => void;
     validatePin: (pin: string) => boolean;
@@ -26,42 +20,60 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [hasAccess, setHasAccess] = useState(false);
+    const store = useAppStore();
 
-    const [user, setUser] = useState<User | null>(null);
+    // Sync store logout with legacy cleanup if needed
+    useEffect(() => {
+        if (!store.hasAccess) {
+            try {
+                localStorage.removeItem('distrito_beef_agenda'); // Legacy cleanup
+            } catch { /* ignore */ }
+        }
+    }, [store.hasAccess]);
 
+    const validatePin = (pin: string): boolean => {
+        // Check rate limit first
+        const identifier = `pin-validation-${navigator.userAgent.slice(0, 50)}`; // Simple fingerprint
+        const limitCheck = rateLimiter.checkLimit(identifier);
 
+        if (!limitCheck.allowed) {
+            logger.warn('PIN validation rate limit exceeded', {
+                identifier,
+                resetAt: limitCheck.resetAt?.toISOString(),
+            });
+            return false;
+        }
 
-    const login = (name: string, img?: string) => {
-        setIsAuthenticated(true);
-        setHasAccess(true);
-        setUser({ name, img, isDemoUser: true });
-    };
+        const isValid = DEMO_PINS.includes(pin);
 
-    const enterAsGuest = () => {
-        setIsAuthenticated(false);
-        setHasAccess(true);
-        setUser(null);
-    };
+        if (isValid) {
+            logger.info('Successful PIN validation', {
+                pinLength: pin.length,
+                remaining: limitCheck.remaining,
+            });
+            // Reset rate limit on successful auth
+            rateLimiter.reset(identifier);
+        } else {
+            logger.warn('Failed PIN validation attempt', {
+                pinLength: pin.length,
+                remaining: limitCheck.remaining,
+            });
+        }
 
-    const logout = () => {
-        setIsAuthenticated(false);
-        setHasAccess(false);
-        setUser(null);
-        // Clear demo-only data to honor "no data stored" promise.
-        try {
-            localStorage.removeItem('distrito_beef_agenda');
-            localStorage.removeItem('distrito_beef_itinerary');
-        } catch { /* ignore */ }
-    };
-
-    const validatePin = (pin: string) => {
-        return DEMO_PINS.includes(pin);
+        return isValid;
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, hasAccess, isLoading: false, user, login, enterAsGuest, logout, validatePin }}>
+        <AuthContext.Provider value={{
+            isAuthenticated: store.isAuthenticated,
+            hasAccess: store.hasAccess,
+            isLoading: false,
+            user: store.user,
+            login: store.login,
+            enterAsGuest: store.enterAsGuest,
+            logout: store.logout,
+            validatePin
+        }}>
             {children}
         </AuthContext.Provider>
     );

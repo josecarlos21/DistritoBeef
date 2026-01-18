@@ -8,7 +8,7 @@ module.exports = {
     ],
     ignorePatterns: ['dist', '.eslintrc.cjs'],
     parser: '@typescript-eslint/parser',
-    plugins: ['react-refresh'],
+    plugins: ['react-refresh', 'react'],
     rules: {
         'react-refresh/only-export-components': [
             'warn',
@@ -16,6 +16,12 @@ module.exports = {
         ],
         '@typescript-eslint/no-explicit-any': 'warn',
         '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-        'react-dom/no-unsafe-styles': 'off'
+        'react/no-unknown-property': ['error', { ignore: ['style', 'className'] }],
+        // 'react/style-prop-object': 'off' // If needed
+    },
+    settings: {
+        react: {
+            version: 'detect',
+        },
     },
 }

@@ -1,12 +1,15 @@
 
-import React from 'react';
-import { EventData } from '../../types';
-import { triggerHaptic, cx } from '../../src/utils';
-import { getTrackStyles, getTrackLabel } from '../../src/utils/branding';
-import { MapPin, Calendar, Clock } from 'lucide-react';
-import { useLocale } from '../../src/context/LocaleContext';
-import { useAuth } from '../../src/context/AuthContext';
-import { getSavedAgenda, toggleAgendaItem } from '../../src/utils/itinerary';
+import React, { useMemo } from 'react';
+import { EventData } from '@/types';
+import { triggerHaptic, cx } from '@/utils';
+import { getTrackStyles, getTrackLabel } from '@/utils/branding';
+import { Clock, MapPin, Bookmark, Share2, Navigation, Users, Star } from 'lucide-react';
+import { MetaHead } from '../atoms/MetaHead';
+import { useLocale } from '@/context/LocaleContext';
+import { useAppStore } from '@/store/useAppStore';
+import { useGeofence } from '@/hooks/useGeofence';
+
+import { RatingDialogue } from './RatingDialogue';
 
 interface EventDetailProps {
   event: EventData;
@@ -14,33 +17,46 @@ interface EventDetailProps {
   onAction: () => void;
 }
 
+/**
+ * EventDetail - "Event Profile" Style
+ * Treats the event like a social media profile for better UX engagement.
+ * Design A - Primary design
+ */
 export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onAction: _onAction }) => {
   const { t, formatFullDate, formatTime } = useLocale();
-
-  // const bgVal = getEventBackgroundValue(event.image, event.track, event.id); // Keeping for future use if needed, but commenting out for lint
   const fullDate = formatFullDate(event.start);
-  const [isInAgenda, setIsInAgenda] = React.useState(false);
-  const { isAuthenticated } = useAuth();
 
-  React.useEffect(() => {
-    setIsInAgenda(getSavedAgenda().includes(event.id));
-  }, [event.id]);
+  const { agendaIds, toggleAgendaItem, isAuthenticated, userRatings, rateEvent } = useAppStore();
+  const isInAgenda = agendaIds.includes(event.id);
+  const userRating = userRatings[event.id]; // 0 or undefined if not rated
 
-  // Demo Logic: Hardcoded 'User is Nearby'
-  const isNearby = true;
+  const { isNearby, loading: geoLoading } = useGeofence();
+  const [showRating, setShowRating] = React.useState(false);
 
-  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-  const canRate = React.useMemo(() => {
-    // Demo Logic: Hardcoded 'User is Nearby'
-    return isNearby;
-  }, [isNearby]);
+  // Check if event is "Live" (1hr before start to 1hr after end)
+  const isLive = useMemo(() => {
+    // For demo purposes, we can uncomment next line to force LIVE state
+    // return true; 
+    const now = new Date();
+    const startWindow = new Date(new Date(event.start).getTime() - 60 * 60 * 1000); // -1 hr
+    const endWindow = new Date(new Date(event.end).getTime() + 60 * 60 * 1000);   // +1 hr
+    return now >= startWindow && now <= endWindow;
+  }, [event.start, event.end]);
 
-
+  // Deterministic "random" stats based on event.id (stable across re-renders)
+  const stats = useMemo(() => {
+    const seed = event.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return {
+      interested: (seed % 130) + 20,
+      saved: (seed % 45) + 5,
+      // If user rated, we show that. If not, we show "--" to indicate unranked.
+      rating: userRating ? userRating.toFixed(1) : "--"
+    };
+  }, [event.id, userRating]);
 
   const handleOpenMap = () => {
     triggerHaptic('medium');
     const query = encodeURIComponent(`${event.venue} Puerto Vallarta`);
-    // Try deep link first (geo protocol or universal link), fallback to web
     window.location.href = `https://www.google.com/maps/search/?api=1&query=${query}`;
   };
 
@@ -63,178 +79,207 @@ export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onActi
     }
   };
 
+  const handleToggleAgenda = () => {
+    if (!isAuthenticated) return triggerHaptic('error');
+    triggerHaptic('success');
+    toggleAgendaItem(event.id);
+  };
+
+  const handleRate = (rating: number) => {
+    rateEvent(event.id, rating);
+  };
+
   return (
-    <div className="absolute inset-0 z-[150] flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div className="fixed inset-0 z-[200] flex items-end md:items-center justify-center">
+      <MetaHead
+        title={event.title}
+        description={`${event.venue} - ${t('agenda.addToItinerary')}`}
+        image={event.image}
+      />
+
       {/* Backdrop */}
       <div
-        className="absolute inset-0 backdrop-blur-md transition-opacity animate-in fade-in duration-300 bg-black-85"
+        className="absolute inset-0 bg-black/80 backdrop-blur-lg animate-in fade-in duration-300"
         onClick={() => { triggerHaptic('light'); onClose(); }}
-      ></div>
+      />
 
-      {/* Card */}
-      <div className="relative w-full sm:max-w-md sm:rounded-[40px] rounded-t-[40px] overflow-hidden shadow-[0_0_80px_rgba(0,0,0,0.9)] border-t border-white-20 sm:border border-white-10 flex flex-col max-h-[92vh] animate-in slide-in-from-bottom-full duration-500 bg-deep">
+      {/* Profile Card */}
+      <div className="relative w-full md:max-w-md bg-deep rounded-t-[32px] md:rounded-[32px] overflow-hidden shadow-2xl flex flex-col animate-in slide-in-from-bottom-full md:zoom-in-95 duration-400 max-h-[90vh]">
 
-        {/* Image Header */}
-        <div className="h-80 relative shrink-0 group">
+        {/* Hero Image - Like Profile Cover */}
+        <div className="relative h-40 md:h-44 shrink-0 group overflow-hidden">
+          <img
+            src={event.image}
+            alt={event.title}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-deep via-deep/40 to-transparent" />
 
-          <div className="w-full h-full bg-cover bg-center transition-transform duration-1000 group-hover:scale-105" style={{ backgroundImage: `url(${event.image})` }} />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#1a120b] via-[#1a120b]/30 to-transparent"></div>
-
+          {/* Close Button */}
           <button
-            type="button"
             onClick={() => { triggerHaptic('light'); onClose(); }}
-            className="absolute top-4 right-4 w-10 h-10 rounded-full backdrop-blur-md text-white flex items-center justify-center border z-10 hover:bg-white/20 transition-all active:scale-95 shadow-lg bg-black-40 border-white-15"
+            className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/50 backdrop-blur-md text-white border border-white/10 flex items-center justify-center active:scale-95 z-10"
           >
-            <span className="material-symbols-outlined text-lg">✕</span>
+            <span className="material-symbols-outlined text-lg">close</span>
           </button>
 
-          <div className="absolute bottom-6 left-6 right-6">
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2">
-                <span className={`px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest inline-block shadow-lg ${getTrackStyles(event.track).solidBg} ${getTrackStyles(event.track).solidText}`}>
-                  {getTrackLabel(event.track)}
-                </span>
-                {event.isFeatured && (
-                  <span className="px-2.5 py-1 rounded-md bg-white text-black text-[9px] font-black uppercase tracking-widest inline-block shadow-lg">
-                    {t('home.featured')}
-                  </span>
-                )}
-              </div>
-              <h2 className="text-3xl font-black text-white leading-[0.95] font-display uppercase tracking-tight drop-shadow-xl">{event.title}</h2>
+          {/* Badges */}
+          <div className="absolute top-4 left-4 flex gap-2 z-10">
+            <span className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${getTrackStyles(event.track).solidBg} ${getTrackStyles(event.track).solidText}`}>
+              {getTrackLabel(event.track)}
+            </span>
+            {!geoLoading && (
+              <span className={cx(
+                "px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest flex items-center gap-1",
+                isNearby ? "bg-emerald-500/30 text-emerald-300" : "bg-red-500/30 text-red-300"
+              )}>
+                <Navigation size={8} className={isNearby ? "fill-current" : ""} />
+                {isNearby ? "En Zona" : "Fuera"}
+              </span>
+            )}
+          </div>
+
+          {/* Live Badge if applicable */}
+          {isLive && !userRating && (
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
+              <span className="px-3 py-1 bg-red-600 text-white rounded-full text-[10px] font-black uppercase tracking-widest animate-pulse shadow-lg shadow-red-500/50">
+                🔴 En Vivo
+              </span>
             </div>
+          )}
+
+          {/* Title - Like Profile Name */}
+          <div className="absolute bottom-4 left-5 right-5">
+            <h2 className="text-2xl font-black text-white leading-[0.95] font-display uppercase tracking-tight drop-shadow-lg">
+              {event.title}
+            </h2>
+          </div>
+        </div>
+
+        {/* Stats Row - Like Followers/Following */}
+        <div className="flex justify-around py-4 border-b border-white/5 shrink-0">
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-1 text-white font-bold text-lg">
+              <Users size={14} className="text-o" />
+              {stats.interested}
+            </div>
+            <span className="text-[9px] text-f uppercase tracking-widest">Interesados</span>
+          </div>
+          <div className="h-8 w-px bg-white/10" />
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-1 text-white font-bold text-lg">
+              <Bookmark size={14} className="text-o" />
+              {stats.saved}
+            </div>
+            <span className="text-[9px] text-f uppercase tracking-widest">En Agenda</span>
+          </div>
+          <div className="h-8 w-px bg-white/10" />
+
+          {/* Rating Section */}
+          <div className="text-center cursor-pointer" onClick={() => isLive && !userRating && setShowRating(true)}>
+            <div className={cx(
+              "flex items-center justify-center gap-1 font-bold text-lg transition-colors",
+              userRating ? "text-yellow-400" : "text-white/50"
+            )}>
+              <Star size={14} className={userRating ? "text-yellow-400 fill-current" : "text-white/30"} />
+              {stats.rating}
+            </div>
+            <span className={cx(
+              "text-[9px] uppercase tracking-widest",
+              isLive && !userRating ? "text-o font-bold animate-pulse" : "text-f"
+            )}>
+              {userRating ? "Tu Rating" : (isLive ? "Calificar" : "Rating")}
+            </span>
           </div>
         </div>
 
         {/* Content */}
-        <div className="p-6 pt-2 overflow-y-auto no-scrollbar bg-deep">
+        <div className="p-5 overflow-y-auto no-scrollbar flex-1">
 
-          {/* Key Info Grid */}
-          <div className="grid grid-cols-1 gap-4 mb-8 bg-white/5 p-5 rounded-3xl border border-white/5 shadow-inner">
-            {/* Date */}
-            <div className="flex items-start gap-3">
-              <Calendar size={18} className="text-o shrink-0 mt-0.5" strokeWidth={2.5} />
-              <div>
-                <p className="text-[10px] text-[var(--f)] uppercase font-black tracking-widest mb-0.5">{t('event.date')}</p>
-                <p className="text-white font-bold text-sm capitalize">{fullDate}</p>
-              </div>
+          {/* Quick Info */}
+          <div className="flex flex-wrap gap-3 mb-4">
+            <div className="flex items-center gap-2 text-white/80 text-sm">
+              <MapPin size={14} className="text-o" />
+              <span className="font-medium">{event.venue}</span>
             </div>
-
-            {/* Time */}
-            <div className="flex items-start gap-3">
-              <Clock size={18} className="text-o shrink-0 mt-0.5" strokeWidth={2.5} />
-              <div>
-                <p className="text-[10px] text-[var(--f)] uppercase font-black tracking-widest mb-0.5">{t('event.time')}</p>
-                <p className="text-white font-bold text-sm">{formatTime(event.start)} - {formatTime(event.end)}</p>
-              </div>
-            </div>
-
-            {/* Venue */}
-            <div className="flex items-start gap-3">
-              <MapPin size={18} className="text-o shrink-0 mt-0.5" strokeWidth={2.5} />
-              <div>
-                <p className="text-[10px] text-[var(--f)] uppercase font-black tracking-widest mb-0.5">{t('event.venue')}</p>
-                <p className="text-white font-bold text-sm">{event.venue}</p>
-              </div>
+            <div className="flex items-center gap-2 text-white/80 text-sm">
+              <Clock size={14} className="text-o" />
+              <span className="font-medium">{formatTime(event.start)} - {formatTime(event.end)}</span>
             </div>
           </div>
 
-          <div className="mb-8">
-            <p className="text-[10px] text-f uppercase font-black tracking-widest mb-3">{t('event.about')}</p>
-            <p className="text-white/90 text-sm leading-relaxed font-medium">
-              {event.description || t('event.defaultDescription')}
-            </p>
-            {event.dress && (
-              <div className="mt-5 flex items-center gap-3 p-3 bg-white/[0.03] rounded-xl border border-white/5">
-                <span className="text-[10px] font-bold text-f uppercase tracking-wider">{t('event.dresscode')}</span>
-                <div className="h-4 w-px bg-white/10" />
-                <span className="text-[10px] font-black text-o uppercase tracking-wider">{event.dress}</span>
-              </div>
+          {/* Date Pill */}
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full border border-white/5 text-sm text-white/70 mb-4">
+            <span className="material-symbols-outlined text-o text-sm">calendar_today</span>
+            <span className="capitalize font-medium">{fullDate}</span>
+          </div>
+
+          {/* Description - Like Bio */}
+          <p className="text-white/70 text-sm leading-relaxed mb-4">
+            {event.description || t('event.defaultDescription')}
+          </p>
+
+          {event.dress && (
+            <div className="flex items-center gap-2 text-[10px] mb-4">
+              <span className="text-f uppercase font-bold tracking-wider">Dresscode:</span>
+              <span className="text-o uppercase font-black tracking-wider">{event.dress}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Actions - Sticky Bottom */}
+        <div className="p-4 border-t border-white/5 shrink-0 space-y-3 bg-deep">
+          {/* Primary CTA */}
+          <button
+            onClick={handleToggleAgenda}
+            disabled={!isAuthenticated}
+            className={cx(
+              "w-full h-12 rounded-xl flex items-center justify-center gap-2 transition-all font-black uppercase tracking-widest text-[11px] active:scale-[0.98]",
+              isInAgenda
+                ? "bg-white text-black"
+                : "bg-gradient-to-r from-o to-amber-500 text-white shadow-lg shadow-o/30",
+              !isAuthenticated && "opacity-50 cursor-not-allowed"
             )}
-          </div>
+          >
+            {isInAgenda ? (
+              <>
+                <span className="material-symbols-outlined icon-filled text-o text-base">check_circle</span>
+                En Mi Agenda
+              </>
+            ) : (
+              <>
+                <Bookmark size={16} />
+                Agregar a Agenda
+              </>
+            )}
+          </button>
 
-          <div className="flex flex-col gap-3 sticky bottom-0 pb-2">
-            <div className="grid grid-cols-3 gap-3">
-              {/* Website Button */}
-              {event.url && (
-                <a
-                  href={event.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => triggerHaptic('light')}
-                  className="h-12 bg-white/5 border border-white/10 text-white rounded-xl flex items-center justify-center gap-2 hover:bg-white/10 transition active:scale-[0.98]"
-                >
-                  <span className="material-symbols-outlined text-sm">public</span>
-                  <span className="text-[10px] font-black uppercase tracking-widest hidden sm:inline">{t('action.visitWebsite')}</span>
-                </a>
-              )}
-
-              {/* Google Maps Button */}
-              <button
-                type="button"
-                onClick={handleOpenMap}
-                className={cx(
-                  "h-12 bg-white/5 border border-white/10 text-white rounded-xl flex items-center justify-center gap-2 hover:bg-white/10 transition active:scale-[0.98]",
-                  event.url ? "col-span-1" : "col-span-2"
-                )}
-              >
-                <MapPin size={14} strokeWidth={2.5} />
-                <span className="text-[10px] font-black uppercase tracking-widest hidden sm:inline">{t('action.googleMaps')}</span>
-              </button>
-
-              {/* Share Button */}
-              <button
-                type="button"
-                onClick={handleShare}
-                className="h-12 bg-white/5 border border-white/10 text-white rounded-xl flex items-center justify-center gap-2 hover:bg-white/10 transition active:scale-[0.98]"
-              >
-                <span className="material-symbols-outlined text-sm">share</span>
-                <span className="text-[10px] font-black uppercase tracking-widest hidden sm:inline">{t('action.share')}</span>
-              </button>
-            </div>
-
-            {/* Add to Agenda Button */}
+          {/* Secondary Actions */}
+          <div className="flex gap-2">
             <button
-              type="button"
-              onClick={() => {
-                if (!isAuthenticated) {
-                  triggerHaptic('error');
-                  return;
-                }
-                triggerHaptic('success');
-                setIsInAgenda(!isInAgenda);
-                toggleAgendaItem(event.id);
-              }}
-              disabled={!isAuthenticated}
-              className={cx(
-                "col-span-2 h-14 rounded-2xl flex items-center justify-center gap-3 transition-all font-black uppercase tracking-[.2em] text-[11px] shadow-lg mb-4",
-                isInAgenda
-                  ? "bg-white text-black hover:bg-white/90"
-                  : "bg-white/10 text-white hover:bg-white/20 border border-white/10",
-                !isAuthenticated && "opacity-50 cursor-not-allowed"
-              )}
+              onClick={handleOpenMap}
+              className="flex-1 h-10 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg flex items-center justify-center gap-2 text-white transition-all text-sm font-medium"
             >
-              {isInAgenda ? (
-                <>
-                  <span className="material-symbols-outlined icon-filled text-o">check_circle</span>
-                  {t('action.addedToAgenda') || "EN MI AGENDA"}
-                </>
-              ) : (
-                <>
-                  <span className="material-symbols-outlined">bookmark_add</span>
-                  {t('action.addToAgenda') || "AGREGAR A MI AGENDA"}
-                </>
-              )}
+              <MapPin size={14} />
+              Mapa
             </button>
-            <p className="col-span-2 text-[9px] text-center text-white/40 uppercase tracking-widest pb-4">
-              {!isAuthenticated
-                ? "App informativa: inicia sesión para guardar eventos (solo en este dispositivo)."
-                : isInAgenda
-                  ? "Evento guardado en tu itinerario"
-                  : "Guarda este evento para armar tu plan"}
-            </p>
+            <button
+              onClick={handleShare}
+              className="flex-1 h-10 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg flex items-center justify-center gap-2 text-white transition-all text-sm font-medium"
+            >
+              <Share2 size={14} />
+              Compartir
+            </button>
           </div>
         </div>
       </div>
+
+      <RatingDialogue
+        isOpen={showRating}
+        onClose={() => setShowRating(false)}
+        onRate={handleRate}
+        title={event.title}
+      />
     </div>
   );
 };

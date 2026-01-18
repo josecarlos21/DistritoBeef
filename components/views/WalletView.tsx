@@ -1,25 +1,39 @@
 
 import React, { useMemo, useState, useEffect } from 'react';
-import { Award, RefreshCw, ShieldCheck, HelpCircle, SlidersHorizontal } from 'lucide-react';
+import { RefreshCw, ShieldCheck, HelpCircle, SlidersHorizontal } from 'lucide-react';
 import { GlassContainer } from '../atoms';
 import { UnifiedHeader, HeaderTitle, HeaderAction } from '../organisms';
-import { triggerHaptic, cx } from '../../src/utils';
-import { useLocale } from '../../src/context/LocaleContext';
+import { triggerHaptic, cx } from '@/utils';
+import { useLocale } from '@/context/LocaleContext';
+import { useAuth } from '@/context/AuthContext';
+import { Apple, Facebook, X, Key, User as UserIcon } from 'lucide-react';
+import { BackupPanel } from '../molecules/BackupPanel';
 
 interface WalletViewProps {
     onOpenConfig: () => void;
-    onLogout: () => void;
-    userName: string;
 }
 
-export const WalletView: React.FC<WalletViewProps> = ({ onOpenConfig, onLogout, userName }) => {
+export const WalletView: React.FC<WalletViewProps> = ({ onOpenConfig }) => {
+    const { user, logout } = useAuth();
+    const userName = user?.name || "Invitado";
     // Simulate dynamic QR noise
     const [seed, setSeed] = useState(0);
     const { t } = useLocale();
 
     useEffect(() => {
-        const interval = setInterval(() => setSeed(s => s + 1), 2000);
-        return () => clearInterval(interval);
+        let lastUpdate = 0;
+        let frameId: number;
+
+        const loop = (time: number) => {
+            if (document.visibilityState === 'visible' && (time - lastUpdate) > 2000) {
+                setSeed(s => s + 1);
+                lastUpdate = time;
+            }
+            frameId = requestAnimationFrame(loop);
+        };
+
+        frameId = requestAnimationFrame(loop);
+        return () => cancelAnimationFrame(frameId);
     }, []);
 
     const handleRefresh = () => {
@@ -52,7 +66,7 @@ export const WalletView: React.FC<WalletViewProps> = ({ onOpenConfig, onLogout, 
                 <div className="w-full max-w-sm relative group px-4">
 
                     {/* Glow Effect */}
-                    <div className="absolute -inset-1 bg-gradient-to-b from-[var(--o)] to-[var(--c)] rounded-[40px] opacity-20 blur-xl group-hover:opacity-30 transition-opacity duration-1000 mx-4" />
+                    <div className="absolute -inset-1 bg-gradient-to-b from-[var(--o)] to-[var(--c)] rounded-[32px] opacity-20 blur-xl group-hover:opacity-30 transition-opacity duration-1000 mx-4" />
 
                     <GlassContainer strong className="p-8 relative overflow-hidden">
                         {/* Top Pattern */}
@@ -71,7 +85,7 @@ export const WalletView: React.FC<WalletViewProps> = ({ onOpenConfig, onLogout, 
                                 <div className="w-28 h-28 rounded-full border-4 border-[var(--bg)] shadow-[0_0_20px_rgba(255,138,29,0.3)] overflow-hidden bg-white/10 flex items-center justify-center">
                                     {/* Use transparent background placeholder if no specific image logic is present (generic user) */}
                                     <img
-                                        src={`https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=1a120b&color=f97316&size=240&bold=true`}
+                                        src={`https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=161310&color=f97316&size=240&bold=true`}
                                         alt="Profile"
                                         className="w-full h-full object-cover"
                                     />
@@ -84,13 +98,17 @@ export const WalletView: React.FC<WalletViewProps> = ({ onOpenConfig, onLogout, 
                             <div className="text-3xl font-black uppercase tracking-tight text-center mt-5 text-white font-display text-ellipsis overflow-hidden w-full whitespace-nowrap">{userName}</div>
 
                             <div className="mt-3 flex items-center gap-2 bg-white/5 px-4 py-1.5 rounded-full border border-white/5">
-                                <Award size={14} className="text-o" strokeWidth={3} />
-                                <span className="text-[10px] font-black uppercase tracking-[.15em] text-o">{t('wallet.member')}</span>
+                                {user?.provider === 'apple' && <Apple size={12} className="text-white" />}
+                                {user?.provider === 'facebook' && <Facebook size={12} className="text-[#1877F2]" />}
+                                {user?.provider === 'x' && <X size={12} className="text-white" />}
+                                {user?.provider === 'pin' && <Key size={12} className="text-o" />}
+                                {user?.provider === 'guest' && <UserIcon size={12} className="text-f" />}
+                                <span className="text-[10px] font-black uppercase tracking-[.15em] text-f">{user?.provider || 'member'}</span>
                             </div>
                         </div>
 
                         {/* Dynamic QR Area */}
-                        <div className="mt-8 mb-4 relative bg-white rounded-[36px] p-5 shadow-[0_0_40px_rgba(255,255,255,0.08)]">
+                        <div className="mt-8 mb-4 relative bg-white rounded-[32px] p-5 shadow-bento">
                             <div className="w-full aspect-square grid grid-cols-4 gap-2">
                                 {blocks.map((x, i) => (
                                     <div
@@ -124,7 +142,7 @@ export const WalletView: React.FC<WalletViewProps> = ({ onOpenConfig, onLogout, 
                             </div>
                             <div className="text-center">
                                 <div className="text-[9px] font-bold text-f uppercase mb-1">{t('wallet.id')}</div>
-                                <div className="text-xs font-black text-white">#{Math.abs(userName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) * 13).toString().slice(0, 4)}</div>
+                                <div className="text-xs font-black text-white">{user?.id.toUpperCase() || '#0000'}</div>
                             </div>
                         </div>
 
@@ -143,7 +161,7 @@ export const WalletView: React.FC<WalletViewProps> = ({ onOpenConfig, onLogout, 
                         <div className="w-px h-3 bg-white/10" />
                         <button
                             type="button"
-                            onClick={() => { triggerHaptic('medium'); onLogout(); }}
+                            onClick={() => { triggerHaptic('medium'); logout(); }}
                             className="flex items-center gap-2 text-red-500 text-[10px] font-bold uppercase tracking-wider p-2"
                         >
                             {t('action.logout')}
@@ -151,6 +169,9 @@ export const WalletView: React.FC<WalletViewProps> = ({ onOpenConfig, onLogout, 
                     </div>
                 </div>
 
+                <div className="w-full max-w-sm px-4 mt-8">
+                    <BackupPanel />
+                </div>
 
             </div>
         </div>

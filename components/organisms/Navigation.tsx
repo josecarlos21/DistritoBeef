@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Home, Calendar, Map as MapIcon, Wallet, User } from 'lucide-react';
+import { Home, Calendar, Map as MapIcon, Wallet, User, Compass } from 'lucide-react';
 import { TabType } from '@/types';
 import { GlassContainer } from '../atoms';
 import { cx, triggerHaptic } from '@/utils';
@@ -71,7 +71,7 @@ export const NavBar: React.FC<NavBarProps> = ({ activeTab, setTab }) => {
           </button>
         </div>
 
-        <NavItem id="social" Icon={User} label={t('nav.social', 'Social')} isActive={activeTab === 'social'} onClick={handleTabClick} />
+        <NavItem id="explore" Icon={Compass} label={t('nav.explore', 'Explorar')} isActive={activeTab === 'explore'} onClick={handleTabClick} />
         {useAuth().isAuthenticated && (
           <NavItem id="wallet" Icon={Wallet} label={t('nav.wallet', 'Wallet')} isActive={activeTab === 'wallet'} onClick={handleTabClick} />
         )}

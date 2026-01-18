@@ -1,5 +1,5 @@
 export type TrackType = 'beefdip' | 'bearadise' | 'community';
-export type TabType = "home" | "social" | "calendar" | "wallet" | "map" | "agenda";
+export type TabType = "home" | "explore" | "calendar" | "wallet" | "map" | "agenda";
 
 export type ZoomLevel = 0 | 1 | 2 | 3;
 

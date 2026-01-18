@@ -1,0 +1,229 @@
+
+# --- 4) Root × Prefix Family matrix (ALLOW/DENY/CONDITIONAL) ---
+roots = ["INGRESS","CORE","IAM","API","EVENT","LLM","RAG","OBS","SEC","OPS","SUPPLY","BILLING","TENANT"]
+families = ["CSF","80053","SRE","OTEL","IAM","API","EVENT","SUPPLY","LLM","RAG"]
+
+# From our previously defined decisions
+decision_map = {
+    "INGRESS": {"CSF":"ALLOW","80053":"ALLOW","SRE":"ALLOW","OTEL":"ALLOW","IAM":"ALLOW","API":"ALLOW","EVENT":"ALLOW","SUPPLY":"DENY","LLM":"DENY","RAG":"DENY"},
+    "CORE":    {"CSF":"ALLOW","80053":"ALLOW","SRE":"ALLOW","OTEL":"ALLOW","IAM":"DENY","API":"ALLOW","EVENT":"ALLOW","SUPPLY":"DENY","LLM":"DENY","RAG":"DENY"},
+    "IAM":     {"CSF":"ALLOW","80053":"ALLOW","SRE":"ALLOW","OTEL":"ALLOW","IAM":"ALLOW","API":"ALLOW","EVENT":"ALLOW","SUPPLY":"DENY","LLM":"DENY","RAG":"DENY"},
+    "API":     {"CSF":"DENY","80053":"ALLOW","SRE":"ALLOW","OTEL":"ALLOW","IAM":"ALLOW","API":"ALLOW","EVENT":"DENY","SUPPLY":"DENY","LLM":"DENY","RAG":"DENY"},
+    "EVENT":   {"CSF":"ALLOW","80053":"ALLOW","SRE":"ALLOW","OTEL":"ALLOW","IAM":"DENY","API":"DENY","EVENT":"ALLOW","SUPPLY":"DENY","LLM":"DENY","RAG":"DENY"},
+    "LLM":     {"CSF":"ALLOW","80053":"ALLOW","SRE":"ALLOW","OTEL":"ALLOW","IAM":"DENY","API":"DENY","EVENT":"DENY","SUPPLY":"DENY","LLM":"ALLOW","RAG":"CONDITIONAL"},
+    "RAG":     {"CSF":"ALLOW","80053":"ALLOW","SRE":"ALLOW","OTEL":"ALLOW","IAM":"DENY","API":"DENY","EVENT":"DENY","SUPPLY":"DENY","LLM":"CONDITIONAL","RAG":"ALLOW"},
+    "OBS":     {"CSF":"ALLOW","80053":"ALLOW","SRE":"ALLOW","OTEL":"ALLOW","IAM":"DENY","API":"DENY","EVENT":"DENY","SUPPLY":"DENY","LLM":"DENY","RAG":"DENY"},
+    "SEC":     {"CSF":"ALLOW","80053":"ALLOW","SRE":"ALLOW","OTEL":"ALLOW","IAM":"ALLOW","API":"DENY","EVENT":"DENY","SUPPLY":"ALLOW","LLM":"CONDITIONAL","RAG":"DENY"},
+    "OPS":     {"CSF":"ALLOW","80053":"ALLOW","SRE":"ALLOW","OTEL":"ALLOW","IAM":"DENY","API":"DENY","EVENT":"ALLOW","SUPPLY":"ALLOW","LLM":"DENY","RAG":"ALLOW"},
+    "SUPPLY":  {"CSF":"ALLOW","80053":"ALLOW","SRE":"ALLOW","OTEL":"DENY","IAM":"DENY","API":"ALLOW","EVENT":"DENY","SUPPLY":"ALLOW","LLM":"DENY","RAG":"DENY"},
+    "BILLING": {"CSF":"ALLOW","80053":"ALLOW","SRE":"ALLOW","OTEL":"ALLOW","IAM":"DENY","API":"ALLOW","EVENT":"ALLOW","SUPPLY":"DENY","LLM":"DENY","RAG":"DENY"},
+    "TENANT":  {"CSF":"ALLOW","80053":"ALLOW","SRE":"ALLOW","OTEL":"ALLOW","IAM":"DENY","API":"ALLOW","EVENT":"ALLOW","SUPPLY":"DENY","LLM":"DENY","RAG":"DENY"},
+}
+
+conditions = {
+    ("LLM","RAG"): "ALLOW only RAG-CTXASM|RAG-CITE",
+    ("RAG","LLM"): "ALLOW only LLM-OUTVAL",
+    ("SEC","LLM"): "ALLOW only LLM-INJDEF",
+}
+matrix_rows = []
+for r in roots:
+    for f in families:
+        decision = decision_map[r][f]
+        cond = ""
+        if decision == "CONDITIONAL":
+            cond = conditions.get((r,f),"CONDITIONAL_ALLOWLIST")
+        matrix_rows.append((r,f,decision,cond))
+df_root_prefix_family_matrix = pd.DataFrame(matrix_rows, columns=["root","prefix_family","decision","condition"])
+
+# --- 5) Descriptor catalog (explicit descriptors) ---
+descriptor_rows = []
+
+def add_desc(area, descriptor, allowed_types, family=None, notes=""):
+    family = family or descriptor.split("_")[0]
+    descriptor_rows.append((descriptor, area, family, allowed_types, notes))
+
+# INGRESS
+ingress_descriptors = [
+    "WEBHOOK_RECEIVED","WEBHOOK_SIGNATURE_OK","WEBHOOK_SIGNATURE_FAIL","WEBHOOK_PARSE_OK","WEBHOOK_PARSE_FAIL",
+    "REQUEST_AUTH_OK","REQUEST_AUTH_FAIL","REQUEST_AUTHZ_OK","REQUEST_AUTHZ_DENY",
+    "RATE_LIMIT_APPLIED","RATE_LIMIT_BLOCKED",
+    "INPUT_VALIDATION_OK","INPUT_VALIDATION_FAIL",
+    "CANONICALIZE_APPLIED","UNICODE_NORMALIZED",
+    "PII_DETECTED","REDACTION_APPLIED",
+    "IDEMP_KEY_CREATED","IDEMP_HIT","DEDUPE_HIT","DEDUP_STORE_FAIL"
+]
+for d in ingress_descriptors:
+    add_desc("INGRESS", d, "LOG")
+
+# CORE
+core_descriptors = [
+    "SSOT_READ_OK","SSOT_READ_FAIL","FSM_STATE_LOADED","FSM_TRANSITION_ALLOWED","FSM_TRANSITION_DENIED","FSM_TRANSITION_APPLIED",
+    "FSM_RECONCILE_STARTED","FSM_RECONCILE_DONE",
+    "ROUTE_FLOW","ROUTE_AGENT","ROUTE_HUMAN",
+    "RULE_MATCHED","RULE_NO_MATCH",
+    "AUDIT_WRITE_OK","AUDIT_WRITE_FAIL","AUDIT_CHAIN_ADVANCED","AUDIT_CHAIN_FAIL"
+]
+for d in core_descriptors:
+    add_desc("CORE", d, "LOG")
+
+# IAM
+iam_descriptors = [
+    "OIDC_LOGIN_STARTED","OIDC_LOGIN_OK","OIDC_LOGIN_FAIL",
+    "TOKEN_ISSUED","TOKEN_REFRESHED","TOKEN_REVOKED","TOKEN_INVALID",
+    "SESSION_CREATED","SESSION_EXPIRED",
+    "AUTHZ_ALLOW","AUTHZ_DENY",
+    "RBAC_ROLE_ASSIGNED","RBAC_ROLE_REMOVED",
+    "ABAC_POLICY_MATCHED","ABAC_POLICY_DENY",
+    "MFA_REQUIRED","MFA_OK","MFA_FAIL",
+    "SCIM_PROVISION_OK","SCIM_PROVISION_FAIL"
+]
+for d in iam_descriptors:
+    add_desc("IAM", d, "LOG")
+
+# API
+api_descriptors = [
+    "OAS_PUBLISHED","SCHEMA_VALIDATED","SCHEMA_BREAKING_CHANGE","BC_OK","BC_FAIL",
+    "ERROR_MAPPED","ERROR_UNMAPPED","CDC_CONTRACT_OK","CDC_CONTRACT_FAIL"
+]
+for d in api_descriptors:
+    add_desc("API", d, "LOG|DOC")
+
+# EVENT
+event_descriptors = [
+    "OUTBOX_ENQUEUED","OUTBOX_DEQUEUED","OUTBOX_DISPATCH_OK","OUTBOX_DISPATCH_FAIL","OUTBOX_BACKLOG_HIGH",
+    "RETRY_SCHEDULED","RETRY_EXHAUSTED",
+    "DLQ_ENQUEUED","DLQ_REPROCESS_STARTED","DLQ_REPROCESS_OK","DLQ_REPROCESS_FAIL",
+    "POISON_MESSAGE_DETECTED",
+    "INBOX_MARKED_PROCESSED","INBOX_DUPLICATE"
+]
+for d in event_descriptors:
+    add_desc("EVENT", d, "LOG")
+
+# LLM
+llm_descriptors = [
+    "PLAN_GENERATED","PLAN_INVALID","PLAN_TRIMMED","ASSUMPTION_LISTED",
+    "POLICY_EVALUATED","POLICY_ALLOWED","POLICY_DENIED",
+    "EVIDENCE_REQUIRED","EVIDENCE_MISSING",
+    "TOOL_PROPOSED","TOOL_ALLOWED","TOOL_REJECTED","TOOL_SCHEMA_OK","TOOL_SCHEMA_FAIL","TOOL_TIMEOUT","TOOL_ERROR",
+    "INJECTION_SIGNAL_DETECTED","DATA_TREATED_AS_DATA",
+    "OUTPUT_VALIDATION_OK","OUTPUT_VALIDATION_FAIL",
+    "TOKEN_BUDGET_APPLIED","LATENCY_BUDGET_APPLIED","COST_BUDGET_APPLIED",
+    "MODEL_ROUTED","MODEL_FALLBACK"
+]
+for d in llm_descriptors:
+    add_desc("LLM", d, "LOG")
+
+# RAG
+rag_descriptors = [
+    "INGEST_STARTED","INGEST_OK","INGEST_FAIL",
+    "PARSE_OK","PARSE_FAIL","CHUNK_OK","CHUNK_FAIL",
+    "EMBED_OK","EMBED_FAIL",
+    "INDEX_BUILT","INDEX_UPDATED",
+    "RETRIEVE_STARTED","RETRIEVE_EMPTY","RETRIEVE_OK",
+    "HYBRID_MERGED","RERANK_OK","RERANK_FAIL","FRESHNESS_APPLIED",
+    "CITATION_ATTACHED","CITATION_MISSING","GROUNDING_OK","GROUNDING_FAIL",
+    "RETRIEVAL_EVAL_OK","RETRIEVAL_EVAL_FAIL"
+]
+for d in rag_descriptors:
+    add_desc("RAG", d, "LOG")
+
+# OBS signals (as metric/alert descriptors)
+obs_descriptors = [
+    "LATENCY_P50","LATENCY_P95","LATENCY_P99",
+    "ERROR_RATE","REQUEST_RATE","SATURATION","QUEUE_DEPTH","DLQ_COUNT","RETRY_RATE",
+    "BURN_RATE_FAST","BURN_RATE_SLOW",
+    "ALERT_FIRED","ALERT_RESOLVED","DASHBOARD_UPDATED"
+]
+for d in obs_descriptors:
+    add_desc("OBS", d, "METRIC|ALERT|LOG")
+
+# SEC
+sec_descriptors = [
+    "LEAST_PRIVILEGE","EGRESS_FILTERING","SECRETS_ROTATED","KEY_ROTATED","ENCRYPTION_ENABLED","RETENTION_APPLIED",
+    "VULN_FOUND","VULN_FIXED","ABUSE_DETECTED","ABUSE_BLOCKED"
+]
+for d in sec_descriptors:
+    add_desc("SEC", d, "LOG|DOC")
+
+# OPS
+ops_descriptors = [
+    "INCIDENT_DECLARED","INCIDENT_ESCALATED","MITIGATION_APPLIED","ROLLBACK_EXECUTED",
+    "RESTORE_STARTED","RESTORE_OK","RESTORE_FAIL",
+    "POSTMORTEM_CREATED","ACTION_ITEM_TRACKED"
+]
+for d in ops_descriptors:
+    add_desc("OPS", d, "RUNBOOK|LOG")
+
+# SUPPLY
+supply_descriptors = [
+    "SBOM_GENERATED","PROVENANCE_GENERATED","ARTIFACT_SIGNED","SLSA_LEVEL_SET",
+    "DEPENDENCY_PINNED","VULN_SCAN_OK","VULN_SCAN_FAIL","SECRETS_SCAN_OK","SECRETS_SCAN_FAIL"
+]
+for d in supply_descriptors:
+    add_desc("SUPPLY", d, "DOC|RUNBOOK|LOG")
+
+# BILLING
+billing_descriptors = [
+    "PLAN_ASSIGNED","ENTITLEMENT_GRANTED","ENTITLEMENT_DENIED","METERING_RECORDED",
+    "INVOICE_ISSUED","PAYMENT_SUCCEEDED","PAYMENT_FAILED","DUNNING_STARTED","DUNNING_RESOLVED"
+]
+for d in billing_descriptors:
+    add_desc("BILLING", d, "LOG|DOC")
+
+# TENANT
+tenant_descriptors = [
+    "TENANT_CREATED","TENANT_SUSPENDED","TENANT_REACTIVATED","TENANT_DELETED",
+    "TENANT_CONFIG_UPDATED","TENANT_QUOTA_UPDATED","TENANT_KEYS_ROTATED"
+]
+for d in tenant_descriptors:
+    add_desc("TENANT", d, "LOG|DOC")
+
+df_descriptor_catalog = pd.DataFrame(descriptor_rows, columns=["descriptor","area","family","allowed_types","notes"]).sort_values(["area","descriptor"])
+
+# --- 6) Descriptor family allow rules (pattern-based) ---
+descriptor_family_rules = [
+    ("INGRESS","WEBHOOK_*|REQUEST_*|INPUT_VALIDATION_*|RATE_LIMIT_*|UNICODE_*|PII_*|REDACTION_*|IDEMP_*|DEDUPE_*","OUTBOX_*|DLQ_*|RETRY_*|PLAN_*|TOOL_*|RETRIEVE_*|CITATION_*|TOKENS_*|COST_*","Ingress-only families"),
+    ("CORE","SSOT_*|FSM_*|ROUTE_*|RULE_*|AUDIT_*","WEBHOOK_*|OIDC_*|TOKEN_*|OUTBOX_*|DLQ_*|PLAN_*|TOOL_*|RETRIEVE_*|CITATION_*|TOKENS_*","Core-only families"),
+    ("IAM","OIDC_*|TOKEN_*|SESSION_*|AUTHZ_*|RBAC_*|ABAC_*|MFA_*|SCIM_*","WEBHOOK_*|FSM_*|OUTBOX_*|DLQ_*|PLAN_*|TOOL_*|RETRIEVE_*|CITATION_*|TOKENS_*","IAM-only families"),
+    ("EVENT","OUTBOX_*|INBOX_*|RETRY_*|DLQ_*|POISON_*|QUEUE_*","WEBHOOK_*|OIDC_*|FSM_*|PLAN_*|TOOL_*|RETRIEVE_*|CITATION_*|TOKENS_*|COST_*","Event durability families"),
+    ("LLM","PLAN_*|POLICY_*|EVIDENCE_*|TOOL_*|INJECTION_*|OUTPUT_VALIDATION_*|TOKEN_*|COST_*|MODEL_*","WEBHOOK_*|OIDC_*|FSM_*|OUTBOX_*|DLQ_*|INBOX_*|INGEST_*|EMBED_*|INDEX_*","LLM governance families"),
+    ("RAG","INGEST_*|PARSE_*|CHUNK_*|EMBED_*|INDEX_*|RETRIEVE_*|HYBRID_*|RERANK_*|FRESHNESS_*|CITATION_*|GROUNDING_*|RETRIEVAL_EVAL_*","WEBHOOK_*|OIDC_*|FSM_*|OUTBOX_*|DLQ_*|PLAN_*|TOOL_*|TOKEN_*|COST_*","RAG-only families"),
+    ("OBS","LATENCY_P*|ERROR_RATE|REQUEST_RATE|SATURATION|QUEUE_DEPTH|DLQ_COUNT|RETRY_RATE|BURN_*","WEBHOOK_*|TOKEN_ISSUED|PLAN_GENERATED","Observability signals"),
+    ("SEC","LEAST_PRIVILEGE|EGRESS_FILTERING|SECRETS_*|KEY_*|ENCRYPTION_*|RETENTION_*|VULN_*|ABUSE_*","PLAN_*|TOOL_*|RETRIEVE_*|OUTBOX_*|FSM_*","Security control families"),
+    ("OPS","INCIDENT_*|MITIGATION_*|ROLLBACK_*|RESTORE_*|POSTMORTEM_*|ACTION_ITEM_*|DLQ_*|REPLAY_*","TOKEN_ISSUED|WEBHOOK_RECEIVED|PLAN_GENERATED","Ops only"),
+    ("SUPPLY","SBOM_*|PROVENANCE_*|ARTIFACT_*|SLSA_*|DEPENDENCY_*|VULN_SCAN_*|SECRETS_SCAN_*","WEBHOOK_*|FSM_*|OUTBOX_*|PLAN_*|RETRIEVE_*","Supply chain only"),
+    ("BILLING","PLAN_*|ENTITLEMENT_*|METERING_*|INVOICE_*|PAYMENT_*|DUNNING_*","PLAN_GENERATED|RETRIEVE_*","Billing only"),
+    ("TENANT","TENANT_*","PLAN_GENERATED|RETRIEVE_*|TOKEN_*","Tenant only"),
+]
+df_descriptor_family_rules = pd.DataFrame(descriptor_family_rules, columns=["area","allow_patterns","deny_patterns","notes"])
+
+# --- 7) Signal catalog (OTEL-METRIC signals) ---
+signal_rows = [
+    ("LATENCY_P50","MS","Latency p50","OBS|INGRESS|CORE|EVENT|LLM|RAG|API|IAM|BILLING|TENANT","P50|HIGH|CRITICAL|W1M|W5M|W15M|W1H"),
+    ("LATENCY_P95","MS","Latency p95","OBS|INGRESS|CORE|EVENT|LLM|RAG|API|IAM|BILLING|TENANT","P95|HIGH|CRITICAL|W1M|W5M|W15M|W1H"),
+    ("LATENCY_P99","MS","Latency p99","OBS|INGRESS|CORE|EVENT|LLM|RAG|API|IAM|BILLING|TENANT","P99|HIGH|CRITICAL|LATENCY_SPIKE|W1M|W5M|W15M|W1H"),
+    ("REQUEST_RATE","RATE","Requests per time","OBS|INGRESS|API","RATE_SPIKE|RATE_DROP|HIGH|W1M|W5M|W15M"),
+    ("MESSAGE_RATE","RATE","Messages per time","OBS|INGRESS","RATE_SPIKE|RATE_DROP|HIGH|W1M|W5M|W15M"),
+    ("ERROR_RATE","RATE","Errors per time","OBS|INGRESS|CORE|EVENT|LLM|RAG|API|IAM|BILLING|TENANT","HIGH|CRITICAL|BURN_FAST|BURN_SLOW|W1M|W5M|W15M"),
+    ("SATURATION","RATIO","Saturation (generic)","OBS|CORE|EVENT|LLM|RAG|SUPPLY","SAT_HIGH|SAT_CRITICAL|W5M|W15M"),
+    ("CPU_UTILIZATION","RATIO","CPU utilization","OBS|CORE|EVENT|LLM|RAG|SUPPLY","SAT_HIGH|SAT_CRITICAL|W5M|W15M"),
+    ("MEMORY_UTILIZATION","RATIO","Memory utilization","OBS|CORE|EVENT|LLM|RAG|SUPPLY","SAT_HIGH|SAT_CRITICAL|W5M|W15M"),
+    ("QUEUE_DEPTH","COUNT","Queue backlog depth","OBS|EVENT","DEPTH_HIGH|DEPTH_CRITICAL|W5M|W15M|W1H"),
+    ("OUTBOX_DEPTH","COUNT","Outbox backlog depth","OBS|EVENT|CORE|BILLING","DEPTH_HIGH|DEPTH_CRITICAL|W5M|W15M|W1H"),
+    ("DLQ_COUNT","COUNT","Dead letter queue count","OBS|EVENT","DLQ_HIGH|DLQ_CRITICAL|W5M|W15M|W1H"),
+    ("RETRY_RATE","RATE","Retries per time","OBS|EVENT","RETRY_STORM|CRITICAL|W1M|W5M"),
+    ("IDEMP_HIT_RATE","RATE","Idempotency hits per time","OBS|INGRESS|EVENT|CORE","HIGH|W5M|W15M"),
+    ("DEDUPE_HIT_RATE","RATE","Deduplication hits per time","OBS|INGRESS|EVENT","HIGH|W5M|W15M"),
+    ("POLICY_DENY_RATE","RATE","Policy denies per time","OBS|LLM","HIGH|CRITICAL|W5M|W15M"),
+    ("AUTHZ_DENY_RATE","RATE","Authorization denies per time","OBS|IAM","AUTHZ_DENY_SPIKE|HIGH|CRITICAL|W5M"),
+    ("QUOTA_EXCEEDED_RATE","RATE","Quota exceeded per time","OBS|TENANT|BILLING|LLM","HIGH|W5M|W15M"),
+    ("TOKENS_PER_CONV","COUNT","Tokens per conversation","OBS|LLM","TOKEN_SPIKE|HIGH|CRITICAL|W15M"),
+    ("TOKENS_RATE","RATE","Tokens per time","OBS|LLM","TOKEN_SPIKE|HIGH|CRITICAL|W5M"),
+    ("COST_PER_TENANT","CURRENCY","Cost per tenant","OBS|LLM|BILLING","COST_SPIKE|HIGH|CRITICAL|W15M"),
+    ("LLM_LATENCY_P99","MS","LLM latency p99","OBS|LLM","LATENCY_SPIKE|HIGH|CRITICAL|W5M"),
+    ("RETRIEVAL_EMPTY_RATE","RATE","Retrieval queries with empty results","OBS|RAG","RETRIEVAL_EMPTY_SPIKE|HIGH|CRITICAL|W15M"),
+    ("RETRIEVAL_PRECISION","RATIO","Retrieval precision (eval-derived)","OBS|RAG","HIGH|W1H|W1D"),
+    ("CITATION_COVERAGE","RATIO","Citation coverage","OBS|RAG|LLM","CITATION_DROP|HIGH|CRITICAL|W15M"),
+    ("GROUNDING_FAIL_RATE","RATE","Grounding failures per time","OBS|RAG|LLM","HIGH|CRITICAL|W15M"),
+]
+df_signal_catalog = pd.DataFrame(signal_rows, columns=["signal","unit_type","description","allowed_areas","allowed_threshold_tokens"])

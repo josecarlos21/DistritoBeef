@@ -122,7 +122,7 @@ function AppContent() {
     switch (activeTab) {
       case "home":
         return <HomeView onEventClick={setSelectedEvent} onNavigate={handleTabChange} onWeather={handleWeather} onNotifications={handleNotifications} />;
-      case "social":
+      case "explore":
         return <ExploreView onEventClick={setSelectedEvent} onUserClick={setSelectedUser} />;
       case "calendar":
         return <CalendarView onEventClick={setSelectedEvent} onOpenConfig={handleConfig} />;
@@ -184,13 +184,13 @@ function AppContent() {
               </div>
 
               <nav className="flex-1 px-4 space-y-2">
-                {(['home', 'calendar', 'social', 'map', 'agenda', 'wallet'] as TabType[])
+                {(['home', 'calendar', 'explore', 'map', 'agenda', 'wallet'] as TabType[])
                   .filter(t => isAuthenticated || t !== 'wallet')
                   .map((tab) => {
                     const icons: Record<string, string> = {
                       home: 'home',
                       calendar: 'event_note',
-                      social: 'group',
+                      explore: 'explore',
                       map: 'map',
                       wallet: 'account_balance_wallet',
                       agenda: 'bookmarks'

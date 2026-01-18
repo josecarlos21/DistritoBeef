@@ -2,6 +2,7 @@
 
 // Classname utility (DRY)
 export const cx = (...x: (string | 0 | null | undefined | false)[]) => x.filter(Boolean).join(" ");
+export * from './logger';
 
 export const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
 

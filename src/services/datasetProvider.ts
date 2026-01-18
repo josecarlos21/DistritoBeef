@@ -113,7 +113,13 @@ export const loadDataset = async (forceRefresh = false): Promise<DatasetLoadResu
         const headers: Record<string, string> = {};
         if (cached?.etag) headers['If-None-Match'] = cached.etag;
 
-        const response = await fetch('/base.json', { headers });
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3s Timeout
+        const response = await fetch('/base.json', {
+            headers,
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
 
         if (response.status === 304 && cached) {
             return {

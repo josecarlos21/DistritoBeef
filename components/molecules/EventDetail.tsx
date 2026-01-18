@@ -1,7 +1,7 @@
 
 import React, { useMemo } from 'react';
 import { EventData } from '@/types';
-import { triggerHaptic, cx } from '@/utils';
+import { triggerHaptic, cx, logger } from '@/utils';
 import { getTrackStyles, getTrackLabel } from '@/utils/branding';
 import { Clock, MapPin, Bookmark, Share2, Navigation, Users, Star } from 'lucide-react';
 import { MetaHead } from '../atoms/MetaHead';
@@ -76,7 +76,7 @@ export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onActi
         alert(t('action.linkCopied', '¡Enlace copiado!'));
       }
     } catch (err) {
-      console.log('Share failed', err);
+      logger.error('Share failed', {}, err instanceof Error ? err : new Error(String(err)));
     }
   };
 

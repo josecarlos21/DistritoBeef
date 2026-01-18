@@ -1,5 +1,4 @@
-import React from 'react';
-import { Sparkles, ArrowUpRight, Phone } from 'lucide-react';
+import { ArrowUpRight, Phone } from 'lucide-react';
 import { GlassContainer } from '../atoms';
 import { triggerHaptic } from '@/utils';
 

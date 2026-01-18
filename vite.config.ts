@@ -63,7 +63,9 @@ export default defineConfig(({ mode }) => {
         'https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Montserrat:wght@900&display=swap'
       ]),
     ],
-
+    define: {
+      __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '1.5.0'),
+    },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, 'src'),

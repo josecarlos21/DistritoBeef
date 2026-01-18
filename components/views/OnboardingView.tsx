@@ -70,7 +70,7 @@ export const Onboarding: React.FC = () => {
             <div>
               <div className="text-[10px] font-black uppercase tracking-[.4em] mb-4 text-o">{t('onboarding.welcomeTo')}</div>
               <h1 className="text-4xl sm:text-5xl font-black tracking-tighter text-white mb-2 leading-[0.9] font-display">
-                DISTRICT<br /><span className="text-s"><span className="text-o">V</span>ALLARTA</span> <span className="text-[8px] text-white/30 font-bold tracking-wider">1.5.0</span>
+                DISTRICT<br /><span className="text-s"><span className="text-o">V</span>ALLARTA</span> <span className="text-[8px] text-white/30 font-bold tracking-wider">{typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '1.5.0'}</span>
               </h1>
             </div>
 

@@ -44,51 +44,97 @@ const mapColor = (track: TrackType): string => {
     }
 };
 
+import { z } from 'zod';
+import { logger } from './logger';
+
+const RawEventSchema = z.object({
+    Event_ID: z.string(),
+    Evento: z.string(),
+    Fecha: z.string(), // YYYY-MM-DD
+    Inicio: z.string().nullable().optional(), // HH:MM
+    Fin: z.string().nullable().optional(),
+    Venue: z.string().nullable().optional(),
+    Grupo: z.string().nullable().optional(),
+    Tipo: z.string().nullable().optional(),
+    'Dress code': z.string().nullable().optional(),
+    Notas: z.string().nullable().optional(),
+    'URL fuente': z.string().nullable().optional(),
+});
+
 export const mapDatasetToEvents = (data: Pick<Dataset, 'EVENTS_MASTER'>): EventData[] => {
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    return (data.EVENTS_MASTER as any[]).map(evt => {
-        const startIso = `${evt.Fecha}T${evt.Inicio || '12:00'}:00`;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const rawList = data.EVENTS_MASTER as any[];
+    const validEvents: EventData[] = [];
+
+    rawList.forEach((evt, index) => {
+        const result = RawEventSchema.safeParse(evt);
+
+        if (!result.success) {
+            logger.warn(`Skipping invalid event at index ${index}`, {
+                id: evt?.Event_ID || 'unknown',
+                errors: result.error
+            });
+            return;
+        }
+
+        const validEvt = result.data;
+
+        // Runtime Logic Safety (Prevent Date Chrashes)
+        if (!validEvt.Fecha) {
+            logger.warn(`Skipping event ${validEvt.Event_ID}: Missing Date`);
+            return;
+        }
+
+        const startHour = validEvt.Inicio || '12:00';
+        const startIso = `${validEvt.Fecha}T${startHour}:00`;
+
+        // Validate Date Validity
+        if (isNaN(new Date(startIso).getTime())) {
+            logger.warn(`Skipping event ${validEvt.Event_ID}: Invalid Date Format (${startIso})`);
+            return;
+        }
+
         let endIso = '';
 
-        if (evt.Fin) {
-            // Check for midnight crossover
-            // If end hour is significantly smaller than start hour (e.g. 03 vs 21), assume next day
-            // Or if explicit date is same, but time is earlier.
-
-            // Simple approach: Construct dates
+        if (validEvt.Fin) {
             const startDate = new Date(startIso);
-            const endDate = new Date(`${evt.Fecha}T${evt.Fin}:00`);
+            const endDateString = `${validEvt.Fecha}T${validEvt.Fin}:00`;
+            const endDate = new Date(endDateString);
 
-            if (endDate < startDate) {
-                // Determine if this is a crossover (end time is simply next day)
-                // Add 1 day to endDate
-                endDate.setDate(endDate.getDate() + 1);
+            if (isNaN(endDate.getTime())) {
+                // Fallback if end time is weird
+                endIso = new Date(startDate.getTime() + 3 * 3600 * 1000).toISOString();
+            } else {
+                if (endDate < startDate) {
+                    endDate.setDate(endDate.getDate() + 1);
+                }
+                endIso = endDate.toISOString().split('.')[0];
             }
-            endIso = endDate.toISOString().split('.')[0];
         } else {
-            // Default duration 3h
             const startDate = new Date(startIso);
             startDate.setHours(startDate.getHours() + 3);
             endIso = startDate.toISOString().split('.')[0];
         }
 
-        const track = mapTrack(evt.Grupo || '');
+        const track = mapTrack(validEvt.Grupo || '');
 
-        return {
-            id: evt.Event_ID,
-            title: evt.Evento,
-            venue: evt.Venue,
+        validEvents.push({
+            id: validEvt.Event_ID,
+            title: validEvt.Evento,
+            venue: validEvt.Venue || 'TBA',
             track,
             category: track === 'beefdip' ? 'beef' : 'community',
             start: startIso,
             end: endIso,
-            dress: evt['Dress code'] || 'Casual',
+            dress: validEvt['Dress code'] || 'Casual',
             color: mapColor(track),
-            image: mapImage(evt.Tipo || '', evt.Venue || ''),
-            description: evt.Notas || '',
-            url: evt['URL fuente']
-        };
+            image: mapImage(validEvt.Tipo || '', validEvt.Venue || ''),
+            description: validEvt.Notas || '',
+            url: validEvt['URL fuente'] || undefined
+        });
     });
+
+    return validEvents;
 };
 
 export const getLocalEvents = async (): Promise<EventData[]> => {

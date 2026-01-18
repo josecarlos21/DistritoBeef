@@ -1,9 +1,9 @@
 
 import React, { useMemo } from 'react';
-import { MapPin, Award, Info, ArrowRight, Bell, CloudSun } from 'lucide-react';
+import { MapPin, Bell, CloudSun } from 'lucide-react';
 import { EventData, TabType } from '@/types';
-import { cx, triggerHaptic } from '@/utils';
-import { Badge, GlassContainer, Skeleton, BentoSkeleton } from '../atoms';
+import { triggerHaptic } from '@/utils';
+import { Badge, Skeleton, BentoSkeleton } from '../atoms';
 import { PullToRefresh, AdCard } from '../molecules';
 import { UnifiedHeader, HeaderAction } from '../organisms';
 import { useLocale } from '@/context/LocaleContext';
@@ -16,7 +16,7 @@ interface HomeViewProps {
   onNotifications: () => void;
 }
 
-export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, _onNavigate, onWeather, onNotifications }) => {
+export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate: _onNavigate, onWeather, onNotifications }) => {
   const { events, status } = useDataset();
   const { t } = useLocale();
 

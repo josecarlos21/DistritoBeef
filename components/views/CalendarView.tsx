@@ -170,7 +170,7 @@ export const CalendarView = ({
    onOpenConfig: () => void
 }) => {
    const todayRef = useRef<HTMLDivElement>(null);
-   const [isCompact, setIsCompact] = useState(true);
+   const [isCompact, setIsCompact] = useState(false); // Default to Detailed/Bento View
    const { t, formatFullDate, formatTime } = useLocale();
    const { events } = useDataset();
 
@@ -281,7 +281,7 @@ export const CalendarView = ({
          />
 
          {/* Grouped List */}
-         <div className="flex-1 overflow-y-auto no-scrollbar pt-44 pb-40 px-[var(--space-md)] sm:px-[var(--space-lg)] md:px-[var(--space-xl)] scroll-smooth z-0">
+         <div className="flex-1 overflow-y-auto no-scrollbar pt-44 pb-60 px-[var(--space-md)] sm:px-[var(--space-lg)] md:px-[var(--space-xl)] scroll-smooth z-0">
             <div className="max-w-7xl mx-auto space-y-[var(--space-xs)]" role="list">
 
                {groupedEvents.map((group, _) => (

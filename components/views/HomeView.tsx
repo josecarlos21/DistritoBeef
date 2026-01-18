@@ -4,7 +4,7 @@ import { MapPin, Award, Info, ArrowRight, Bell, CloudSun } from 'lucide-react';
 import { EventData, TabType } from '@/types';
 import { cx, triggerHaptic } from '@/utils';
 import { Badge, GlassContainer } from '../atoms';
-import { PullToRefresh } from '../molecules';
+import { PullToRefresh, AdCard } from '../molecules';
 import { UnifiedHeader, HeaderAction } from '../organisms';
 import { useLocale } from '@/context/LocaleContext';
 import { useDataset } from '@/context/DatasetContext';
@@ -18,10 +18,33 @@ interface HomeViewProps {
 
 export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate, onWeather, onNotifications }) => {
   const { events } = useDataset();
-  const featuredEvent = useMemo(() => {
+
+  const { heroEvent, gridEvents } = useMemo(() => {
     const now = new Date();
-    const currentOrFuture = events.filter((e: EventData) => new Date(e.end).getTime() > now.getTime());
-    return currentOrFuture.find((e: EventData) => e.isFeatured) || currentOrFuture[0] || events[0];
+    // 1. Filter Active (Live) or imminent (next 2h)
+    let activeEvents = events.filter((e) => {
+      const start = new Date(e.start);
+      const end = new Date(e.end);
+      // It is live OR starts in next 2 hours
+      return (now >= start && now <= end) || (start > now && start.getTime() - now.getTime() < 7200000);
+    });
+
+    // 2. If no active events, fallback to any future event to populate grid
+    if (activeEvents.length === 0) {
+      activeEvents = events.filter(e => new Date(e.end).getTime() > now.getTime()).slice(0, 4);
+    }
+
+    // 3. Sort by Duration (Longest first gets Hero spot)
+    activeEvents.sort((a, b) => {
+      const durA = new Date(a.end).getTime() - new Date(a.start).getTime();
+      const durB = new Date(b.end).getTime() - new Date(b.start).getTime();
+      return durB - durA;
+    });
+
+    return {
+      heroEvent: activeEvents[0] || null,
+      gridEvents: activeEvents.slice(1, 5) // Next 4 events for grid
+    };
   }, [events]);
   const { t } = useLocale();
 
@@ -55,85 +78,78 @@ export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate, on
       <PullToRefresh onRefresh={refreshData}>
         <div className="max-w-7xl mx-auto space-y-[var(--space-lg)] pb-40 pt-36 px-[var(--space-md)] md:px-[var(--space-lg)] xl:px-[var(--space-xl)] animate-in fade-in slide-in-from-bottom-4 duration-500">
 
-          {/* Featured Card - Now the Hero element */}
-          <div>
-            <div className="mb-[var(--space-sm)] flex items-center justify-between px-2">
+          {/* Bento Grid - Live Now */}
+          <div className="space-y-[var(--space-sm)]">
+            <div className="flex items-center justify-between px-2">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-ok animate-pulse shadow-[0_0_8px_var(--ok)]" />
                 <span className="text-[10px] font-black uppercase tracking-[.2em] text-m">{t('home.happeningNow')}</span>
               </div>
             </div>
 
-            {featuredEvent && (
-              <button
-                type="button"
-                onClick={() => { triggerHaptic('medium'); onEventClick(featuredEvent); }}
-                className={cx(
-                  "relative w-full h-[500px] overflow-hidden border transition-all duration-300 rounded-[32px] group transform-gpu text-left border-white/10",
-                  "active:scale-[.995] hover:scale-[1.01] hover:shadow-bento focus:scale-[1.01] outline-none",
-                  "shadow-bento"
-                )}
-              >
-                <img
-                  src={featuredEvent.image}
-                  className="absolute inset-0 w-full h-full object-cover grayscale-[10%] scale-[1.03] group-hover:scale-[1.06] transition-transform duration-700 ease-out will-change-transform"
-                  alt="Destacado"
-                  loading="eager"
-                />
-                <div className="absolute inset-0 hero-gradient" />
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[minmax(180px,auto)]">
+              {/* Hero Event (Longest Duration) */}
+              {heroEvent && (
+                <button
+                  type="button"
+                  onClick={() => { triggerHaptic('medium'); onEventClick(heroEvent); }}
+                  className="col-span-2 row-span-2 relative w-full h-[400px] md:h-auto overflow-hidden border transition-all duration-300 rounded-[32px] group transform-gpu text-left border-white/10 active:scale-[.995] hover:scale-[1.01] hover:shadow-bento focus:scale-[1.01] outline-none shadow-bento"
+                >
+                  <img
+                    src={heroEvent.image}
+                    className="absolute inset-0 w-full h-full object-cover grayscale-[10%] scale-[1.03] group-hover:scale-[1.06] transition-transform duration-700 ease-out"
+                    alt="Destacado"
+                  />
+                  <div className="absolute inset-0 hero-gradient" />
 
-                <div className="absolute top-6 left-6 flex gap-2">
-                  <Badge label={t('home.featured')} dot track="featured" />
-                  <Badge label={featuredEvent.track} />
-                </div>
-
-                <div className="absolute bottom-10 left-8 right-8 cursor-pointer">
-                  <div className="text-5xl font-black uppercase tracking-tighter leading-[.85] font-display drop-shadow-2xl text-tx group-hover:scale-[1.02] transition-transform duration-500 origin-left">{featuredEvent.title}</div>
-                  <div className="flex items-center gap-3 mt-6 mb-10 text-s bg-black/30 backdrop-blur-md w-fit px-4 py-2 rounded-2xl border border-white/5">
-                    <MapPin size={20} className="text-o" strokeWidth={3} />
-                    <span className="text-sm font-black tracking-[.1em] uppercase text-white shadow-black drop-shadow-md">{featuredEvent.venue}</span>
+                  <div className="absolute top-6 left-6 flex gap-2">
+                    <Badge label="EN VIVO" dot track="featured" />
+                    <Badge label={heroEvent.track} />
                   </div>
 
-                  <div className="flex gap-4">
-                    <div
-                      className="flex-1 h-14 rounded-2xl font-black uppercase tracking-[.22em] text-[11px] flex items-center justify-center gap-3 shadow-xl backdrop-blur-xl bg-[rgba(255,159,69,0.95)] text-black active:scale-95 transition-all"
-                    >
-                      <Info size={18} strokeWidth={3} />
-                      {t('home.viewInfo')}
-                    </div>
-                    <div className="h-14 w-14 rounded-2xl bg-white/10 backdrop-blur-xl flex items-center justify-center border border-white/10 hover:bg-white/20 transition-colors">
-                      <ArrowRight size={24} className="text-white" />
+                  <div className="absolute bottom-8 left-6 right-6">
+                    <div className="text-4xl md:text-5xl font-black uppercase tracking-tighter leading-[.9] font-display drop-shadow-2xl text-tx mb-4">{heroEvent.title}</div>
+                    <div className="flex items-center gap-2 text-white/80">
+                      <MapPin size={16} className="text-o" />
+                      <span className="text-xs font-bold uppercase tracking-wider">{heroEvent.venue}</span>
                     </div>
                   </div>
-                </div>
-              </button>
-            )}
+                </button>
+              )}
+
+              {/* Secondary Grid Events */}
+              {gridEvents.map((event) => (
+                <button
+                  key={event.id}
+                  type="button"
+                  onClick={() => { triggerHaptic('light'); onEventClick(event); }}
+                  className="col-span-1 row-span-1 relative h-48 md:h-64 overflow-hidden border transition-all duration-300 rounded-[28px] group transform-gpu text-left border-white/10 active:scale-[.98] hover:scale-[1.02] shadow-lg bg-[#1a1614]"
+                >
+                  <img
+                    src={event.image}
+                    className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity duration-500"
+                    alt={event.title}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+
+                  <div className="absolute top-3 left-3">
+                    <Badge label={event.track} />
+                  </div>
+
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <div className="text-lg font-black uppercase leading-none font-display text-white mb-1 line-clamp-2">{event.title}</div>
+                    <div className="text-[9px] font-bold uppercase tracking-wider text-white/60 truncate">{event.venue}</div>
+                  </div>
+                </button>
+              ))}
+
+              {/* Ad Card - Always present in the grid */}
+              <div className="col-span-1 row-span-1 h-48 md:h-64">
+                <AdCard />
+              </div>
+
+            </div>
           </div>
-
-          <hr className="border-t border-white/5 mx-2 my-8" />
-
-          {/* Live Status Widgets */}
-          <ul className="grid grid-cols-2 lg:grid-cols-4 gap-[var(--space-md)] list-none">
-            <li>
-              <button
-                type="button"
-                onClick={() => { triggerHaptic('light'); onNavigate('social'); }}
-                className="w-full text-left group relative outline-none focus:scale-[1.02] transition-transform"
-              >
-                <div className="absolute inset-0 bg-[var(--s)] opacity-0 group-hover:opacity-5 rounded-[28px] transition-opacity duration-500" />
-                <GlassContainer className="p-8 h-full transition-colors duration-300 border-white/5 group-hover:bg-white/5 flex flex-col justify-between min-h-[160px]">
-                  <div className="text-[10px] font-black uppercase tracking-[.25em] text-s opacity-70 leading-none">{t('home.vibe')}</div>
-                  <div>
-                    <div className="flex items-center gap-3 mt-4">
-                      <Award size={24} className="text-o" strokeWidth={3} />
-                      <div className="text-3xl font-black font-display text-tx tracking-tighter uppercase">{t('home.top')}</div>
-                    </div>
-                    <div className="mt-3 text-[10px] font-black uppercase tracking-widest text-m opacity-60 leading-tight">{t('home.goodVibe')}</div>
-                  </div>
-                </GlassContainer>
-              </button>
-            </li>
-          </ul>
         </div>
       </PullToRefresh >
     </>

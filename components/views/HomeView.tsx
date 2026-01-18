@@ -23,31 +23,76 @@ export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate: _o
 
   const { heroEvent, gridEvents } = useMemo(() => {
     const now = new Date();
-    // 1. Filter Active (Live) or imminent (next 2h)
-    let activeEvents = events.filter((e) => {
+    const currentHour = now.getHours();
+
+    // Define Time Blocks
+    const isMorning = currentHour >= 5 && currentHour < 12;
+    const isAfternoon = currentHour >= 12 && currentHour < 19;
+    const isEvening = currentHour >= 19 || currentHour < 2;
+
+    // Helper to score events suitability for the Hero spot based on time
+    const getEventScore = (e: EventData) => {
       const start = new Date(e.start);
       const end = new Date(e.end);
-      // It is live OR starts in next 2 hours
-      return (now >= start && now <= end) || (start > now && start.getTime() - now.getTime() < 7200000);
-    });
+      let score = 0;
 
-    // 2. If no active events, fallback to any future event to populate grid
-    if (activeEvents.length === 0) {
-      activeEvents = events.filter(e => new Date(e.end).getTime() > now.getTime()).slice(0, 4);
-    }
+      // 1. STATUS: Is it Live? (CRITICAL)
+      const isLive = now >= start && now <= end;
+      if (isLive) score += 100;
 
-    // 3. Sort by Duration (Longest first gets Hero spot)
-    activeEvents.sort((a, b) => {
-      const durA = new Date(a.end).getTime() - new Date(a.start).getTime();
-      const durB = new Date(b.end).getTime() - new Date(b.start).getTime();
-      return durB - durA;
-    });
+      // 2. STATUS: Starts Soon? (< 2 hours)
+      const msUntilStart = start.getTime() - now.getTime();
+      const startsSoon = msUntilStart > 0 && msUntilStart < 7200000;
+      if (startsSoon) score += 50;
+
+      // 3. TIME RELEVANCE (Vibe Match)
+      // Even if not live, is it appropriate for *now*?
+      const eventHour = start.getHours();
+
+      if (isMorning) {
+        // Morning: Prioritize events starting 6am-11am (Yoga, Brunch)
+        if (eventHour >= 6 && eventHour < 12) score += 20;
+      } else if (isAfternoon) {
+        // Afternoon: Prioritize 12pm-6pm (Pool, Beach)
+        if (eventHour >= 12 && eventHour < 18) score += 20;
+      } else if (isEvening) {
+        // Evening: Prioritize 7pm-2am (Dinner, Parties)
+        if (eventHour >= 19 || eventHour < 2) score += 20;
+      }
+
+      // 4. DURATION (Longer main events often better for Hero than quick ones)
+      const durationHours = (end.getTime() - start.getTime()) / 3600000;
+      if (durationHours > 3) score += 5;
+
+      // 5. FUTURE PENALTY: Don't show things days away if possible
+      const hoursUntil = msUntilStart / 3600000;
+      if (hoursUntil > 24) score -= 50;
+
+      return score;
+    };
+
+    // Filter relevant events (Live OR Future)
+    let candidates = events.filter(e => new Date(e.end) > now);
+
+    // Sort by Score
+    candidates.sort((a, b) => getEventScore(b) - getEventScore(a));
+
+    // Fallback: If top score is low (no live/soon events), ensure we stick to chronological for the future
+    // But for the HERO, we strictly want the highest score.
 
     return {
-      heroEvent: activeEvents[0] || null,
-      gridEvents: activeEvents.slice(1, 5) // Next 4 events for grid
+      heroEvent: candidates[0] || null,
+      gridEvents: candidates.slice(1, 5)
     };
   }, [events]);
+
+  const greeting = useMemo(() => {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) return 'home.morning';
+    if (hour >= 12 && hour < 19) return 'home.afternoon';
+    if (hour >= 19 || hour < 2) return 'home.evening';
+    return 'home.party';
+  }, []);
 
   if (status === 'loading') {
     return (
@@ -102,7 +147,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate: _o
             <div className="flex items-center justify-between px-2">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-ok animate-pulse shadow-[0_0_8px_var(--ok)]" />
-                <span className="text-[10px] font-black uppercase tracking-[.2em] text-m">{t('home.happeningNow')}</span>
+                <span className="text-[10px] font-black uppercase tracking-[.2em] text-m">{t(greeting)}</span>
               </div>
             </div>
 

@@ -16,20 +16,9 @@ interface HomeViewProps {
   onNotifications: () => void;
 }
 
-export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate, onWeather, onNotifications }) => {
+export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, _onNavigate, onWeather, onNotifications }) => {
   const { events, status } = useDataset();
-
-  if (status === 'loading') {
-    return (
-      <div className="h-full bg-theme-main flex flex-col pt-24 sm:pt-32 animate-in fade-in duration-500">
-        <div className="px-5 mb-8 space-y-2">
-          <Skeleton variant="text" className="h-4 w-24" />
-          <Skeleton variant="text" className="h-10 w-64" />
-        </div>
-        <BentoSkeleton />
-      </div>
-    );
-  }
+  const { t } = useLocale();
 
   const { heroEvent, gridEvents } = useMemo(() => {
     const now = new Date();
@@ -58,7 +47,18 @@ export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate, on
       gridEvents: activeEvents.slice(1, 5) // Next 4 events for grid
     };
   }, [events]);
-  const { t } = useLocale();
+
+  if (status === 'loading') {
+    return (
+      <div className="h-full bg-theme-main flex flex-col pt-24 sm:pt-32 animate-in fade-in duration-500">
+        <div className="px-5 mb-8 space-y-2">
+          <Skeleton variant="text" className="h-4 w-24" />
+          <Skeleton variant="text" className="h-10 w-64" />
+        </div>
+        <BentoSkeleton />
+      </div>
+    );
+  }
 
   const refreshData = async () => {
     // Simulate data refresh

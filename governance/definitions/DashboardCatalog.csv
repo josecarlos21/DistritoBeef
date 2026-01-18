@@ -1,0 +1,3 @@
+dashboard_doc_name,area,notes
+SRE-GS-OBS-DOC-DESIGN-DASHBOARD_INGRESS,INGRESS,Golden signals + ingress-specific
+SRE-GS-OBS-DOC-DESIGN-DASHBOARD_CORE,CORE,Golden signals + core-specific

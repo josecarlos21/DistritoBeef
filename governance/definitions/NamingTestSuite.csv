@@ -1,0 +1,3 @@
+expected,example_name,reason
+ALLOW,OTEL-LOG-INGRESS-WEBHOOK_RECEIVED,Valid ingress log event
+DENY,OTEL-METRIC-INGRESS-DLQ_COUNT,DLQ is EVENT-only metric

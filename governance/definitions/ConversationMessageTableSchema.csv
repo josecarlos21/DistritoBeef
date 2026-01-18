@@ -1,0 +1,6 @@
+column_name,data_type,nullable,semantics,index_hint
+message_id,STRING,NO,PK (ULID/UUID),INDEX
+conversation_id,STRING,NO,Conversation thread FK,INDEX
+user_id,STRING,YES,End-user identifier,INDEX
+content_text,STRING,YES,Text content,
+is_pii,BOOLEAN,YES,PII detected,INDEX

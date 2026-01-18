@@ -1,0 +1,4 @@
+rule_id,severity,semantics,scope
+PREFIX_REQUIRED,ERROR,All artifacts must begin with allowed prefix,GLOBAL
+ROOT_COMPATIBLE,ERROR,Prefix must be allowed for the root namespace,GLOBAL
+NO_AMBIGUOUS_TOKENS,WARN,Disallow MISC/TEMP/NEW/OLD/FIX in names,GLOBAL

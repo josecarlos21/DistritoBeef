@@ -47,8 +47,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const isValid = DEMO_PINS.includes(pin);
 
         if (isValid) {
-            logger.info('Successful PIN validation', {
-                pinLength: pin.length,
+            logger.info('User Authenticated via PIN', {
+                timestamp: new Date().toISOString(),
+                method: 'PIN',
                 remaining: limitCheck.remaining,
             });
             // Reset rate limit on successful auth

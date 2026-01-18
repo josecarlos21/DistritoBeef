@@ -1,0 +1,14 @@
+root_token,semantics,owner_domain,criticality
+INGRESS,API Gateway & Load Balancing,Platform,CRITICAL
+CORE,Core Application Logic,Product,CRITICAL
+IAM,Identity & Access Management,Security,CRITICAL
+BILLING,Payments & Subscriptions,Finance,HIGH
+TENANT,Tenant Isolation & Config,Platform,HIGH
+LLM,LLM Orchestration & Inference,AI,HIGH
+RAG,Retrieval Augmented Gen,AI,HIGH
+EVENT,Event Bus & Messaging,Platform,CRITICAL
+OBS,Observability Pipeline,SRE,HIGH
+SEC,Security Scanners & WAF,Security,CRITICAL
+SUPPLY,Software Supply Chain,DevOps,MED
+API,Public API Surface,Product,HIGH
+CLIENT,Web & Mobile Clients,Product,MED

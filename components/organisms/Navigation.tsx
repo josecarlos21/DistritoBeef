@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Home, Calendar, Map as MapIcon, Wallet, User, Compass } from 'lucide-react';
+import { Home, Calendar, Map as MapIcon, Wallet, Compass } from 'lucide-react';
 import { TabType } from '@/types';
 import { GlassContainer } from '../atoms';
 import { cx, triggerHaptic } from '@/utils';

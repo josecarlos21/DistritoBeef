@@ -10,7 +10,7 @@
 
 DistritoBeef is a Progressive Web App (PWA) designed to provide a premium, fluid experience for attendees of BeefDip Bear Week and visitors to Puerto Vallarta's Zona Romántica. It features an interactive map, event schedule, wallet system, and community recommendations.
 
-> **Note:** This project currently operates in **"Demo Mode"**. Authentication and data persistence are simulated client-side for demonstration purposes.
+> **Architecture**: This project operates on a **"Local-First & Privacy-Focused"** architecture. All data persistence happens on the user's device (IndexedDB), ensuring high performance and zero-latency even with spotty connectivity.
 
 ## 🛠 Technical Stack
 

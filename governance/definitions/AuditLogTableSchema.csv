@@ -1,0 +1,5 @@
+column_name,data_type,nullable,semantics,index_hint
+audit_id,STRING,NO,PK (ULID),INDEX
+actor_id,STRING,YES,Actor id,
+decision_type,STRING,NO,Decision/action type,INDEX
+created_at,TIMESTAMP,NO,Created,INDEX

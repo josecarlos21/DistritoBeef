@@ -1,17 +1,17 @@
 /**
- * Structured Logger with Trace Context Support
+ * Structured Logger with Governance SDK Support
  * 
  * Provides type-safe logging with automatic trace context injection
- * and support for different log levels.
- * 
- * Note: OpenTelemetry integration can be added later via @opentelemetry/api
+ * and enforcement of Semantic Prefixes (SSOT).
  */
 
-// Simplified trace context for now (can be replaced with OTel later)
-interface TraceContext {
-    traceId?: string;
-    spanId?: string;
-}
+import {
+    GovernanceScope,
+    TelemetryPrefix,
+    EventDescriptor,
+    TelemetryEvent,
+    validateEvent
+} from '@/lib/governance';
 
 export enum LogLevel {
     DEBUG = 0,
@@ -20,6 +20,9 @@ export enum LogLevel {
     ERROR = 3,
     CRITICAL = 4,
 }
+
+// Re-export SDK types for consumers
+export { GovernanceScope, TelemetryPrefix, EventDescriptor };
 
 interface LogContext {
     userId?: string;
@@ -33,6 +36,7 @@ interface LogEntry {
     timestamp: string;
     level: string;
     message: string;
+    telemetry?: TelemetryEvent; // Optional structured telemetry
     context: LogContext;
     error?: {
         name: string;
@@ -48,20 +52,27 @@ class Logger {
         this.minLevel = minLevel;
     }
 
-    private getTraceContext(): TraceContext {
-        // Simple trace ID generation (can be replaced with OTel later)
+    private getTraceContext(): { traceId?: string } {
+        // Simple trace ID generation
         return {
-            traceId: crypto.randomUUID?.() || Date.now().toString(36),
+            traceId: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36),
         };
     }
 
-    private log(level: LogLevel, message: string, ctx: LogContext = {}, error?: Error): void {
+    private log(level: LogLevel, message: string, ctx: LogContext = {}, error?: Error, telemetry?: TelemetryEvent): void {
         if (level < this.minLevel) return;
+
+        // Governance Validation on Telemetry
+        if (telemetry && !validateEvent(telemetry)) {
+            console.warn(`[GOVERNANCE VIOLATION] Invalid telemetry event: ${JSON.stringify(telemetry)}`);
+            // We still log, but flag it locally
+        }
 
         const entry: LogEntry = {
             timestamp: new Date().toISOString(),
             level: LogLevel[level],
             message,
+            telemetry,
             context: {
                 ...ctx,
                 ...this.getTraceContext(),
@@ -76,12 +87,17 @@ class Logger {
             };
         }
 
-        // Console output for development
+        // Console output
         const logFn = level >= LogLevel.ERROR ? console.error :
             level === LogLevel.WARN ? console.warn :
                 console.log;
 
-        logFn(JSON.stringify(entry));
+        // Dev-friendly output
+        if (import.meta.env.DEV) {
+            logFn(`[${LogLevel[level]}] ${message}`, entry);
+        } else {
+            logFn(JSON.stringify(entry));
+        }
 
         // Send ERROR+ to analytics in production
         if (level >= LogLevel.ERROR && import.meta.env.PROD) {
@@ -91,7 +107,6 @@ class Logger {
 
     private async sendToAnalytics(entry: LogEntry): Promise<void> {
         try {
-            // Send to Cloudflare Workers Analytics or similar
             await fetch('/api/logs', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -101,6 +116,8 @@ class Logger {
             console.error('Failed to send log to analytics:', err);
         }
     }
+
+    // --- Standard Methods ---
 
     debug(message: string, context?: LogContext): void {
         this.log(LogLevel.DEBUG, message, context);
@@ -120,6 +137,22 @@ class Logger {
 
     critical(message: string, context?: LogContext, error?: Error): void {
         this.log(LogLevel.CRITICAL, message, context, error);
+    }
+
+    // --- Governance-Aware Methods ---
+
+    /**
+     * Log a strictly typed telemetry event
+     */
+    track(
+        prefix: TelemetryPrefix,
+        scope: GovernanceScope,
+        descriptor: EventDescriptor,
+        value?: number,
+        unit?: string
+    ) {
+        const event: TelemetryEvent = { prefix, scope, descriptor, value, unit };
+        this.log(LogLevel.INFO, `[TELEM] ${prefix}-${scope}-${descriptor}`, {}, undefined, event);
     }
 }
 

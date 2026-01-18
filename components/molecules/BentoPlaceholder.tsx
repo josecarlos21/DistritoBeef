@@ -1,7 +1,7 @@
 import React from 'react';
 import { X, Sparkles } from 'lucide-react';
 import { GlassContainer } from '../atoms';
-import { cx, triggerHaptic } from '@/utils';
+import { triggerHaptic } from '@/utils';
 
 interface BentoPlaceholderProps {
     isOpen: boolean;

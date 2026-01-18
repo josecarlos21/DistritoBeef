@@ -1,0 +1,9 @@
+root_token,allowed_prefixes,conditionals
+INGRESS,OTEL|SRE|SEC|UX,None
+CORE,OTEL|SRE|BIZ|DATA,No AI prefixes
+IAM,OTEL|SRE|SEC,Strict audit requirements
+BILLING,OTEL|SRE|BIZ|SEC,PCI context
+LLM,OTEL|SRE|AI|SEC,Full AI suite
+RAG,OTEL|SRE|AI|DATA,Data heavy
+EVENT,OTEL|SRE,Tracing mandatory
+SEC,SRE|SEC|DATA,Self-monitoring

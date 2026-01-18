@@ -80,7 +80,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({ onEventClick, onUserCl
         }
         right={
           isSearchOpen ? (
-            <HeaderAction onClick={handleCloseSearch}>
+            <HeaderAction onClick={handleCloseSearch} ariaLabel={t('action.close', 'Cerrar búsqueda')}>
               <X size={20} strokeWidth={2.5} />
             </HeaderAction>
           ) : (

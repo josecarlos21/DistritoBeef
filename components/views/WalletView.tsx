@@ -1,12 +1,11 @@
 
-import React, { useMemo, useState, useEffect } from 'react';
-import { ShieldCheck, HelpCircle, SlidersHorizontal, User as UserIcon, QrCode } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { HelpCircle, SlidersHorizontal, User as UserIcon } from 'lucide-react';
 import { GlassContainer, Badge } from '../atoms';
 import { UnifiedHeader, HeaderTitle, HeaderAction } from '../organisms';
 import { triggerHaptic, cx } from '@/utils';
 import { useLocale } from '@/context/LocaleContext';
 import { useAuth } from '@/context/AuthContext';
-import { Apple, Facebook, X as XIcon, Key } from 'lucide-react';
 import { BackupPanel } from '../molecules/BackupPanel';
 
 interface WalletViewProps {

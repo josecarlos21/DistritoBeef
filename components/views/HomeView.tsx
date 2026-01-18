@@ -3,7 +3,7 @@ import React, { useMemo, useState } from 'react';
 import { MapPin, Bell, CloudSun, Loader2 } from 'lucide-react';
 import { EventData, TabType } from '@/types';
 import { triggerHaptic } from '@/utils';
-import { Badge, Skeleton, BentoSkeleton } from '../atoms';
+import { Badge, Skeleton } from '../atoms';
 import { PullToRefresh, AdCard, BentoPlaceholder } from '../molecules';
 import { UnifiedHeader, HeaderAction } from '../organisms';
 import { useLocale } from '@/context/LocaleContext';
@@ -16,7 +16,7 @@ interface HomeViewProps {
   onNotifications: () => void;
 }
 
-export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate: _onNavigate, onWeather, onNotifications }) => {
+export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate: _onNavigate, onWeather, onNotifications: _onNotifications }) => {
   const { events, status } = useDataset();
   const { t } = useLocale();
   const [showPlaceholder, setShowPlaceholder] = useState<string | null>(null);
@@ -72,7 +72,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate: _o
     };
 
     // Filter relevant events (Live OR Future)
-    let candidates = events.filter(e => new Date(e.end) > now);
+    const candidates = events.filter(e => new Date(e.end) > now);
 
     // Sort by Score
     candidates.sort((a, b) => getEventScore(b) - getEventScore(a));

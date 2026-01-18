@@ -1,0 +1,13 @@
+signal_name,base_descriptor,unit,data_type
+LATENCY_P99,LATENCY,ms,float
+LATENCY_P50,LATENCY,ms,float
+ERROR_COUNT,ERROR_RATE,count,int
+ERROR_PERCENT,ERROR_RATE,percent,float
+CPU_USAGE,SATURATION,percent,float
+MEM_USAGE,SATURATION,bytes,int
+QUEUE_SIZE,QUEUE_DEPTH,count,int
+DLQ_COUNT,QUEUE_DEPTH,count,int
+TOKENS_IN,TOKEN_COUNT,count,int
+TOKENS_OUT,TOKEN_COUNT,count,int
+COST_USD,COST,usd,decimal
+CITATION_DOCS,RELEVANCE_SCORE,count,int

@@ -1,0 +1,11 @@
+token,token_category,semantics,applies_to
+LOW,SEVERITY,Low severity threshold,generic
+MED,SEVERITY,Medium severity threshold,generic
+HIGH,SEVERITY,High severity threshold,generic
+CRITICAL,SEVERITY,Critical threshold,generic
+OK,STATE,Normal state token,generic
+P50,PERCENTILE,Percentile p50 token,latency
+P95,PERCENTILE,Percentile p95 token,latency
+P99,PERCENTILE,Percentile p99 token,latency
+BURN_FAST,SLO,Fast burn rate token,slo
+BURN_SLOW,SLO,Slow burn rate token,slo

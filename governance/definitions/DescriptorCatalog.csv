@@ -1,0 +1,24 @@
+descriptor_token,category,semantics,applies_to
+LATENCY,SIGNAL,Time taken to process request,generic
+ERROR_RATE,SIGNAL,Fraction of failed requests,generic
+AVAILABILITY,SIGNAL,Uptime percentage,generic
+THROUGHPUT,SIGNAL,Requests per second,generic
+SATURATION,SIGNAL,Resource utilization (cpu/mem),generic
+QUEUE_DEPTH,SIGNAL,Items pending in queue,async
+LAG,SIGNAL,Time delay in processing,async
+JITTER,SIGNAL,Variance in latency,network
+PACKET_LOSS,SIGNAL,Dropped network packets,network
+CACHE_HIT,SIGNAL,Cache hit count,storage
+CACHE_MISS,SIGNAL,Cache miss count,storage
+DB_CONN,SIGNAL,Database connections,storage
+TOKEN_COUNT,AI,LLM Token usage,llm
+COST,AI,Inference cost,llm
+HALLUCINATION_RATE,AI,Detected fabrications,llm
+RELEVANCE_SCORE,AI,RAG retrieval relevance,rag
+TOXICITY_SCORE,AI,Safety check score,safety
+LOGIN_SUCCESS,AUTH,Successful logins,iam
+LOGIN_FAIL,AUTH,Failed login attempts,iam
+MFA_CHALLENGE,AUTH,MFA requests,iam
+ACL_DENY,AUTH,Access denied events,iam
+ORDER_TOTAL,BIZ,Order value,billing
+SUB_STATUS,BIZ,Subscription state,billing

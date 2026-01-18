@@ -199,7 +199,7 @@ export const Onboarding: React.FC = () => {
         )}
       </div>
       <div className="mt-12 pb-4 text-center z-10 opacity-40">
-        <p className="text-[7px] text-f uppercase tracking-wider leading-relaxed max-w-xs sm:max-w-md mx-auto">
+        <p className="text-[9px] text-f uppercase tracking-wider leading-relaxed max-w-xs sm:max-w-md mx-auto">
           AVISO LEGAL: Esta aplicación opera exclusivamente como una herramienta informativa de itinerario y guía.
           No está afiliada oficialmente con los organizadores de los eventos.
           La información puede cambiar sin previo aviso.

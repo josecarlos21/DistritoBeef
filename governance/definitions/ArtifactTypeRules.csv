@@ -1,0 +1,4 @@
+artifact_type,semantics,allowed_roots,allowed_prefixes,naming_pattern
+DOC-SPEC,Specification document,ALL,CSF|80053,DOC-SPEC
+ALERT,Alert definition,OBS|OPS,SRE-ALERT,SRE-ALERT-*
+LOG,Log event name,ALL_RUNTIME,OTEL-LOG,OTEL-LOG-<AREA>-<DESCRIPTOR>

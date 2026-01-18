@@ -1,11 +1,11 @@
 import React, { forwardRef } from 'react';
-import { EventData, UserData } from '@/types';
+import { EventData } from '@/types';
 import { getFullDateLabel, formatTime } from '@/utils';
 import { ShieldCheck } from 'lucide-react';
 
 interface AgendaShareCardProps {
     events: EventData[];
-    user: UserData | null;
+    user: { name: string } | null;
 }
 
 export const AgendaShareCard = forwardRef<HTMLDivElement, AgendaShareCardProps>(({ events, user }, ref) => {

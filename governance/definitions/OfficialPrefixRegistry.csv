@@ -1,0 +1,8 @@
+prefix,semantics,usage_scope,allowed_roots,notes
+OTEL,OpenTelemetry Observability Signals,GLOBAL,ALL,Standard prefix for all telemetry
+SRE,Site Reliability Engineering Controls,GLOBAL,OBS|INFRA|CORE,"SLOs, Alerts, Incidents"
+SEC,Security & Compliance Controls,GLOBAL,SEC|IAM,"Audit, Policy, Access"
+DATA,Data Governance & Lifecycle,GLOBAL,DATA|CORE,"Schema, Catalog, Quality"
+BIZ,Business Logic & Domain Events,GLOBAL,BILLING|TENANT,"KPIs, Business Transactions"
+AI,Artificial Intelligence & ML,GLOBAL,LLM|RAG,"Model ops, Evaluation"
+UX,User Experience & Analytics,GLOBAL,INGRESS|CLIENT,"RUM, Client telemetry"

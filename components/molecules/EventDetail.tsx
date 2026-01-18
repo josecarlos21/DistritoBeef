@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { EventData } from '@/types';
 import { triggerHaptic, cx, logger } from '@/utils';
 import { getTrackStyles, getTrackLabel } from '@/utils/branding';
-import { Clock, MapPin, Bookmark, Share2, Navigation, Users, Star } from 'lucide-react';
+import { Clock, MapPin, Bookmark, Share2, Navigation } from 'lucide-react';
 import { MetaHead } from '../atoms/MetaHead';
 import { useLocale } from '@/context/LocaleContext';
 import { useAppStore } from '@/store/useAppStore';
@@ -26,7 +26,7 @@ export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onActi
   const { t, formatFullDate, formatTime } = useLocale();
   const fullDate = formatFullDate(event.start);
 
-  const { agendaIds, toggleAgendaItem, isAuthenticated, userRatings, rateEvent } = useAppStore();
+  const { agendaIds, toggleAgendaItem, userRatings, rateEvent } = useAppStore();
   const isInAgenda = agendaIds.includes(event.id);
   const userRating = userRatings[event.id]; // 0 or undefined if not rated
 
@@ -99,6 +99,7 @@ export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onActi
         {/* Close Button - Global Position */}
         <button
           onClick={() => { triggerHaptic('light'); onClose(); }}
+          aria-label="Cerrar detalles del evento"
           className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/50 backdrop-blur-md text-white border border-white/10 flex items-center justify-center active:scale-95 z-50 md:bg-black/20 md:hover:bg-black/40 transition-colors"
         >
           <span className="material-symbols-outlined text-lg">close</span>

@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { EventData } from '@/types';
 import { AgendaItem } from '../molecules/AgendaItem';
-import { ArrowLeft, Calendar, Share2, Download } from 'lucide-react';
+import { ArrowLeft, Calendar, Download } from 'lucide-react';
 import { ItineraryPlanner } from '../molecules/ItineraryPlanner';
 import { useLocale } from '@/context/LocaleContext';
 import { useAppStore } from '@/store/useAppStore';

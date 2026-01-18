@@ -1,0 +1,13 @@
+prefix,parent_prefix,semantics,notes
+OTEL-LOG,OTEL,Log entry,Structured logs
+OTEL-METRIC,OTEL,Metric data point,Timeseries
+OTEL-TRACE,OTEL,Trace span,Distributed tracing
+SRE-SLO,SRE,Service Level Objective,Target definition
+SRE-ALERT,SRE,Alert definition,Threshold rule
+SRE-INC,SRE,Incident record,Post-mortem
+SEC-AUDIT,SEC,Audit log entry,Immutable record
+SEC-POLICY,SEC,Policy definition,OPA/Sentinel
+AI-EVAL,AI,Evaluation run,Offline testing
+AI-MODEL,AI,Model registry,Model artifacts
+UX-EVENT,UX,Client interaction,Click/View
+UX-SESSION,UX,User session,Journey

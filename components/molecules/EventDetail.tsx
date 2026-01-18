@@ -44,16 +44,6 @@ export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onActi
     return now >= startWindow && now <= endWindow;
   }, [event.start, event.end]);
 
-  // Deterministic "random" stats based on event.id (stable across re-renders)
-  const stats = useMemo(() => {
-    const seed = event.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    return {
-      interested: (seed % 130) + 20,
-      saved: (seed % 45) + 5,
-      // If user rated, we show that. If not, we show "--" to indicate unranked.
-      rating: userRating ? userRating.toFixed(1) : "--"
-    };
-  }, [event.id, userRating]);
 
   const handleOpenMap = () => {
     triggerHaptic('medium');
@@ -81,7 +71,6 @@ export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onActi
   };
 
   const handleToggleAgenda = () => {
-    if (!isAuthenticated) return triggerHaptic('error');
     triggerHaptic('success');
     toggleAgendaItem(event.id);
   };
@@ -160,51 +149,6 @@ export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onActi
         {/* Right Column: Content & Actions */}
         <div className="flex flex-col flex-1 md:w-[45%] md:h-full bg-deep relative">
 
-          {/* Stats Row */}
-          <div className="flex justify-around py-4 border-b border-white/5 shrink-0 bg-deep/50">
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-1 text-white font-bold text-lg">
-                <Users size={14} className="text-o" />
-                {stats.interested}
-              </div>
-              <span className="text-[9px] text-f uppercase tracking-widest">Interesados</span>
-            </div>
-            <div className="h-8 w-px bg-white/10" />
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-1 text-white font-bold text-lg">
-                <Bookmark size={14} className="text-o" />
-                {stats.saved}
-              </div>
-              <span className="text-[9px] text-f uppercase tracking-widest">En Agenda</span>
-            </div>
-            <div className="h-8 w-px bg-white/10" />
-
-            {/* Rating Section */}
-            <div className="text-center cursor-pointer" onClick={() => {
-              if (!isLive || userRating) return;
-
-              if (!isNearby) {
-                alert(t('rating.locationRequired', 'Debes estar en el evento para calificar. \n\nActiva tu ubicación.'));
-                return;
-              }
-              setShowRating(true);
-            }}>
-              <div className={cx(
-                "flex items-center justify-center gap-1 font-bold text-lg transition-colors",
-                userRating ? "text-yellow-400" : "text-white/50"
-              )}>
-                <Star size={14} className={userRating ? "text-yellow-400 fill-current" : "text-white/30"} />
-                {stats.rating}
-              </div>
-              <span className={cx(
-                "text-[9px] uppercase tracking-widest",
-                isLive && !userRating ? "text-o font-bold animate-pulse" : "text-f"
-              )}>
-                {userRating ? "Tu Rating" : (isLive ? "Calificar" : "Rating")}
-              </span>
-            </div>
-          </div>
-
           {/* Scrollable Content */}
           <div className="p-5 md:p-8 overflow-y-auto no-scrollbar flex-1">
 
@@ -245,13 +189,11 @@ export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onActi
             {/* Primary CTA */}
             <button
               onClick={handleToggleAgenda}
-              disabled={!isAuthenticated}
               className={cx(
                 "w-full h-12 rounded-xl flex items-center justify-center gap-2 transition-all font-black uppercase tracking-widest text-[11px] active:scale-[0.98]",
                 isInAgenda
                   ? "bg-white text-black"
-                  : "bg-gradient-to-r from-o to-amber-500 text-white shadow-lg shadow-o/30",
-                !isAuthenticated && "opacity-50 cursor-not-allowed"
+                  : "bg-gradient-to-r from-o to-amber-500 text-white shadow-lg shadow-o/30"
               )}
             >
               {isInAgenda ? (

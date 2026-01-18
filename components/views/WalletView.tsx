@@ -109,11 +109,15 @@ export const WalletView: React.FC<WalletViewProps> = ({ onOpenConfig }) => {
 
                         {/* Dynamic QR Area */}
                         <div className="mt-8 mb-4 relative bg-white rounded-[32px] p-5 shadow-bento">
-                            <div className="w-full aspect-square grid grid-cols-4 gap-2">
+                            <div className="absolute top-2 right-5 flex items-center gap-1.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                                <span className="text-[7px] font-black uppercase tracking-widest text-black/40">Dynamic Auth</span>
+                            </div>
+                            <div className="w-full aspect-square grid grid-cols-4 gap-2 mt-2">
                                 {blocks.map((x, i) => (
                                     <div
                                         key={i}
-                                        className={cx("rounded-lg transition-colors duration-500", x ? "wallet-code-on" : "wallet-code-off")}
+                                        className={cx("rounded-md transition-colors duration-500", x ? "wallet-code-on" : "wallet-code-off")}
                                     />
                                 ))}
                             </div>

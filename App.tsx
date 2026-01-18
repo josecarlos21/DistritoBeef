@@ -6,7 +6,7 @@ import { GlobalStyles } from './components/GlobalStyles';
 import { GlobalErrorBoundary } from './components/molecules/GlobalErrorBoundary';
 import { MetaHead } from './components/atoms/MetaHead';
 import { OfflineIndicator } from './components/atoms/OfflineIndicator';
-import { CanvasBackground } from './components/atoms/CanvasBackground';
+import { CanvasBackground, Skeleton } from './components/atoms';
 import { NavBar } from './components/organisms/Navigation';
 import { AmbienceModal } from './components/molecules/AmbienceModal';
 import { Onboarding } from './components/views/OnboardingView';
@@ -32,10 +32,14 @@ import { HelmetProvider } from 'react-helmet-async';
 
 function LoadingFallback() {
   return (
-    <div className="w-full h-full flex items-center justify-center">
-      <div className="flex flex-col items-center gap-4 animate-pulse">
-        <div className="w-12 h-12 rounded-full border-4 border-white/10 border-t-o animate-spin" />
-        <div className="text-[10px] font-black uppercase tracking-widest text-white/40">Loading District...</div>
+    <div className="w-full h-full flex flex-col items-center justify-center p-8 space-y-8 bg-theme-main">
+      <div className="flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-1000">
+        <div className="w-16 h-16 rounded-full border-4 border-white/5 border-t-o animate-spin" />
+        <div className="text-[12px] font-black uppercase tracking-[.3em] text-white/60">Distrito Vallarta</div>
+      </div>
+      <div className="w-full max-w-sm space-y-4">
+        <Skeleton className="h-6 w-1/3 mx-auto" />
+        <Skeleton className="h-32 w-full" />
       </div>
     </div>
   );

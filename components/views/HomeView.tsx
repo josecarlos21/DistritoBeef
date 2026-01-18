@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { MapPin, Award, Info, ArrowRight, Bell, CloudSun } from 'lucide-react';
 import { EventData, TabType } from '@/types';
 import { cx, triggerHaptic } from '@/utils';
-import { Badge, GlassContainer } from '../atoms';
+import { Badge, GlassContainer, Skeleton, BentoSkeleton } from '../atoms';
 import { PullToRefresh, AdCard } from '../molecules';
 import { UnifiedHeader, HeaderAction } from '../organisms';
 import { useLocale } from '@/context/LocaleContext';
@@ -17,7 +17,19 @@ interface HomeViewProps {
 }
 
 export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate, onWeather, onNotifications }) => {
-  const { events } = useDataset();
+  const { events, status } = useDataset();
+
+  if (status === 'loading') {
+    return (
+      <div className="h-full bg-theme-main flex flex-col pt-32 animate-in fade-in duration-500">
+        <div className="px-5 mb-8 space-y-2">
+          <Skeleton variant="text" className="h-4 w-24" />
+          <Skeleton variant="text" className="h-10 w-64" />
+        </div>
+        <BentoSkeleton />
+      </div>
+    );
+  }
 
   const { heroEvent, gridEvents } = useMemo(() => {
     const now = new Date();

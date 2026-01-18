@@ -27,6 +27,7 @@ const NavItem: React.FC<NavItemProps> = ({ id, Icon, isActive, onClick, label })
     <button
       type="button"
       aria-label={label}
+      aria-current={isActive ? 'page' : undefined}
       onClick={() => onClick(id)}
       className={cx(
         "w-12 h-12 rounded-2xl flex items-center justify-center active:scale-95 transition-all duration-300",

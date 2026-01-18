@@ -143,12 +143,20 @@ export const ExploreView: React.FC<ExploreViewProps> = ({ onEventClick, onUserCl
                 </li>
               ))}
               {filteredEvents.length === 0 && (
-                <li className="w-full text-center py-12 flex flex-col items-center gap-3 animate-in fade-in zoom-in-95 duration-500">
-                  <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-f">
-                    <Sparkles size={20} className="opacity-50" />
+                <li className="w-full text-center py-20 flex flex-col items-center gap-4 animate-in fade-in zoom-in-95 duration-700">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-o/20 blur-2xl rounded-full" />
+                    <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-o relative z-10">
+                      <Search size={28} className="opacity-50" strokeWidth={1.5} />
+                    </div>
                   </div>
-                  <div className="text-[10px] font-black uppercase tracking-[.15em] text-f">
-                    {t('home.noResults')}
+                  <div className="space-y-1">
+                    <div className="text-xs font-black uppercase tracking-[.2em] text-white">
+                      {t('home.noResults', 'No se encontraron eventos')}
+                    </div>
+                    <div className="text-[9px] font-bold uppercase tracking-widest text-f">
+                      Intenta con otra búsqueda o filtro
+                    </div>
                   </div>
                 </li>
               )}

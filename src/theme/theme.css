@@ -45,6 +45,10 @@
 
   /* Motion */
   --ease-ios: cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  /* New Accents */
+  --accent-brown: #C07A50;
+  /* Café naranjoso */
 }
 
 /* Dynamic Variable Utilities */

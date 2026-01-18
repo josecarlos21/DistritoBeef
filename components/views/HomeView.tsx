@@ -1,10 +1,10 @@
 
-import React, { useMemo } from 'react';
-import { MapPin, Bell, CloudSun } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { MapPin, Bell, CloudSun, Loader2 } from 'lucide-react';
 import { EventData, TabType } from '@/types';
 import { triggerHaptic } from '@/utils';
 import { Badge, Skeleton, BentoSkeleton } from '../atoms';
-import { PullToRefresh, AdCard } from '../molecules';
+import { PullToRefresh, AdCard, BentoPlaceholder } from '../molecules';
 import { UnifiedHeader, HeaderAction } from '../organisms';
 import { useLocale } from '@/context/LocaleContext';
 import { useDataset } from '@/context/DatasetContext';
@@ -19,6 +19,7 @@ interface HomeViewProps {
 export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate: _onNavigate, onWeather, onNotifications }) => {
   const { events, status } = useDataset();
   const { t } = useLocale();
+  const [showPlaceholder, setShowPlaceholder] = useState<string | null>(null);
 
   const { heroEvent, gridEvents } = useMemo(() => {
     const now = new Date();
@@ -50,12 +51,11 @@ export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate: _o
 
   if (status === 'loading') {
     return (
-      <div className="h-full bg-theme-main flex flex-col pt-24 sm:pt-32 animate-in fade-in duration-500">
-        <div className="px-5 mb-8 space-y-2">
-          <Skeleton variant="text" className="h-4 w-24" />
-          <Skeleton variant="text" className="h-10 w-64" />
+      <div className="h-full bg-theme-main flex flex-col items-center justify-center pt-24 sm:pt-32 animate-in fade-in duration-500">
+        <Loader2 className="text-[var(--accent-brown)] animate-spin mb-4" size={48} />
+        <div className="px-5 mb-8 space-y-2 opacity-50 w-full max-w-md">
+          <Skeleton variant="text" className="h-4 w-24 mx-auto" />
         </div>
-        <BentoSkeleton />
       </div>
     );
   }
@@ -65,13 +65,20 @@ export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate: _o
     await new Promise(r => setTimeout(r, 1500));
   };
 
+  const handlePlaceholder = (feature: string) => {
+    triggerHaptic('light');
+    setShowPlaceholder(feature);
+  };
+
   return (
     <>
+      <div className="fixed top-[-10%] left-[-20%] w-[70%] h-[50%] bg-[var(--accent-brown)]/10 rounded-full blur-[120px] pointer-events-none mix-blend-screen animate-pulse z-0" />
+      <div className="fixed bottom-[-10%] right-[-20%] w-[60%] h-[60%] bg-[var(--accent-brown)]/5 rounded-full blur-[100px] pointer-events-none mix-blend-screen z-0" />
       <UnifiedHeader
         left={
           <div className="flex flex-col justify-center animate-in fade-in duration-500">
             <div className="text-[10px] font-black uppercase tracking-[.22em] text-s leading-none mb-0.5">District</div>
-            <div className="text-sm font-black tracking-tighter text-white leading-none">VALLARTA<span className="text-o">.</span></div>
+            <div className="text-sm font-black tracking-tighter text-white leading-none drop-shadow-[0_0_10px_rgba(192,122,80,0.5)]">VALLARTA<span className="text-[var(--accent-brown)]">.</span></div>
           </div>
         }
         center={null}
@@ -80,7 +87,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate: _o
             <HeaderAction onClick={onWeather} ariaLabel={t('action.weather')}>
               <CloudSun size={18} strokeWidth={2.5} />
             </HeaderAction>
-            <HeaderAction onClick={onNotifications} ariaLabel={t('action.notifications')}>
+            <HeaderAction onClick={() => handlePlaceholder('notifications')} ariaLabel={t('action.notifications')}>
               <Bell size={18} strokeWidth={2.5} />
             </HeaderAction>
           </>
@@ -99,13 +106,13 @@ export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate: _o
               </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[minmax(180px,auto)]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-[minmax(200px,auto)]">
               {/* Hero Event (Longest Duration) */}
               {heroEvent && (
                 <button
                   type="button"
                   onClick={() => { triggerHaptic('medium'); onEventClick(heroEvent); }}
-                  className="col-span-2 row-span-2 relative w-full h-[400px] md:h-auto overflow-hidden border transition-all duration-300 rounded-[32px] group transform-gpu text-left border-white/10 active:scale-[.995] hover:scale-[1.01] hover:shadow-bento focus:scale-[1.01] outline-none shadow-bento"
+                  className="col-span-1 sm:col-span-2 lg:col-span-2 row-span-2 relative w-full min-h-[400px] overflow-hidden border transition-all duration-300 rounded-[32px] group transform-gpu text-left border-white/10 active:scale-[.995] hover:scale-[1.01] hover:shadow-bento focus:scale-[1.01] outline-none shadow-bento"
                 >
                   <img
                     src={heroEvent.image}
@@ -122,7 +129,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate: _o
                   <div className="absolute bottom-8 left-6 right-6">
                     <div className="text-4xl md:text-5xl font-black uppercase tracking-tighter leading-[.9] font-display drop-shadow-2xl text-tx mb-4">{heroEvent.title}</div>
                     <div className="flex items-center gap-2 text-white/80">
-                      <MapPin size={16} className="text-o" />
+                      <MapPin size={16} className="text-[var(--accent-brown)]" />
                       <span className="text-xs font-bold uppercase tracking-wider">{heroEvent.venue}</span>
                     </div>
                   </div>
@@ -135,7 +142,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate: _o
                   key={event.id}
                   type="button"
                   onClick={() => { triggerHaptic('light'); onEventClick(event); }}
-                  className="col-span-1 row-span-1 relative h-48 md:h-64 overflow-hidden border transition-all duration-300 rounded-[28px] group transform-gpu text-left border-white/10 active:scale-[.98] hover:scale-[1.02] shadow-lg bg-[#1a1614]"
+                  className="col-span-1 row-span-1 relative h-64 sm:h-auto overflow-hidden border transition-all duration-300 rounded-[28px] group transform-gpu text-left border-white/10 active:scale-[.98] hover:scale-[1.02] shadow-lg bg-[#1a1614]"
                 >
                   <img
                     src={event.image}
@@ -156,7 +163,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate: _o
               ))}
 
               {/* Ad Card - Always present in the grid */}
-              <div className="col-span-1 row-span-1 h-48 md:h-64">
+              <div className="col-span-1 row-span-1 h-48 sm:h-auto">
                 <AdCard />
               </div>
 
@@ -164,6 +171,14 @@ export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate: _o
           </div>
         </div>
       </PullToRefresh >
+
+      {showPlaceholder && (
+        <BentoPlaceholder
+          isOpen={!!showPlaceholder}
+          onClose={() => setShowPlaceholder(null)}
+          title={showPlaceholder === 'notifications' ? "Centro de Alertas" : "Próximamente"}
+        />
+      )}
     </>
   );
 };

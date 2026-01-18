@@ -66,10 +66,38 @@ function AppContent() {
     setActiveTab(tab);
   };
 
-  const handleWeather = () => {
+  const handleWeather = async () => {
     triggerHaptic('light');
-    setIsNotifOpen(false); // Close Notification Drawer if open
-    setNotification({ msg: t('toast.weather'), type: "info" });
+    setIsNotifOpen(false);
+
+    // Show loading state initially
+    setNotification({ msg: "Conectando con Puerto Vallarta...", type: "info" });
+
+    try {
+      const response = await fetch(
+        'https://api.open-meteo.com/v1/forecast?latitude=20.6534&longitude=-105.2253&current=temperature_2m,weather_code&timezone=auto'
+      );
+      const data = await response.json();
+
+      if (data.current) {
+        const temp = Math.round(data.current.temperature_2m);
+        // Simple WMO code mapping
+        const code = data.current.weather_code;
+        let condition = "Soleado";
+        if (code > 3) condition = "Nublado";
+        if (code > 50) condition = "Lluvia";
+        if (code > 90) condition = "Tormenta";
+
+        const weatherMsg = `Puerto Vallarta: ${temp}°C, ${condition}.`;
+        setNotification({ msg: weatherMsg, type: "info" });
+      } else {
+        setNotification({ msg: t('toast.weather'), type: "info" });
+      }
+    } catch (error) {
+      console.error("Weather fetch failed", error);
+      // Fallback to generic message if offline/error
+      setNotification({ msg: t('toast.weather'), type: "info" });
+    }
   };
 
   const handleNotifications = () => {

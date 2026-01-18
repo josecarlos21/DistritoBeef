@@ -43,11 +43,11 @@ const EventCard: React.FC<EventCardProps> = ({
       return (
          <li id={`event-${event.id}`} {...props} className={cx("flex gap-4 relative group animate-in fade-in duration-300", className)}>
             <div className="w-14 shrink-0 flex flex-col items-end pt-3">
-               <span className={cx("text-[11px] font-bold tracking-wider", showTime ? "text-o opacity-100" : "opacity-0")}>{time}</span>
+               <span className={cx("text-[11px] font-bold tracking-wider", showTime ? "text-[var(--accent-brown)] opacity-100" : "opacity-0")}>{time}</span>
             </div>
 
             <div className="w-4 flex flex-col items-center relative pt-4">
-               <div className={cx("w-2.5 h-2.5 rounded-full border-2 border-b z-10 transition-colors", showTime ? "bg-o" : "bg-[var(--f)] opacity-30")} />
+               <div className={cx("w-2.5 h-2.5 rounded-full border-2 border-b z-10 transition-colors", showTime ? "bg-[var(--accent-brown)]" : "bg-[var(--f)] opacity-30")} />
                {!isLastInDay && <div className="absolute top-6 bottom-[-16px] w-px border-l border-dashed border-white/10" />}
             </div>
 
@@ -59,16 +59,16 @@ const EventCard: React.FC<EventCardProps> = ({
                )}
             >
                {isClosest && (
-                  <div className="absolute inset-y-1 inset-x-[-10px] border-2 border-[var(--o)] rounded-xl pointer-events-none z-20 shadow-[0_0_20px_rgba(255,159,69,0.4)]" />
+                  <div className="absolute inset-y-1 inset-x-[-10px] border-2 border-[var(--accent-brown)] rounded-xl pointer-events-none z-20 shadow-[0_0_20px_rgba(192,122,80,0.4)]" />
                )}
                <div className="flex items-center gap-2 mb-1">
                   <span className="text-[9px] font-black uppercase tracking-wider text-s px-1.5 py-0.5 rounded bg-white/5">{event.track}</span>
-                  {isClosest && <span className="text-[9px] font-black uppercase tracking-wider text-o bg-o/10 px-1.5 py-0.5 rounded animate-pulse">AHORA</span>}
+                  {isClosest && <span className="text-[9px] font-black uppercase tracking-wider text-[var(--accent-brown)] bg-[var(--accent-brown)]/10 px-1.5 py-0.5 rounded animate-pulse">AHORA</span>}
                </div>
                <div
                   className={cx(
                      "text-sm text-white leading-tight truncate",
-                     isClosest ? "underline decoration-[var(--o)] decoration-2 underline-offset-4 font-black" : "font-bold"
+                     isClosest ? "underline decoration-[var(--accent-brown)] decoration-2 underline-offset-4 font-black" : "font-bold"
                   )}
                >
                   {event.title}
@@ -85,12 +85,12 @@ const EventCard: React.FC<EventCardProps> = ({
          {/* Left Column: Time & Connector */}
          <div className="w-14 shrink-0 flex flex-col items-center relative pt-1">
             {/* Time Label */}
-            <div className={`text-[11px] font-black tracking-wider mb-1 transition-opacity duration-300 ${showTime ? 'text-o opacity-100' : 'opacity-0 h-0 overflow-hidden'}`}>
+            <div className={`text-[11px] font-black tracking-wider mb-1 transition-opacity duration-300 ${showTime ? 'text-[var(--accent-brown)] opacity-100' : 'opacity-0 h-0 overflow-hidden'}`}>
                {time}
             </div>
 
             {/* Dot */}
-            <div className={`w-3 h-3 rounded-full border-2 border-b z-10 shadow-sm transition-all duration-300 ${showTime ? 'bg-o mt-0.5 scale-100' : 'bg-[var(--f)] opacity-30 mt-1 scale-75'}`} />
+            <div className={`w-3 h-3 rounded-full border-2 border-b z-10 shadow-sm transition-all duration-300 ${showTime ? 'bg-[var(--accent-brown)] mt-0.5 scale-100' : 'bg-[var(--f)] opacity-30 mt-1 scale-75'}`} />
 
             {/* Connecting Line - Only render if not last in day */}
             {!isLastInDay && (
@@ -103,7 +103,7 @@ const EventCard: React.FC<EventCardProps> = ({
             onClick={() => { triggerHaptic('medium'); onClick(); }}
             className={cx(
                "flex-1 relative mb-[var(--space-md)] rounded-[40px] overflow-hidden border shadow-soft active:scale-[0.98] transition-all duration-300 bg-[var(--bg2)] min-h-[220px] text-left group-hover:shadow-[0_25px_60px_rgba(0,0,0,0.7)] hover:scale-[1.01] flex flex-col justify-start",
-               isClosest ? "border-[var(--o)] ring-4 ring-[var(--o)] ring-opacity-20 border-2" : "border-white/10"
+               isClosest ? "border-[var(--accent-brown)] ring-4 ring-[var(--accent-brown)] ring-opacity-20 border-2" : "border-white/10"
             )}
          >
             {/* Bg with better overlay */}
@@ -124,7 +124,7 @@ const EventCard: React.FC<EventCardProps> = ({
                   </span>
 
                   {isClosest && (
-                     <div className="flex items-center gap-2 bg-[var(--o)] px-3 py-1.5 rounded-full animate-pulse shadow-[0_0_20px_var(--o)] border border-white/20 ml-auto">
+                     <div className="flex items-center gap-2 bg-[var(--accent-brown)] px-3 py-1.5 rounded-full animate-pulse shadow-[0_0_20px_var(--accent-brown)] border border-white/20 ml-auto">
                         <span className="text-[10px] font-black text-white uppercase tracking-widest">AHORA</span>
                         <div className="w-2 h-2 rounded-full bg-white" />
                      </div>
@@ -136,7 +136,7 @@ const EventCard: React.FC<EventCardProps> = ({
                   <h3
                      className={cx(
                         "text-3xl text-white font-display font-black leading-[1.1] pr-6 drop-shadow-[0_5px_15px_rgba(0,0,0,0.8)]",
-                        isClosest ? "underline decoration-[var(--o)] decoration-4 underline-offset-8" : ""
+                        isClosest ? "underline decoration-[var(--accent-brown)] decoration-4 underline-offset-8" : ""
                      )}
                   >
                      {event.title}
@@ -144,7 +144,7 @@ const EventCard: React.FC<EventCardProps> = ({
 
                   <div className="flex flex-wrap items-center gap-3">
                      {!showTime && (
-                        <div className="flex items-center gap-2 text-[11px] font-black text-o uppercase bg-black/40 px-3 py-1.5 rounded-xl backdrop-blur-md border border-white/5 shadow-sm">
+                        <div className="flex items-center gap-2 text-[11px] font-black text-[var(--accent-brown)] uppercase bg-black/40 px-3 py-1.5 rounded-xl backdrop-blur-md border border-white/5 shadow-sm">
                            <Clock size={14} strokeWidth={3} />
                            {time}
                         </div>
@@ -297,8 +297,8 @@ export const CalendarView = ({
                         {/* More transparent backdrop as per "barra vacía" request */}
                         <div className="absolute inset-x-[-24px] -top-20 bottom-0 bg-[var(--bg)]/40 backdrop-blur-md border-b border-white/5 mask-image-bento-top"></div>
 
-                        <h2 className={cx("text-[9px] font-black uppercase tracking-[0.4em] pl-14 relative flex items-center z-10 transition-colors duration-300", group.isToday ? "text-o" : "text-white/40")}>
-                           <span className={cx("absolute left-3 top-1/2 -translate-y-1/2 w-8 h-px transition-colors", group.isToday ? "bg-o shadow-[0_0_8px_var(--o)]" : "bg-white/20")} />
+                        <h2 className={cx("text-[9px] font-black uppercase tracking-[0.4em] pl-14 relative flex items-center z-10 transition-colors duration-300", group.isToday ? "text-[var(--accent-brown)]" : "text-white/40")}>
+                           <span className={cx("absolute left-3 top-1/2 -translate-y-1/2 w-8 h-px transition-colors", group.isToday ? "bg-[var(--accent-brown)] shadow-[0_0_8px_var(--accent-brown)]" : "bg-white/20")} />
                            {group.isToday ? t('calendar.today') : ""}{group.dateLabel}
                         </h2>
                      </div>

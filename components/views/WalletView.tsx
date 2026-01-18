@@ -1,12 +1,12 @@
 
 import React, { useMemo, useState, useEffect } from 'react';
-import { RefreshCw, ShieldCheck, HelpCircle, SlidersHorizontal } from 'lucide-react';
-import { GlassContainer } from '../atoms';
+import { ShieldCheck, HelpCircle, SlidersHorizontal, User as UserIcon, QrCode } from 'lucide-react';
+import { GlassContainer, Badge } from '../atoms';
 import { UnifiedHeader, HeaderTitle, HeaderAction } from '../organisms';
 import { triggerHaptic, cx } from '@/utils';
 import { useLocale } from '@/context/LocaleContext';
 import { useAuth } from '@/context/AuthContext';
-import { Apple, Facebook, X, Key, User as UserIcon } from 'lucide-react';
+import { Apple, Facebook, X as XIcon, Key } from 'lucide-react';
 import { BackupPanel } from '../molecules/BackupPanel';
 
 interface WalletViewProps {
@@ -16,38 +16,16 @@ interface WalletViewProps {
 export const WalletView: React.FC<WalletViewProps> = ({ onOpenConfig }) => {
     const { user, logout } = useAuth();
     const userName = user?.name || "Invitado";
-    // Simulate dynamic QR noise
-    const [seed, setSeed] = useState(0);
     const { t } = useLocale();
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        let lastUpdate = 0;
-        let frameId: number;
-
-        const loop = (time: number) => {
-            if (document.visibilityState === 'visible' && (time - lastUpdate) > 2000) {
-                setSeed(s => s + 1);
-                lastUpdate = time;
-            }
-            frameId = requestAnimationFrame(loop);
-        };
-
-        frameId = requestAnimationFrame(loop);
-        return () => cancelAnimationFrame(frameId);
+        // Initial simulated load
+        const timer = setTimeout(() => setLoading(false), 800);
+        return () => clearTimeout(timer);
     }, []);
 
-    const handleRefresh = () => {
-        triggerHaptic('success');
-        setSeed(s => s + 10);
-    };
 
-    const blocks = useMemo(() => {
-        return Array.from({ length: 16 }).map((_, i) => {
-            // Deterministic pseudo-random based on seed + index
-            const val = Math.sin(seed * 99 + i * 13) > 0;
-            return val ? 1 : 0;
-        });
-    }, [seed]);
 
     return (
         <div className="h-full relative font-sans">
@@ -61,123 +39,158 @@ export const WalletView: React.FC<WalletViewProps> = ({ onOpenConfig }) => {
                 }
             />
 
-            <div className="pt-28 pb-24 flex flex-col items-center justify-center h-full animate-in fade-in zoom-in-95 duration-500 overflow-y-auto no-scrollbar">
+            <div className="pt-28 pb-32 flex flex-col items-center h-full animate-in fade-in zoom-in-95 duration-500 overflow-y-auto no-scrollbar scroll-smooth">
 
-                <div className="w-full max-w-sm relative group px-4">
+                <div className="w-full max-w-sm px-5 relative group">
+                    {/* Ambient Glow */}
+                    {/* Ambient Glow & Liquid Effect */}
+                    <div className="absolute top-10 inset-x-10 h-60 bg-[var(--accent-brown)]/20 blur-[60px] rounded-full pointer-events-none mix-blend-screen animate-pulse" />
+                    <div className="absolute -top-20 -right-20 w-80 h-80 bg-[var(--accent-brown)]/10 blur-[100px] rounded-full pointer-events-none" />
 
-                    {/* Glow Effect */}
-                    <div className="absolute -inset-1 bg-gradient-to-b from-[var(--o)] to-[var(--c)] rounded-[32px] opacity-20 blur-xl group-hover:opacity-30 transition-opacity duration-1000 mx-4" />
-
-                    <GlassContainer strong className="p-8 relative overflow-hidden">
-                        {/* Top Pattern */}
-                        <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[var(--o)] via-[var(--s)] to-[var(--o)]" />
-
-                        <div className="flex justify-between items-start mb-8">
-                            <div>
-                                <div className="text-[11px] font-black uppercase tracking-[.22em] text-s">{t('wallet.pass')}</div>
-                                <div className="text-[10px] font-bold uppercase tracking-wider opacity-60 mt-1 text-white">{t('wallet.fullAccess')}</div>
-                            </div>
-                            <ShieldCheck size={24} className="text-ok" strokeWidth={2.5} />
+                    {/* MAIN FESTIVAL GAFFETTE (BADGE) */}
+                    <div className="relative w-full">
+                        {/* Lanyard/Clip Visual */}
+                        <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-32 h-32 bg-white/5 blur-2xl rounded-full pointer-events-none" />
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-12 h-4 bg-zinc-800 rounded-full border border-white/20 shadow-lg z-30 flex items-center justify-center">
+                            <div className="w-8 h-1 bg-black/50 rounded-full" />
                         </div>
 
-                        <div className="flex flex-col items-center">
-                            <div className="relative">
-                                <div className="w-28 h-28 rounded-full border-4 border-[var(--bg)] shadow-[0_0_20px_rgba(255,138,29,0.3)] overflow-hidden bg-white/10 flex items-center justify-center">
-                                    {/* Use transparent background placeholder if no specific image logic is present (generic user) */}
-                                    <img
-                                        src={`https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=161310&color=f97316&size=240&bold=true`}
-                                        alt="Profile"
-                                        className="w-full h-full object-cover"
-                                    />
+                        <GlassContainer strong className="relative p-0 overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.6)] border border-white/10 rounded-[32px] backdrop-blur-3xl bg-[#1a120b]/80">
+
+                            {/* 1. Header Band: The "Event" Brand */}
+                            <div className="h-32 bg-gradient-to-b from-[var(--accent-brown)] to-[#8a5333] relative overflow-hidden flex flex-col items-center justify-center border-b border-white/10 pt-4">
+                                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
+                                {/* Abstract topographical lines or decorative pattern */}
+                                <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--bg)_1px,_transparent_1px)] bg-[size:10px_10px]" />
+
+                                <div className="relative z-10 text-center">
+                                    <div className="text-[10px] font-black uppercase tracking-[0.4em] text-black/60 mb-1">OFFICIAL ACCESS</div>
+                                    <h1 className="text-3xl font-black font-display text-white tracking-tighter leading-none drop-shadow-md">
+                                        DISTRICT<br />VALLARTA
+                                    </h1>
+                                    <div className="mt-2 px-3 py-0.5 bg-black/20 backdrop-blur-md rounded-full border border-white/10 inline-block">
+                                        <span className="text-[10px] font-bold text-white tracking-[0.2em]">{new Date().getFullYear()}</span>
+                                    </div>
                                 </div>
-                                <div className="absolute -bottom-2 -right-2 bg-ok text-black text-[9px] font-black px-3 py-1 rounded-full border-4 border-b shadow-md">
-                                    {t('wallet.active')}
+                            </div>
+
+                            {/* 2. Content Body: User Identity */}
+                            <div className="px-8 pb-8 pt-12 flex flex-col items-center bg-gradient-to-b from-[#1a120b] to-black relative">
+                                {/* Profile Photo - Breaking the boundary */}
+                                <div className="absolute -top-14 w-28 h-28 rounded-full p-1.5 bg-[#1a120b] shadow-2xl">
+                                    <div className="w-full h-full rounded-full overflow-hidden border-2 border-[var(--accent-brown)] relative">
+                                        {loading ? (
+                                            <div className="w-full h-full bg-white/5 animate-pulse" />
+                                        ) : (
+                                            <img
+                                                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=000&color=C07A50&size=240&bold=true`}
+                                                alt="Profile"
+                                                className="w-full h-full object-cover"
+                                            />
+                                        )}
+                                        {/* Status Dot */}
+                                        <div className="absolute bottom-1 right-1 w-5 h-5 bg-ok border-2 border-black rounded-full shadow-[0_0_10px_var(--ok)]" />
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div className="text-3xl font-black uppercase tracking-tight text-center mt-5 text-white font-display text-ellipsis overflow-hidden w-full whitespace-nowrap">{userName}</div>
+                                {/* Name & Role */}
+                                <div className="mt-14 text-center space-y-1 w-full">
+                                    <h2 className="text-2xl font-black text-white font-display uppercase tracking-tight truncate px-2">
+                                        {userName}
+                                    </h2>
+                                    <div className="flex items-center justify-center gap-2 opacity-80">
+                                        <Badge label="GUEST" className="bg-white/5 text-f border-white/10 text-[9px] px-3" />
+                                        <span className="text-[9px] text-f font-mono tracking-widest">ID: {user?.id.substring(0, 6) || "---"}</span>
+                                    </div>
+                                </div>
 
-                            <div className="mt-3 flex items-center gap-2 bg-white/5 px-4 py-1.5 rounded-full border border-white/5">
-                                {user?.provider === 'apple' && <Apple size={12} className="text-white" />}
-                                {user?.provider === 'facebook' && <Facebook size={12} className="text-[#1877F2]" />}
-                                {user?.provider === 'x' && <X size={12} className="text-white" />}
-                                {user?.provider === 'pin' && <Key size={12} className="text-o" />}
-                                {user?.provider === 'guest' && <UserIcon size={12} className="text-f" />}
-                                <span className="text-[10px] font-black uppercase tracking-[.15em] text-f">{user?.provider || 'member'}</span>
-                            </div>
-                        </div>
+                                {/* Unifying Divider */}
+                                <div className="w-full my-6 border-t border-dashed border-white/10 relative">
+                                    <div className="absolute -left-9 -top-3 w-6 h-6 bg-[#000] rounded-full" />
+                                    <div className="absolute -right-9 -top-3 w-6 h-6 bg-[#000] rounded-full" />
+                                </div>
 
-                        {/* Dynamic QR Area */}
-                        <div className="mt-8 mb-4 relative bg-white rounded-[32px] p-5 shadow-bento">
-                            <div className="absolute top-2 right-5 flex items-center gap-1.5">
-                                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                                <span className="text-[7px] font-black uppercase tracking-widest text-black/40">Dynamic Auth</span>
-                            </div>
-                            <div className="w-full aspect-square grid grid-cols-4 gap-2 mt-2">
-                                {blocks.map((x, i) => (
-                                    <div
-                                        key={i}
-                                        className={cx("rounded-md transition-colors duration-500", x ? "wallet-code-on" : "wallet-code-off")}
-                                    />
-                                ))}
-                            </div>
-                            {/* Scanner Line */}
-                            <div className="absolute inset-0 rounded-[36px] bg-gradient-to-b from-transparent via-[var(--o)] to-transparent opacity-20 h-[20%] w-full animate-[scan_3s_ease-in-out_infinite] pointer-events-none" />
-                        </div>
+                                {/* 3. The "Key" (QR) */}
+                                <div className="w-full flex justify-between items-center gap-4">
+                                    <div className="flex-1">
+                                        <div className="text-[9px] font-black uppercase tracking-widest text-f mb-1">Access Level</div>
+                                        <div className="text-xl font-black italic text-[var(--accent-brown)] tracking-tighter">ALL ACCESS</div>
+                                    </div>
 
-                        {/* Explicit Refresh Button */}
-                        <button
-                            type="button"
-                            onClick={handleRefresh}
-                            className="w-full h-12 bg-white/5 hover:bg-white/10 rounded-xl flex items-center justify-center gap-3 border border-white/10 active:scale-[0.98] transition mb-6"
-                        >
-                            <RefreshCw size={16} className="text-o" strokeWidth={2.5} />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-white">{t('action.refresh')}</span>
-                        </button>
+                                    {/* Minimalist Grid QR */}
+                                    <div className="p-2 bg-white rounded-lg shadow-lg">
+                                        <div className="flex gap-0.5">
+                                            {Array.from({ length: 5 }).map((_, col) => (
+                                                <div key={col} className="flex flex-col gap-0.5">
+                                                    {Array.from({ length: 5 }).map((_, row) => {
+                                                        const active = ((user?.id?.charCodeAt((col * 5 + row) % user?.id?.length) || 0) + col) % 2 === 0;
+                                                        return <div key={row} className={cx("w-2 h-2 rounded-[1px]", active ? "bg-black" : "bg-transparent")} />
+                                                    })}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
 
-                        <div className="flex items-center justify-between pt-6 border-t border-white/10">
-                            <div className="text-center">
-                                <div className="text-[9px] font-bold text-f uppercase mb-1">{t('wallet.expires')}</div>
-                                <div className="text-xs font-black text-white">02 FEB</div>
-                            </div>
-                            <div className="text-center">
-                                <div className="text-[9px] font-bold text-f uppercase mb-1">{t('wallet.zone')}</div>
-                                <div className="text-xs font-black text-white">ALL ACCESS</div>
-                            </div>
-                            <div className="text-center">
-                                <div className="text-[9px] font-bold text-f uppercase mb-1">{t('wallet.id')}</div>
-                                <div className="text-xs font-black text-white">{user?.id.toUpperCase() || '--'}</div>
-                            </div>
-                        </div>
+                                <div className="mt-6 w-full text-center">
+                                    <div className="text-[8px] font-bold text-white/20 uppercase tracking-[0.3em]">Distrito Vallarta Non-Transferable</div>
+                                </div>
 
-                    </GlassContainer>
+                            </div>
+                        </GlassContainer>
+                    </div>
+
+                    {/* Reflection / Grounding Shadow */}
+                    <div className="mx-8 h-4 bg-black/40 blur-xl rounded-[100%] mt-[-10px] relative -z-10" />
                 </div>
 
-                <div className="mt-8 text-center px-8 opacity-70 flex flex-col items-center gap-3">
-                    <p className="text-[11px] font-medium leading-relaxed text-f">
-                        {t('wallet.dynamicNote')}
+                {/* Actions Footer */}
+                <div className="mt-10 flex flex-col items-center gap-4 w-full max-w-sm px-8">
+                    <p className="text-center text-[10px] text-f/60 font-medium leading-relaxed max-w-[250px]">
+                        Este pase es personal e intransferible. Muestra este código al staff de Distrito Beef para acceder.
                     </p>
-                    <div className="flex items-center gap-4">
-                        <button type="button" className="flex items-center gap-2 text-o text-[10px] font-bold uppercase tracking-wider p-2">
-                            <HelpCircle size={14} strokeWidth={2.5} />
-                            {t('action.help')}
+
+                    <div className="flex items-center gap-6 mt-2">
+                        <button type="button" className="group flex flex-col items-center gap-2 opacity-60 hover:opacity-100 transition-opacity">
+                            <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/10 group-active:scale-95 transition-transform">
+                                <HelpCircle size={16} className="text-f" />
+                            </div>
+                            <span className="text-[9px] font-black uppercase tracking-wider text-f">{t('action.help')}</span>
                         </button>
-                        <div className="w-px h-3 bg-white/10" />
+
+                        <div className="w-px h-8 bg-white/5" />
+
                         <button
                             type="button"
                             onClick={() => { triggerHaptic('medium'); logout(); }}
-                            className="flex items-center gap-2 text-red-500 text-[10px] font-bold uppercase tracking-wider p-2"
+                            className="group flex flex-col items-center gap-2 opacity-60 hover:opacity-100 transition-opacity"
                         >
-                            {t('action.logout')}
+                            <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center border border-red-500/20 group-active:scale-95 transition-transform">
+                                <UserIcon size={16} className="text-red-400" />
+                            </div>
+                            <span className="text-[9px] font-black uppercase tracking-wider text-red-400">{t('action.logout')}</span>
                         </button>
+                    </div>
+
+                    <div className="w-full mt-6 opacity-80">
+                        <BackupPanel />
                     </div>
                 </div>
 
-                <div className="w-full max-w-sm px-4 mt-8">
-                    <BackupPanel />
-                </div>
-
             </div>
+
+            <style>{`
+                @keyframes scan-x {
+                    0% { left: -10%; opacity: 0; }
+                    10% { opacity: 1; }
+                    90% { opacity: 1; }
+                    100% { left: 110%; opacity: 0; }
+                }
+                @keyframes float {
+                     0%, 100% { transform: translateY(0px); }
+                     50% { transform: translateY(-10px); }
+                }
+            `}</style>
         </div>
     );
 };

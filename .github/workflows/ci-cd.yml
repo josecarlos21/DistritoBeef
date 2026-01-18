@@ -140,7 +140,7 @@ jobs:
       deployments: write
     environment:
       name: "production"
-      url: "https://distritobeef.com"
+      url: "https://distrito.yosoy.mx"
     steps:
       - uses: actions/checkout@v4
 

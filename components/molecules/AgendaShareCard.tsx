@@ -71,7 +71,7 @@ export const AgendaShareCard = forwardRef<HTMLDivElement, AgendaShareCardProps>(
                     <ShieldCheck size={14} />
                     <span className="text-[8px] font-black uppercase tracking-widest">Verified Agenda</span>
                 </div>
-                <div className="text-[8px] font-bold uppercase tracking-widest text-[var(--accent-brown)]">distritovallarta.com</div>
+                <div className="text-[8px] font-bold uppercase tracking-widest text-[var(--accent-brown)]">distrito.yosoy.mx</div>
             </div>
         </div>
     );

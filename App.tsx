@@ -64,11 +64,13 @@ function AppContent() {
 
   const handleWeather = () => {
     triggerHaptic('light');
+    setIsNotifOpen(false); // Close Notification Drawer if open
     setNotification({ msg: t('toast.weather'), type: "info" });
   };
 
   const handleNotifications = () => {
     triggerHaptic('medium');
+    setNotification(null); // Clear any active Toast
     setIsNotifOpen(true);
   };
 

@@ -51,6 +51,9 @@ export const RatingDialogue: React.FC<RatingDialogueProps> = ({ isOpen, onClose,
         const total = Object.values(answers).reduce((acc, curr) => acc + curr, 0);
         const average = Number((total / questions.length).toFixed(1));
 
+        // Show Demo Alert
+        alert("Modo Demo: Tu calificación se ha registrado localmente.\n\nEn próximas versiones se guardará en la nube.");
+
         onRate(average);
         onClose();
         // Reset after closing

@@ -113,7 +113,7 @@ export const loadDataset = async (forceRefresh = false): Promise<DatasetLoadResu
         const headers: Record<string, string> = {};
         if (cached?.etag) headers['If-None-Match'] = cached.etag;
 
-        const response = await fetch('/api/base', { headers });
+        const response = await fetch('/base.json', { headers });
 
         if (response.status === 304 && cached) {
             return {

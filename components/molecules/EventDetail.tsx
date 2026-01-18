@@ -4,7 +4,7 @@ import { EventData } from '@/types';
 import { triggerHaptic, cx, logger } from '@/utils';
 import { getTrackStyles, getTrackLabel } from '@/utils/branding';
 import { Clock, MapPin, Bookmark, Share2, Navigation } from 'lucide-react';
-import { MetaHead } from '../atoms/MetaHead';
+import { MetaHead, SmartImage } from '../atoms';
 import { useLocale } from '@/context/LocaleContext';
 import { useAppStore } from '@/store/useAppStore';
 import { useGeofence } from '@/hooks/useGeofence';
@@ -107,7 +107,7 @@ export const EventDetail: React.FC<EventDetailProps> = ({ event, onClose, onActi
 
         {/* Left Column: Hero Image */}
         <div className="relative h-64 md:h-full md:w-[55%] shrink-0 group overflow-hidden">
-          <img
+          <SmartImage
             src={event.image}
             alt={event.title}
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"

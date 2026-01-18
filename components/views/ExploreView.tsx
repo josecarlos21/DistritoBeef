@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Search, Filter, Sparkles, Camera, X } from 'lucide-react';
 import { EventData, UserData } from '@/types';
 import { RECOMMENDATIONS } from '@/constants';
-import { GlassContainer, Badge } from '../atoms';
+import { GlassContainer, Badge, SmartImage } from '../atoms';
 import { FilterTabs, PullToRefresh } from '../molecules';
 import { UnifiedHeader, HeaderTitle, HeaderAction } from '../organisms';
 import { triggerHaptic } from '@/utils';
@@ -133,7 +133,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({ onEventClick, onUserCl
                     onClick={() => { triggerHaptic('medium'); onEventClick(e); }}
                     className="w-52 h-72 relative overflow-hidden border active:scale-[.99] transition-all hover:scale-[1.02] rounded-[32px] animate-in fade-in zoom-in-95 duration-500 bg-[#14110C] border-b shadow-lg"
                   >
-                    <img src={e.image} className="absolute inset-0 w-full h-full object-cover grayscale-[10%] group-hover:scale-110 transition-transform duration-700" alt={e.title} loading="lazy" />
+                    <SmartImage src={e.image} className="absolute inset-0 w-full h-full object-cover grayscale-[10%] group-hover:scale-110 transition-transform duration-700" alt={e.title} />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-transparent" />
                     <div className="absolute bottom-5 left-5 right-5">
                       <div className="text-white font-black text-sm uppercase leading-tight text-left font-display drop-shadow-md">{e.title}</div>
@@ -176,7 +176,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({ onEventClick, onUserCl
                 <li key={it.id}>
                   <GlassContainer className="overflow-hidden group active:scale-[0.99] transition-all hover:scale-[1.01]">
                     <div className="flex h-28">
-                      <img src={it.img} className="w-28 h-full object-cover" alt={it.title} loading="lazy" />
+                      <SmartImage src={it.img} className="w-28 h-full object-cover" alt={it.title} />
                       <div className="flex-1 p-4 flex flex-col justify-center">
                         <Badge label={it.type} dot track={it.type === "tip" ? "beefdip" : "community"} />
                         <div className="text-sm font-black uppercase mt-2 font-display text-tx">{it.title}</div>

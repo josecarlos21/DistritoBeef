@@ -68,6 +68,8 @@ export const getEventBackgroundValue = (image: string | undefined, track: string
     return gradients[index];
 };
 
+export * from './placeholders';
+
 // Haptic Feedback Utility (Safe Check)
 export const triggerHaptic = (type: 'light' | 'medium' | 'heavy' | 'success' | 'error' = 'light') => {
     if (typeof navigator !== 'undefined' && navigator.vibrate) {

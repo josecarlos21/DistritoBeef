@@ -6,3 +6,4 @@ export * from './Skeleton';
 export * from './OfflineIndicator';
 export * from './ThirdPartyLoginButton';
 export * from './MetaHead';
+export * from './SmartImage';

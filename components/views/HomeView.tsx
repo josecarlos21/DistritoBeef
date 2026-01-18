@@ -3,7 +3,7 @@ import React, { useMemo, useState } from 'react';
 import { MapPin, Bell, CloudSun, Loader2 } from 'lucide-react';
 import { EventData, TabType } from '@/types';
 import { triggerHaptic } from '@/utils';
-import { Badge, Skeleton } from '../atoms';
+import { Badge, Skeleton, SmartImage } from '../atoms';
 import { PullToRefresh, AdCard, BentoPlaceholder } from '../molecules';
 import { UnifiedHeader, HeaderAction } from '../organisms';
 import { useLocale } from '@/context/LocaleContext';
@@ -159,7 +159,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate: _o
                   onClick={() => { triggerHaptic('medium'); onEventClick(heroEvent); }}
                   className="col-span-1 sm:col-span-2 lg:col-span-2 row-span-2 relative w-full min-h-[400px] overflow-hidden border transition-all duration-300 rounded-[32px] group transform-gpu text-left border-white/10 active:scale-[.995] hover:scale-[1.01] hover:shadow-bento focus:scale-[1.01] outline-none shadow-bento"
                 >
-                  <img
+                  <SmartImage
                     src={heroEvent.image}
                     className="absolute inset-0 w-full h-full object-cover grayscale-[10%] scale-[1.03] group-hover:scale-[1.06] transition-transform duration-700 ease-out"
                     alt="Destacado"
@@ -189,7 +189,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onEventClick, onNavigate: _o
                   onClick={() => { triggerHaptic('light'); onEventClick(event); }}
                   className="col-span-1 row-span-1 relative h-64 sm:h-auto overflow-hidden border transition-all duration-300 rounded-[28px] group transform-gpu text-left border-white/10 active:scale-[.98] hover:scale-[1.02] shadow-lg bg-[#1a1614]"
                 >
-                  <img
+                  <SmartImage
                     src={event.image}
                     className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity duration-500"
                     alt={event.title}

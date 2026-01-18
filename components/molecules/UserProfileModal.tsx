@@ -1,7 +1,7 @@
 import React from 'react';
 import { X, MapPin, MessageCircle, UserPlus, Music, Shield } from 'lucide-react';
 import { UserData } from '@/types';
-import { GlassContainer, IconButton } from '../atoms';
+import { GlassContainer, IconButton, SmartImage } from '../atoms';
 import { useLocale } from '@/context/LocaleContext';
 import { triggerHaptic } from '@/utils';
 import FocusLock from 'react-focus-lock';
@@ -37,7 +37,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
                         <div className="px-6 relative -mt-12 flex flex-col items-center text-center">
                             <div className="relative">
                                 <div className="w-24 h-24 rounded-[32px] border-4 border-[var(--bg)] overflow-hidden shadow-2xl bg-[var(--bg)]">
-                                    <img src={user.img} alt={user.name} className="w-full h-full object-cover" />
+                                    <SmartImage src={user.img} alt={user.name} className="w-full h-full object-cover" placeholderType="avatar" />
                                 </div>
                                 {user.online && (
                                     <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-ok border-4 border-[var(--bg)] rounded-full" />

@@ -47,6 +47,8 @@ const ZR_BOUNDS: L.LatLngBoundsExpression = [
   [20.5950, -105.2420], // Southwest
   [20.6080, -105.2300]  // Northeast
 ];
+const DEFAULT_ZOOM = 17;
+const REMOTE_ZOOM = 12;
 
 const MapControls: React.FC<{
   onZoomIn: () => void,
@@ -103,7 +105,7 @@ interface MapViewProps {
 
 export const MapView: React.FC<MapViewProps> = ({ onEventClick }) => {
   const [selectedVenue, setSelectedVenue] = useState<string | null>(null);
-  const [zoom, setZoom] = useState(17);
+  const [zoom, setZoom] = useState(DEFAULT_ZOOM);
   const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
   const { t, formatTime } = useLocale();
   const { events } = useDataset();
@@ -157,14 +159,30 @@ export const MapView: React.FC<MapViewProps> = ({ onEventClick }) => {
     return distance <= 20; // 20km limit for map 'nearby'
   }, [userCoords]);
 
+  // Keep the viewport usable even if the user is outside Vallarta by recentring appropriately.
+  React.useEffect(() => {
+    if (!mapInstance) return;
+    if (userCoords) {
+      const distance = calculateDistance(userCoords.lat, userCoords.lng, ZR_CENTER[0], ZR_CENTER[1]);
+      const nextZoom = distance <= 20 ? DEFAULT_ZOOM : REMOTE_ZOOM;
+      mapInstance.setView([distance <= 20 ? ZR_CENTER[0] : userCoords.lat, distance <= 20 ? ZR_CENTER[1] : userCoords.lng], nextZoom, { animate: false });
+      setZoom(nextZoom);
+    } else {
+      mapInstance.setView(ZR_CENTER, DEFAULT_ZOOM, { animate: false });
+      setZoom(DEFAULT_ZOOM);
+    }
+  }, [mapInstance, userCoords]);
+
   const handleLocate = () => {
     triggerHaptic('medium');
     if (mapInstance) {
       if (userCoords) {
-        mapInstance.flyTo([userCoords.lat, userCoords.lng], 18);
+        const distance = calculateDistance(userCoords.lat, userCoords.lng, ZR_CENTER[0], ZR_CENTER[1]);
+        const targetZoom = distance <= 20 ? 18 : 14;
+        mapInstance.flyTo([userCoords.lat, userCoords.lng], targetZoom);
       } else {
         // Fallback to center if location not available yet
-        mapInstance.flyTo(ZR_CENTER, 17);
+        mapInstance.flyTo(ZR_CENTER, DEFAULT_ZOOM);
       }
     }
   };
@@ -187,11 +205,11 @@ export const MapView: React.FC<MapViewProps> = ({ onEventClick }) => {
 
       <div className="flex-1 relative overflow-hidden bg-[var(--bg)] w-full h-full">
         <MapContainer
-          center={ZR_CENTER}
+          center={isNearby && userCoords ? [ZR_CENTER[0], ZR_CENTER[1]] : userCoords ? [userCoords.lat, userCoords.lng] : ZR_CENTER}
           zoom={zoom}
-          minZoom={15}
+          minZoom={isNearby ? 15 : 3}
           maxZoom={19}
-          maxBounds={ZR_BOUNDS}
+          maxBounds={isNearby ? ZR_BOUNDS : undefined}
           zoomControl={false}
           attributionControl={false}
           className="w-full h-full"
